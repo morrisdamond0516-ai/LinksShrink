@@ -34,7 +34,7 @@ const plans = [
     price: "25",
     description: "Advanced features for professionals.",
     features: [
-      "Custom domain support",
+      "Custom domain",
       "Advanced analytics",
       "Expiring links",
       "Password-protected links",
