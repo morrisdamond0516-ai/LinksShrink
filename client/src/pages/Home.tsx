@@ -128,7 +128,7 @@ export default function Home() {
               <Button variant="ghost" className="hidden sm:flex">Pricing</Button>
             </Link>
             <Button variant="ghost" className="hidden sm:flex">Log In</Button>
-            <Button>Get Started</Button>
+            <Button onClick={() => window.location.href = "/pricing"}>Get Started</Button>
           </div>
         </div>
       </nav>
@@ -260,7 +260,7 @@ export default function Home() {
                         variant="default" 
                         size="sm" 
                         className="gap-1 hover-elevate active-elevate-2 shadow-sm"
-                        onClick={() => window.alert("Premium features require a paid subscription. No free trial available.")}
+                        onClick={() => window.location.href = "/pricing"}
                       >
                         Unlock <ArrowRight className="w-4 h-4" />
                       </Button>
@@ -276,7 +276,7 @@ export default function Home() {
               variant="premium" 
               size="xl" 
               className="rounded-full px-12 text-lg font-bold"
-              onClick={() => window.alert("Premium features require a paid subscription. No free trial available.")}
+              onClick={() => window.location.href = "/pricing"}
             >
               Unlock All Features
             </Button>

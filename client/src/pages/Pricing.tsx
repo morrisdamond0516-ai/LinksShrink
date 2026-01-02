@@ -56,6 +56,11 @@ const plans = [
 ];
 
 export default function Pricing() {
+  const handlePayment = (planName: string) => {
+    if (planName === "FREE") return;
+    window.alert(`Redirecting to payment for ${planName} plan...`);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white py-20 px-4">
       <div className="max-w-7xl mx-auto">
@@ -114,7 +119,7 @@ export default function Pricing() {
                   <Button 
                     className="w-full font-bold h-12 hover-elevate active-elevate-2"
                     variant={plan.recommended ? "default" : "outline"}
-                    onClick={() => plan.name !== "FREE" && window.alert("Premium plans require a paid subscription. No free trial available.")}
+                    onClick={() => handlePayment(plan.name)}
                   >
                     {plan.buttonText}
                   </Button>
