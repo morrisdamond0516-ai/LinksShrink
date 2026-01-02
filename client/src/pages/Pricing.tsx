@@ -11,15 +11,15 @@ const plans = [
     features: [
       { 
         text: "Basic link shortening", 
-        example: "What it does: Shortens any URL. | Shows: A 1-2 character unique link like snap.link/a1" 
+        example: "Clicking this will take you to the dashboard where you can paste a long URL and get a 1-2 character unique link like snap.link/a1 instantly." 
       },
       { 
         text: "No analytics", 
-        example: "What it does: Simple redirection. | Shows: No tracking data provided." 
+        example: "This feature is not available in the free plan. Upgrade to Starter to see your link performance." 
       },
       { 
         text: "No custom domain", 
-        example: "What it does: Uses our default domain. | Shows: Always snap.link branding." 
+        example: "This feature is not available in the free plan. Upgrade to Pro to use your own branding." 
       },
     ],
     buttonText: "Get Started",
@@ -32,19 +32,19 @@ const plans = [
     features: [
       { 
         text: "Click Analytics", 
-        example: "What it does: Counts every visitor. | Shows: Total click count on your dashboard." 
+        example: "Clicking this will open your analytics dashboard showing a real-time total click count for all your active links." 
       },
       { 
         text: "Custom QR Codes", 
-        example: "What it does: Generates scannable codes. | Shows: A downloadable QR image for your link." 
+        example: "Clicking this will open the QR generator where you can download a high-resolution, branded QR code for any of your links." 
       },
       { 
         text: "Custom Slugs", 
-        example: "What it does: Lets you name your link. | Shows: snap.link/your-name instead of random characters." 
+        example: "Clicking this will let you edit your link's suffix, allowing you to create personalized URLs like snap.link/your-name." 
       },
       { 
         text: "Faster Redirects", 
-        example: "What it does: Uses premium server routing. | Shows: Near-instant loading for your visitors." 
+        example: "This feature is automatically enabled. Your visitors will experience near-instant loading times via our premium server routing." 
       },
     ],
     buttonText: "Choose Starter",
@@ -57,19 +57,19 @@ const plans = [
     features: [
       { 
         text: "Custom Domain", 
-        example: "What it does: Connects your own domain. | Shows: yourbrand.com/offer instead of snap.link." 
+        example: "Clicking this will take you to the domain settings page where you can connect your own domain like yourbrand.com/offer." 
       },
       { 
         text: "Advanced Analytics", 
-        example: "What it does: Detailed visitor tracking. | Shows: Charts of location, device types, and browser data." 
+        example: "Clicking this will show you detailed heatmaps and charts of your visitors' locations, device types, and browser data." 
       },
       { 
         text: "Expiring Links", 
-        example: "What it does: Sets an end date. | Shows: Link automatically deactivates after your chosen time." 
+        example: "Clicking this will open the link scheduler where you can set an automatic deactivation date and time for any URL." 
       },
       { 
         text: "Password Protection", 
-        example: "What it does: Adds a security layer. | Shows: A password prompt screen before redirecting." 
+        example: "Clicking this will let you set a secret password, showing a secure prompt screen to visitors before they can access your content." 
       },
     ],
     buttonText: "Go Pro",
@@ -82,19 +82,19 @@ const plans = [
     features: [
       { 
         text: "3,000 Bulk Links", 
-        example: "What it does: Shortens many links at once. | Shows: 3,000 short links generated from your CSV file." 
+        example: "Clicking this will open the bulk uploader where you can import a CSV file to shorten 3,000 URLs in a single click." 
       },
       { 
         text: "50 Custom Domains", 
-        example: "What it does: Manage multiple brands. | Shows: A dashboard to control 50 different custom domains." 
+        example: "Clicking this will take you to the multi-domain manager where you can control and switch between 50 different custom brands." 
       },
       { 
         text: "Bulk Password Protection", 
-        example: "What it does: Secures entire sets. | Shows: Password locks applied across thousands of links instantly." 
+        example: "Clicking this will open the bulk security manager to apply password locks across thousands of links at once." 
       },
       { 
         text: "Full API Access", 
-        example: "What it does: Integrates with your apps. | Shows: Programmatic access to create and manage links." 
+        example: "Clicking this will take you to your API settings page where you can generate keys for programmatic link management." 
       },
     ],
     buttonText: "Get Enterprise",
