@@ -123,6 +123,9 @@ export default function Home() {
             <span className="text-xl font-bold tracking-tight">SnapLink</span>
           </div>
           <div className="flex items-center gap-4">
+            <Link href="/pricing">
+              <Button variant="ghost" className="hidden sm:flex">Pricing</Button>
+            </Link>
             <Button variant="ghost" className="hidden sm:flex">Log In</Button>
             <Button>Get Started</Button>
           </div>
