@@ -1,7 +1,6 @@
 import { db } from "./db";
 import { urls, type Url, type InsertUrl } from "@shared/schema";
 import { eq } from "drizzle-orm";
-import { randomBytes } from "crypto";
 
 export interface IStorage {
   createUrl(insertUrl: InsertUrl): Promise<Url>;
@@ -10,20 +9,34 @@ export interface IStorage {
 }
 
 export class DatabaseStorage implements IStorage {
+  private chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+
+  private generateCode(length: number): string {
+    let result = "";
+    for (let i = 0; i < length; i++) {
+      result += this.chars.charAt(Math.floor(Math.random() * this.chars.length));
+    }
+    return result;
+  }
+
   async createUrl(insertUrl: InsertUrl): Promise<Url> {
-    // Generate a unique short code
-    // Try a few times to ensure uniqueness, though collision is rare with 6 chars (base64ish or hex)
-    // We'll use 6 hex chars for simplicity = 16^6 = 16M combinations. Enough for this demo.
     let shortCode = "";
     let isUnique = false;
+    let length = 1;
+    let attempts = 0;
     
     while (!isUnique) {
-      // Use 1 byte of random data = 16^2 = 256 combinations.
-      // This results in a 2-character short code.
-      shortCode = randomBytes(1).toString("hex");
+      shortCode = this.generateCode(length);
       const existing = await this.getUrl(shortCode);
       if (!existing) {
         isUnique = true;
+      } else {
+        attempts++;
+        // If we collide too much at this length, increase it
+        if (attempts > 5) {
+          length++;
+          attempts = 0;
+        }
       }
     }
 
