@@ -1,38 +1,50 @@
-import { type User, type InsertUser } from "@shared/schema";
-import { randomUUID } from "crypto";
-
-// modify the interface with any CRUD methods
-// you might need
+import { db } from "./db";
+import { urls, type Url, type InsertUrl } from "@shared/schema";
+import { eq } from "drizzle-orm";
+import { randomBytes } from "crypto";
 
 export interface IStorage {
-  getUser(id: string): Promise<User | undefined>;
-  getUserByUsername(username: string): Promise<User | undefined>;
-  createUser(user: InsertUser): Promise<User>;
+  createUrl(insertUrl: InsertUrl): Promise<Url>;
+  getUrl(shortCode: string): Promise<Url | undefined>;
+  incrementVisit(shortCode: string): Promise<void>;
 }
 
-export class MemStorage implements IStorage {
-  private users: Map<string, User>;
+export class DatabaseStorage implements IStorage {
+  async createUrl(insertUrl: InsertUrl): Promise<Url> {
+    // Generate a unique short code
+    // Try a few times to ensure uniqueness, though collision is rare with 6 chars (base64ish or hex)
+    // We'll use 6 hex chars for simplicity = 16^6 = 16M combinations. Enough for this demo.
+    let shortCode = "";
+    let isUnique = false;
+    
+    while (!isUnique) {
+      shortCode = randomBytes(3).toString("hex");
+      const existing = await this.getUrl(shortCode);
+      if (!existing) {
+        isUnique = true;
+      }
+    }
 
-  constructor() {
-    this.users = new Map();
+    const [url] = await db
+      .insert(urls)
+      .values({ ...insertUrl, shortCode })
+      .returning();
+    return url;
   }
 
-  async getUser(id: string): Promise<User | undefined> {
-    return this.users.get(id);
+  async getUrl(shortCode: string): Promise<Url | undefined> {
+    const [url] = await db.select().from(urls).where(eq(urls.shortCode, shortCode));
+    return url;
   }
 
-  async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(
-      (user) => user.username === username,
-    );
-  }
-
-  async createUser(insertUser: InsertUser): Promise<User> {
-    const id = randomUUID();
-    const user: User = { ...insertUser, id };
-    this.users.set(id, user);
-    return user;
+  async incrementVisit(shortCode: string): Promise<void> {
+    const url = await this.getUrl(shortCode);
+    if (url) {
+      await db.update(urls)
+        .set({ visitCount: (url.visitCount || 0) + 1 })
+        .where(eq(urls.shortCode, shortCode));
+    }
   }
 }
 
-export const storage = new MemStorage();
+export const storage = new DatabaseStorage();
