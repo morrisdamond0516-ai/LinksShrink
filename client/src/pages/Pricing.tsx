@@ -7,37 +7,37 @@ const plans = [
   {
     name: "FREE",
     price: "0",
-    description: "Get started with basic link shortening.",
+    description: "Essential link shortening for personal use.",
     features: [
-      "Basic link shortening",
-      "No analytics",
-      "No custom domain",
+      { text: "Basic link shortening", example: "Example: snap.link/a1" },
+      { text: "No analytics", example: "Upgrade for tracking" },
+      { text: "No custom domain", example: "SnapLink branding only" },
     ],
     buttonText: "Get Started",
-    recommended: true,
+    recommended: false,
   },
   {
     name: "Starter",
     price: "10",
     description: "Perfect for growing brands.",
     features: [
-      "Analytics",
-      "QR codes",
-      "Custom slugs",
-      "Faster redirects",
+      { text: "Click Analytics", example: "Example: Track 500 clicks/mo" },
+      { text: "Custom QR Codes", example: "Example: Branded QR for menus" },
+      { text: "Custom Slugs", example: "Example: snap.link/my-sale" },
+      { text: "Faster Redirects", example: "Optimized server paths" },
     ],
     buttonText: "Choose Starter",
-    recommended: false,
+    recommended: true,
   },
   {
     name: "Pro",
     price: "25",
     description: "Advanced features for professionals.",
     features: [
-      "Custom domain",
-      "Advanced analytics",
-      "Expiring links",
-      "Password-protected links",
+      { text: "Custom Domain", example: "Example: link.yourbrand.com/offer" },
+      { text: "Advanced Analytics", example: "Track location & device types" },
+      { text: "Expiring Links", example: "Example: Link expires after 24h" },
+      { text: "Password Protection", example: "Example: snap.link/vault (locked)" },
     ],
     buttonText: "Go Pro",
     recommended: false,
@@ -45,12 +45,14 @@ const plans = [
   {
     name: "Enterprise",
     price: "50",
-    description: "Scale your business with powerful tools.",
+    description: "Maximum scale for agencies and power users.",
     features: [
-      "Bulk link creation",
-      "API access",
+      { text: "3,000 Bulk Links", example: "Example: Shorten 3,000 URLs via CSV" },
+      { text: "50 Custom Domains", example: "Example: Manage 50 separate brands" },
+      { text: "Bulk Password Protection", example: "Lock thousands of links at once" },
+      { text: "Full API Access", example: "Programmatic link management" },
     ],
-    buttonText: "Contact Us",
+    buttonText: "Get Enterprise",
     recommended: false,
   },
 ];
@@ -58,7 +60,7 @@ const plans = [
 export default function Pricing() {
   const handlePayment = (planName: string) => {
     if (planName === "FREE") return;
-    window.alert(`Redirecting to payment for ${planName} plan...`);
+    window.alert(`Redirecting to secure payment for ${planName} plan ($${plans.find(p => p.name === planName)?.price}/mo)...`);
   };
 
   return (
@@ -106,11 +108,14 @@ export default function Pricing() {
                 <CardContent className="flex-1">
                   <ul className="space-y-4">
                     {plan.features.map((feature) => (
-                      <li key={feature} className="flex items-start gap-3 text-sm">
-                        <div className="bg-primary/10 rounded-full p-1 mt-0.5">
-                          <Check className="w-3 h-3 text-primary" />
+                      <li key={feature.text} className="flex flex-col gap-1">
+                        <div className="flex items-start gap-3 text-sm">
+                          <div className="bg-primary/10 rounded-full p-1 mt-0.5">
+                            <Check className="w-3 h-3 text-primary" />
+                          </div>
+                          <span className="font-medium leading-tight">{feature.text}</span>
                         </div>
-                        <span className="leading-tight">{feature}</span>
+                        <span className="text-xs text-muted-foreground ml-9 italic">{feature.example}</span>
                       </li>
                     ))}
                   </ul>

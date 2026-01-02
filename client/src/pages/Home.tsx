@@ -78,37 +78,37 @@ export default function Home() {
       icon: <Globe className="w-6 h-6 text-blue-500" />,
       title: "Branded Links",
       description: "Build trust with custom domains like brand.link/sale.",
-      benefit: "Looks professional"
+      benefit: "Example: link.yourbrand.com/summer"
     },
     {
       icon: <BarChart className="w-6 h-6 text-green-500" />,
       title: "Detailed Analytics",
       description: "Track clicks, location, devices, and traffic sources.",
-      benefit: "Businesses love this"
+      benefit: "Example: See real-time click maps"
     },
     {
       icon: <QrCode className="w-6 h-6 text-purple-500" />,
       title: "Smart QR Codes",
       description: "High-resolution, custom colors, and fully downloadable.",
-      benefit: "Bridge physical & digital"
+      benefit: "Example: Custom branded restaurant menus"
     },
     {
       icon: <Lock className="w-6 h-6 text-red-500" />,
       title: "Password Protection",
       description: "Secure your content with password-protected links.",
-      benefit: "Privacy focused"
+      benefit: "Example: Only shared with verified clients"
     },
     {
       icon: <Clock className="w-6 h-6 text-orange-500" />,
       title: "Expiring Links",
       description: "Set links to expire after a certain date or click count.",
-      benefit: "Limited-time offers"
+      benefit: "Example: Holiday sale links that auto-close"
     },
     {
       icon: <Layers className="w-6 h-6 text-cyan-500" />,
       title: "Bulk Creation",
-      description: "Generate thousands of links instantly via API or CSV.",
-      benefit: "For power users"
+      description: "Generate up to 3,000 links instantly via API or CSV.",
+      benefit: "Example: 3,000 links for large campaigns"
     }
   ];
 
