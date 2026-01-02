@@ -18,7 +18,7 @@ const plans = [
   },
   {
     name: "Starter",
-    price: "3-5",
+    price: "10",
     description: "Perfect for growing brands.",
     features: [
       "Analytics",
@@ -31,7 +31,7 @@ const plans = [
   },
   {
     name: "Pro",
-    price: "10-15",
+    price: "25",
     description: "Advanced features for professionals.",
     features: [
       "Custom domain support",
@@ -44,7 +44,7 @@ const plans = [
   },
   {
     name: "Enterprise",
-    price: "20-49",
+    price: "50",
     description: "Scale your business with powerful tools.",
     features: [
       "Bulk link creation",
