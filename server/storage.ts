@@ -18,9 +18,9 @@ export class DatabaseStorage implements IStorage {
     let isUnique = false;
     
     while (!isUnique) {
-      // Use 4 hex chars = 16^4 = 65,536 combinations. 
-      // This results in a very short URL: domain.com/abcd (4 chars)
-      shortCode = randomBytes(2).toString("hex");
+      // Use 1 byte of random data = 16^2 = 256 combinations.
+      // This results in a 2-character short code.
+      shortCode = randomBytes(1).toString("hex");
       const existing = await this.getUrl(shortCode);
       if (!existing) {
         isUnique = true;
