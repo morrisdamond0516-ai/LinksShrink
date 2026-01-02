@@ -9,9 +9,18 @@ const plans = [
     price: "0",
     description: "Essential link shortening for personal use.",
     features: [
-      { text: "Basic link shortening", example: "Example: snap.link/a1" },
-      { text: "No analytics", example: "Upgrade for tracking" },
-      { text: "No custom domain", example: "SnapLink branding only" },
+      { 
+        text: "Basic link shortening", 
+        example: "What it does: Shortens any URL. | Shows: A 1-2 character unique link like snap.link/a1" 
+      },
+      { 
+        text: "No analytics", 
+        example: "What it does: Simple redirection. | Shows: No tracking data provided." 
+      },
+      { 
+        text: "No custom domain", 
+        example: "What it does: Uses our default domain. | Shows: Always snap.link branding." 
+      },
     ],
     buttonText: "Get Started",
     recommended: false,
@@ -21,10 +30,22 @@ const plans = [
     price: "10",
     description: "Perfect for growing brands.",
     features: [
-      { text: "Click Analytics", example: "Example: Track 500 clicks/mo" },
-      { text: "Custom QR Codes", example: "Example: Branded QR for menus" },
-      { text: "Custom Slugs", example: "Example: snap.link/my-sale" },
-      { text: "Faster Redirects", example: "Optimized server paths" },
+      { 
+        text: "Click Analytics", 
+        example: "What it does: Counts every visitor. | Shows: Total click count on your dashboard." 
+      },
+      { 
+        text: "Custom QR Codes", 
+        example: "What it does: Generates scannable codes. | Shows: A downloadable QR image for your link." 
+      },
+      { 
+        text: "Custom Slugs", 
+        example: "What it does: Lets you name your link. | Shows: snap.link/your-name instead of random characters." 
+      },
+      { 
+        text: "Faster Redirects", 
+        example: "What it does: Uses premium server routing. | Shows: Near-instant loading for your visitors." 
+      },
     ],
     buttonText: "Choose Starter",
     recommended: true,
@@ -34,10 +55,22 @@ const plans = [
     price: "25",
     description: "Advanced features for professionals.",
     features: [
-      { text: "Custom Domain", example: "Example: link.yourbrand.com/offer" },
-      { text: "Advanced Analytics", example: "Track location & device types" },
-      { text: "Expiring Links", example: "Example: Link expires after 24h" },
-      { text: "Password Protection", example: "Example: snap.link/vault (locked)" },
+      { 
+        text: "Custom Domain", 
+        example: "What it does: Connects your own domain. | Shows: yourbrand.com/offer instead of snap.link." 
+      },
+      { 
+        text: "Advanced Analytics", 
+        example: "What it does: Detailed visitor tracking. | Shows: Charts of location, device types, and browser data." 
+      },
+      { 
+        text: "Expiring Links", 
+        example: "What it does: Sets an end date. | Shows: Link automatically deactivates after your chosen time." 
+      },
+      { 
+        text: "Password Protection", 
+        example: "What it does: Adds a security layer. | Shows: A password prompt screen before redirecting." 
+      },
     ],
     buttonText: "Go Pro",
     recommended: false,
@@ -47,10 +80,22 @@ const plans = [
     price: "50",
     description: "Maximum scale for agencies and power users.",
     features: [
-      { text: "3,000 Bulk Links", example: "Example: Shorten 3,000 URLs via CSV" },
-      { text: "50 Custom Domains", example: "Example: Manage 50 separate brands" },
-      { text: "Bulk Password Protection", example: "Lock thousands of links at once" },
-      { text: "Full API Access", example: "Programmatic link management" },
+      { 
+        text: "3,000 Bulk Links", 
+        example: "What it does: Shortens many links at once. | Shows: 3,000 short links generated from your CSV file." 
+      },
+      { 
+        text: "50 Custom Domains", 
+        example: "What it does: Manage multiple brands. | Shows: A dashboard to control 50 different custom domains." 
+      },
+      { 
+        text: "Bulk Password Protection", 
+        example: "What it does: Secures entire sets. | Shows: Password locks applied across thousands of links instantly." 
+      },
+      { 
+        text: "Full API Access", 
+        example: "What it does: Integrates with your apps. | Shows: Programmatic access to create and manage links." 
+      },
     ],
     buttonText: "Get Enterprise",
     recommended: false,
