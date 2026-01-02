@@ -252,8 +252,13 @@ export default function Home() {
                       <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                         {feature.benefit}
                       </span>
-                      <Button variant="ghost" size="sm" className="gap-1 text-primary hover:text-primary/80 p-0 h-auto hover:bg-transparent">
-                        Learn more <ArrowRight className="w-4 h-4" />
+                      <Button 
+                        variant="default" 
+                        size="sm" 
+                        className="gap-1 hover-elevate active-elevate-2 shadow-sm"
+                        onClick={() => window.alert("Premium features require a paid subscription. No free trial available.")}
+                      >
+                        Unlock <ArrowRight className="w-4 h-4" />
                       </Button>
                     </div>
                   </CardContent>
@@ -263,11 +268,16 @@ export default function Home() {
           </div>
 
           <div className="mt-20 text-center">
-            <Button variant="premium" size="xl" className="rounded-full px-12 text-lg font-bold">
+            <Button 
+              variant="premium" 
+              size="xl" 
+              className="rounded-full px-12 text-lg font-bold"
+              onClick={() => window.alert("Premium features require a paid subscription. No free trial available.")}
+            >
               Unlock All Features
             </Button>
             <p className="mt-4 text-sm text-muted-foreground">
-              Start your 14-day free trial. No credit card required.
+              Upgrade today to access professional marketing tools.
             </p>
           </div>
         </div>
