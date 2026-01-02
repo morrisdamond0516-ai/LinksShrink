@@ -45,12 +45,10 @@ const plans = [
   {
     name: "Enterprise",
     price: "20-49",
-    description: "Scale your business with team features.",
+    description: "Scale your business with powerful tools.",
     features: [
       "Bulk link creation",
-      "Team accounts",
       "API access",
-      "Priority support",
     ],
     buttonText: "Contact Us",
     recommended: false,
