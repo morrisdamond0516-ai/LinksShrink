@@ -9,7 +9,7 @@ export interface IStorage {
 }
 
 export class DatabaseStorage implements IStorage {
-  private chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  private chars = "23456789bcdfghjkmnpqrstvwxyzBCDFGHJKLMNPQRSTVWXYZ";
 
   private generateCode(length: number): string {
     let result = "";
