@@ -28,6 +28,12 @@ export default function Home() {
   
   const shortenMutation = useShortenUrl();
 
+    const handleJobClick = () => {
+      toast({
+        title: "Applications Closed",
+        description: "We are sorry, but we are not accepting any applications right now. However, if you email us your resume, we will take a look at it in a timely manner. Have a great day!",
+      });
+    };
   const handleShorten = (e: React.FormEvent) => {
     e.preventDefault();
     if (!url) return;
@@ -462,7 +468,11 @@ export default function Home() {
               { role: "Product Designer", type: "Remote", dept: "Product" },
               { role: "Growth Marketer", type: "Remote", dept: "Marketing" }
             ].map((job, i) => (
-              <div key={i} className="group flex items-center justify-between p-6 bg-black rounded-2xl border border-white/5 hover:border-lime-400/50 transition-all cursor-pointer">
+              <div 
+                key={i} 
+                onClick={handleJobClick}
+                className="group flex items-center justify-between p-6 bg-black rounded-2xl border border-white/5 hover:border-lime-400/50 transition-all cursor-pointer"
+              >
                 <div>
                   <h4 className="text-xl font-bold text-white group-hover:text-lime-400 transition-colors">{job.role}</h4>
                   <div className="flex gap-4 mt-1 text-sm text-slate-500">
@@ -480,7 +490,7 @@ export default function Home() {
             <Button 
               variant="outline" 
               className="border-lime-400 text-lime-400 hover:bg-lime-400 hover:text-black font-bold h-12 px-8"
-              onClick={() => window.location.href = "mailto:ProductionLinks@yahoo.com"}
+              onClick={handleJobClick}
             >
               Email Us Your CV
             </Button>
