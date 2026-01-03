@@ -215,6 +215,52 @@ const featureShowcase: FeatureShowcaseItem[] = [
         <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-slate-50 to-transparent pointer-events-none" />
       </div>
     )
+  },
+  {
+    title: "Full API Access",
+    description: "Integrate link shortening directly into your own applications and workflows.",
+    features: [
+      { text: "RESTful Endpoint Support", example: "Send POST requests to our high-speed API to generate links programmatically in milliseconds." },
+      { text: "Secure API Key Management", example: "Generate, rotate, and manage multiple API keys for different environments like Dev, Staging, and Production." },
+      { text: "Detailed API Usage Logs", example: "Track every single API call made by your systems with detailed status codes and response times." }
+    ],
+    visual: (
+      <div className="bg-slate-900 rounded-xl p-6 font-mono text-[10px] text-blue-300 border border-slate-700 shadow-2xl relative overflow-hidden">
+        <div className="flex items-center gap-2 mb-4 border-b border-slate-700 pb-2">
+          <div className="flex gap-1.5">
+            <div className="w-2.5 h-2.5 rounded-full bg-red-500/50" />
+            <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/50" />
+            <div className="w-2.5 h-2.5 rounded-full bg-green-500/50" />
+          </div>
+          <span className="text-slate-500 text-[9px] font-bold">POST /api/v1/shorten</span>
+        </div>
+        <div className="space-y-4">
+          <div className="space-y-1">
+            <div className="text-slate-500">// Request Payload</div>
+            <div className="text-white">
+              <span className="text-purple-400">{"{"}</span><br />
+              <span className="pl-4 text-blue-400">"url"</span>: <span className="text-green-400">"https://your-product.com/deal"</span>,<br />
+              <span className="pl-4 text-blue-400">"domain"</span>: <span className="text-green-400">"brand.link"</span><br />
+              <span className="text-purple-400">{"}"}</span>
+            </div>
+          </div>
+          <div className="space-y-1">
+            <div className="text-slate-500">// Response 201 Created</div>
+            <div className="text-white bg-slate-800/50 p-2 rounded">
+              <span className="text-purple-400">{"{"}</span><br />
+              <span className="pl-4 text-blue-400">"shortUrl"</span>: <span className="text-green-400">"https://brand.link/x7y"</span>,<br />
+              <span className="pl-4 text-blue-400">"id"</span>: <span className="text-yellow-400">"lnk_9281"</span><br />
+              <span className="text-purple-400">{"}"}</span>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 text-[9px]">
+            <span className="text-green-500 font-bold">LATENCY: 42ms</span>
+            <span className="text-slate-600">|</span>
+            <span className="text-slate-500">AUTH: Bearer ****</span>
+          </div>
+        </div>
+      </div>
+    )
   }
 ];
 
