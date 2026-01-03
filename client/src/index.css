@@ -8,30 +8,30 @@
   --font-body: 'Inter', sans-serif;
   --font-display: 'Outfit', sans-serif;
 
-  /* Professional Blue-Grey Palette */
-  --background: 210 20% 98%;
-  --foreground: 222 47% 11%;
+  /* Dark Lime & Yellow Palette */
+  --background: 0 0% 0%;
+  --foreground: 74 100% 50%;
   
-  --primary: 221 83% 53%;
-  --primary-foreground: 210 40% 98%;
+  --primary: 74 100% 50%; /* Lime */
+  --primary-foreground: 0 0% 0%;
   
-  --secondary: 210 40% 96%;
-  --secondary-foreground: 222 47% 11%;
+  --secondary: 48 100% 50%; /* Yellow */
+  --secondary-foreground: 0 0% 0%;
   
-  --muted: 214 32% 91%;
-  --muted-foreground: 215 16% 47%;
+  --muted: 25 30% 15%; /* Dark Brown */
+  --muted-foreground: 48 100% 70%;
   
-  --accent: 262 83% 58%;
-  --accent-foreground: 210 40% 98%;
+  --accent: 25 100% 50%; /* Brown/Orange */
+  --accent-foreground: 0 0% 0%;
   
   --destructive: 0 84% 60%;
-  --destructive-foreground: 210 40% 98%;
+  --destructive-foreground: 0 0% 100%;
   
-  --border: 214 32% 91%;
-  --input: 214 32% 91%;
-  --ring: 221 83% 53%;
+  --border: 25 30% 20%;
+  --input: 25 30% 20%;
+  --ring: 74 100% 50%;
   
-  --radius: 0.75rem;
+  --radius: 0.5rem;
 }
 
 @layer base {
