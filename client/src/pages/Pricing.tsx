@@ -267,7 +267,7 @@ const featureShowcase: FeatureShowcaseItem[] = [
 export default function Pricing() {
   const handlePayment = (planName: string) => {
     if (planName === "FREE") return;
-    window.alert(`Redirecting to secure payment for ${planName} plan ($${plans.find(p => p.name === planName)?.price}/mo)...`);
+    window.alert(`Redirecting to secure payment for ${planName} plan ($${plans.find(p => p.name === planName)?.price}/mo)... Check your phone for verification.`);
   };
 
   return (
