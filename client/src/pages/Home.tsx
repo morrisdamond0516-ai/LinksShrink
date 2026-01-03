@@ -28,7 +28,8 @@ export default function Home() {
   
   const shortenMutation = useShortenUrl();
 
-    const handleJobClick = () => {
+    const handleJobClick = (e?: React.MouseEvent) => {
+      if (e) e.preventDefault();
       toast({
         title: "Applications Closed",
         description: "We are sorry, but we are not accepting any applications right now. However, if you email us your resume, we will take a look at it in a timely manner. Have a great day!",
@@ -186,6 +187,7 @@ export default function Home() {
                     size="xl" 
                     className="h-14 font-bold text-lg shrink-0 bg-lime-400 text-black hover:bg-lime-500 shadow-lg shadow-lime-400/20"
                     disabled={shortenMutation.isPending || !url}
+                    data-testid="button-shorten"
                   >
                     {shortenMutation.isPending ? "Shortening..." : "Shorten URL"}
                   </Button>
@@ -491,6 +493,7 @@ export default function Home() {
               variant="outline" 
               className="border-lime-400 text-lime-400 hover:bg-lime-400 hover:text-black font-bold h-12 px-8"
               onClick={handleJobClick}
+              data-testid="button-careers-email"
             >
               Email Us Your CV
             </Button>
@@ -514,19 +517,19 @@ export default function Home() {
             <div>
               <h4 className="text-white font-semibold mb-4">Product</h4>
               <ul className="space-y-2 text-sm">
-                <li><a href="#features" className="hover:text-lime-400 transition-colors">Features</a></li>
-                <li><a href="/pricing" className="hover:text-lime-400 transition-colors">Pricing</a></li>
-                <li><a href="#enterprise-details" className="hover:text-lime-400 transition-colors">Enterprise</a></li>
-                <li><a href="#analytics-details" className="hover:text-lime-400 transition-colors">Analytics</a></li>
+                <li><a href="#features" className="hover:text-lime-400 transition-colors" data-testid="link-footer-features">Features</a></li>
+                <li><a href="/pricing" className="hover:text-lime-400 transition-colors" data-testid="link-footer-pricing">Pricing</a></li>
+                <li><a href="#enterprise-details" className="hover:text-lime-400 transition-colors" data-testid="link-footer-enterprise">Enterprise</a></li>
+                <li><a href="#analytics-details" className="hover:text-lime-400 transition-colors" data-testid="link-footer-analytics">Analytics</a></li>
               </ul>
             </div>
             <div>
               <h4 className="text-white font-semibold mb-4">Company</h4>
               <ul className="space-y-2 text-sm">
-                <li><a href="#about-details" className="hover:text-lime-400 transition-colors">About</a></li>
-                <li><a href="#careers" className="hover:text-lime-400 transition-colors">Careers</a></li>
-                <li><a href="mailto:ProductionLinks@yahoo.com" className="hover:text-lime-400 transition-colors">Contact</a></li>
-                <li><a href="/rules" className="hover:text-lime-400 transition-colors">Rules & Policy</a></li>
+                <li><a href="#about-details" className="hover:text-lime-400 transition-colors" data-testid="link-footer-about">About</a></li>
+                <li><a href="#careers" className="hover:text-lime-400 transition-colors" data-testid="link-footer-careers">Careers</a></li>
+                <li><a href="mailto:ProductionLinks@yahoo.com" className="hover:text-lime-400 transition-colors" data-testid="link-footer-contact">Contact</a></li>
+                <li><a href="/rules" className="hover:text-lime-400 transition-colors" data-testid="link-footer-rules">Rules & Policy</a></li>
               </ul>
             </div>
           </div>
