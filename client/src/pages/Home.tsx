@@ -75,13 +75,13 @@ export default function Home() {
 
   const features = [
     {
-      icon: <Globe className="w-6 h-6 text-lime-400" />,
+      icon: <Globe id="branded-links" className="w-6 h-6 text-lime-400" />,
       title: "Branded Links",
       description: "Build trust with custom domains like brand.link/sale.",
       benefit: "Example: link.yourbrand.com/summer"
     },
     {
-      icon: <BarChart className="w-6 h-6 text-yellow-400" />,
+      icon: <BarChart id="analytics" className="w-6 h-6 text-yellow-400" />,
       title: "Detailed Analytics",
       description: "Track clicks, location, devices, and traffic sources.",
       benefit: "Example: See real-time click maps"
@@ -105,7 +105,7 @@ export default function Home() {
       benefit: "Example: Holiday sale links that auto-close"
     },
     {
-      icon: <Layers className="w-6 h-6 text-yellow-500" />,
+      icon: <Layers id="enterprise" className="w-6 h-6 text-yellow-500" />,
       title: "Bulk Creation",
       description: "Generate up to 3,000 links instantly via API or CSV.",
       benefit: "Example: 3,000 links for large campaigns"
@@ -289,6 +289,20 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Careers Section */}
+      <section id="careers" className="py-24 bg-slate-900 border-y border-white/5">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h2 className="text-3xl md:text-4xl font-bold mb-6 text-white">Join the LinkShrink Team</h2>
+          <p className="text-lg text-slate-400 max-w-2xl mx-auto mb-10">
+            We're always looking for passionate people to help build the future of the web. 
+            Send your resume to <a href="mailto:ProductionLinks@yahoo.com" className="text-lime-400 hover:underline">ProductionLinks@yahoo.com</a>.
+          </p>
+          <Button variant="outline" className="border-lime-400 text-lime-400 hover:bg-lime-400 hover:text-black font-bold">
+            View Open Positions
+          </Button>
+        </div>
+      </section>
+
       {/* Footer */}
       <footer className="bg-black text-slate-300 py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -307,15 +321,15 @@ export default function Home() {
               <ul className="space-y-2 text-sm">
                 <li><a href="#features" className="hover:text-lime-400 transition-colors">Features</a></li>
                 <li><a href="/pricing" className="hover:text-lime-400 transition-colors">Pricing</a></li>
-                <li><a href="/pricing" className="hover:text-lime-400 transition-colors">Enterprise</a></li>
-                <li><a href="/pricing" className="hover:text-lime-400 transition-colors">Analytics</a></li>
+                <li><a href="#enterprise" className="hover:text-lime-400 transition-colors">Enterprise</a></li>
+                <li><a href="#analytics" className="hover:text-lime-400 transition-colors">Analytics</a></li>
               </ul>
             </div>
             <div>
               <h4 className="text-white font-semibold mb-4">Company</h4>
               <ul className="space-y-2 text-sm">
                 <li><a href="#about" className="hover:text-lime-400 transition-colors">About</a></li>
-                <li><a href="/pricing" className="hover:text-lime-400 transition-colors">Careers</a></li>
+                <li><a href="#careers" className="hover:text-lime-400 transition-colors">Careers</a></li>
                 <li><a href="mailto:ProductionLinks@yahoo.com" className="hover:text-lime-400 transition-colors">Contact</a></li>
                 <li><a href="/rules" className="hover:text-lime-400 transition-colors">Rules & Policy</a></li>
               </ul>
