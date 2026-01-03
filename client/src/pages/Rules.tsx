@@ -65,7 +65,8 @@ export default function Rules() {
           ))}
         </div>
 
-        <div className="mt-16 text-center">
+        <div className="mt-16 text-center space-y-4">
+          <p className="text-slate-400">Questions? Contact us at <a href="mailto:ProductionLinks@yahoo.com" className="text-lime-400 hover:underline">ProductionLinks@yahoo.com</a></p>
           <Link href="/">
             <Button variant="outline" className="border-lime-400 text-lime-400 hover:bg-lime-400 hover:text-black">
               Back to Home

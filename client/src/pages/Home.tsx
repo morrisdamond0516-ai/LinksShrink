@@ -316,7 +316,7 @@ export default function Home() {
               <ul className="space-y-2 text-sm">
                 <li><a href="#" className="hover:text-lime-400 transition-colors">About</a></li>
                 <li><a href="#" className="hover:text-lime-400 transition-colors">Careers</a></li>
-                <li><a href="#" className="hover:text-lime-400 transition-colors">Contact</a></li>
+                <li><a href="mailto:ProductionLinks@yahoo.com" className="hover:text-lime-400 transition-colors">Contact</a></li>
                 <li><a href="/rules" className="hover:text-lime-400 transition-colors">Privacy</a></li>
               </ul>
             </div>
