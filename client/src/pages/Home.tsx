@@ -136,7 +136,7 @@ export default function Home() {
       </nav>
 
       {/* Hero Section */}
-      <section className="relative pt-20 pb-32 px-4 overflow-hidden">
+      <section id="about" className="relative pt-20 pb-32 px-4 overflow-hidden">
         <div className="max-w-4xl mx-auto text-center relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -226,7 +226,7 @@ export default function Home() {
       </section>
 
       {/* Features Grid */}
-      <section className="py-24 bg-black">
+      <section id="features" className="py-24 bg-black">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">Everything you need to grow</h2>
@@ -305,19 +305,19 @@ export default function Home() {
             <div>
               <h4 className="text-white font-semibold mb-4">Product</h4>
               <ul className="space-y-2 text-sm">
-                <li><a href="#" className="hover:text-lime-400 transition-colors">Features</a></li>
+                <li><a href="#features" className="hover:text-lime-400 transition-colors">Features</a></li>
                 <li><a href="/pricing" className="hover:text-lime-400 transition-colors">Pricing</a></li>
-                <li><a href="/rules" className="hover:text-lime-400 transition-colors">Rules & Policy</a></li>
-                <li><a href="#" className="hover:text-lime-400 transition-colors">Analytics</a></li>
+                <li><a href="/pricing" className="hover:text-lime-400 transition-colors">Enterprise</a></li>
+                <li><a href="/pricing" className="hover:text-lime-400 transition-colors">Analytics</a></li>
               </ul>
             </div>
             <div>
               <h4 className="text-white font-semibold mb-4">Company</h4>
               <ul className="space-y-2 text-sm">
-                <li><a href="#" className="hover:text-lime-400 transition-colors">About</a></li>
-                <li><a href="#" className="hover:text-lime-400 transition-colors">Careers</a></li>
+                <li><a href="#about" className="hover:text-lime-400 transition-colors">About</a></li>
+                <li><a href="/pricing" className="hover:text-lime-400 transition-colors">Careers</a></li>
                 <li><a href="mailto:ProductionLinks@yahoo.com" className="hover:text-lime-400 transition-colors">Contact</a></li>
-                <li><a href="/rules" className="hover:text-lime-400 transition-colors">Privacy</a></li>
+                <li><a href="/rules" className="hover:text-lime-400 transition-colors">Rules & Policy</a></li>
               </ul>
             </div>
           </div>
