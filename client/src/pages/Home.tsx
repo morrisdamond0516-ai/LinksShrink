@@ -15,7 +15,8 @@ import {
   Clock,
   Layers,
   ArrowRight,
-  Check
+  Check,
+  Shield
 } from "lucide-react";
 import { motion } from "framer-motion";
 
@@ -83,32 +84,32 @@ export default function Home() {
     {
       icon: <BarChart id="analytics" className="w-6 h-6 text-yellow-400" />,
       title: "Detailed Analytics",
-      description: "Track clicks, location, devices, and traffic sources.",
-      benefit: "Example: See real-time click maps"
+      description: "Track clicks, location, devices, and traffic sources with our advanced tracking engine.",
+      benefit: "Live tracking & geographic heatmaps"
     },
     {
       icon: <QrCode className="w-6 h-6 text-lime-500" />,
       title: "Smart QR Codes",
-      description: "High-resolution, custom colors, and fully downloadable.",
-      benefit: "Example: Custom branded restaurant menus"
+      description: "High-resolution, custom colors, and fully downloadable for print and web.",
+      benefit: "Custom branded QR menus"
     },
     {
       icon: <Lock className="w-6 h-6 text-red-500" />,
       title: "Password Protection",
-      description: "Secure your content with password-protected links.",
-      benefit: "Example: Only shared with verified clients"
+      description: "Secure your content with password-protected links and managed access control.",
+      benefit: "Verified client sharing"
     },
     {
       icon: <Clock className="w-6 h-6 text-orange-400" />,
       title: "Expiring Links",
-      description: "Set links to expire after a certain date or click count.",
-      benefit: "Example: Holiday sale links that auto-close"
+      description: "Set links to expire after a certain date or click count automatically.",
+      benefit: "Auto-closing holiday sales"
     },
     {
       icon: <Layers id="enterprise" className="w-6 h-6 text-yellow-500" />,
       title: "Bulk Creation",
-      description: "Generate up to 3,000 links instantly via API or CSV.",
-      benefit: "Example: 3,000 links for large campaigns"
+      description: "Generate up to 3,000 links instantly via API or CSV with enterprise-grade stability.",
+      benefit: "Large scale campaign support"
     }
   ];
 
@@ -289,17 +290,201 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Enterprise & Analytics In-depth Section */}
+      <section id="enterprise-details" className="py-24 bg-black border-t border-white/5">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid lg:grid-cols-2 gap-16 items-center mb-32">
+            <motion.div initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}>
+              <h2 className="text-3xl md:text-5xl font-black text-white mb-6">Enterprise Infrastructure</h2>
+              <p className="text-lg text-slate-400 mb-8 leading-relaxed">
+                Built for the most demanding marketing teams. LinkShrink Enterprise provides the stability, 
+                security, and scale your global brand requires.
+              </p>
+              <div className="space-y-4">
+                {[
+                  { title: "SLA Guarantee", desc: "99.99% uptime with 24/7 dedicated support." },
+                  { title: "Custom Domains", desc: "Connect up to 50 unique domains for localized branding." },
+                  { title: "Team Management", desc: "Granular RBAC controls for your entire marketing department." }
+                ].map((item, i) => (
+                  <div key={i} className="flex gap-4">
+                    <div className="bg-lime-400/10 p-2 rounded-lg h-fit">
+                      <Shield className="w-5 h-5 text-lime-400" />
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-white">{item.title}</h4>
+                      <p className="text-sm text-slate-500">{item.desc}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+            <motion.div 
+              className="bg-slate-900 rounded-3xl p-8 border border-white/10 shadow-2xl relative overflow-hidden"
+              initial={{ opacity: 0, scale: 0.95 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+            >
+              <div className="absolute top-0 right-0 w-32 h-32 bg-lime-400/10 blur-3xl rounded-full" />
+              <div className="space-y-6">
+                <div className="flex justify-between items-center">
+                  <span className="text-xs font-bold text-lime-400 uppercase">System Status: Optimal</span>
+                  <div className="flex gap-1">
+                    <div className="w-1.5 h-1.5 bg-lime-400 rounded-full animate-pulse" />
+                    <div className="w-1.5 h-1.5 bg-lime-400 rounded-full" />
+                  </div>
+                </div>
+                <div className="h-48 bg-black/40 rounded-xl border border-white/5 flex items-end p-4 gap-2">
+                  {[40, 70, 45, 90, 65, 80, 55].map((h, i) => (
+                    <div key={i} className="flex-1 bg-lime-400/20 rounded-t-sm relative group">
+                      <div className="absolute bottom-0 w-full bg-lime-400 rounded-t-sm transition-all duration-1000" style={{ height: `${h}%` }} />
+                    </div>
+                  ))}
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="bg-black/40 p-4 rounded-xl border border-white/5">
+                    <span className="text-[10px] text-slate-500 uppercase">Requests/sec</span>
+                    <div className="text-xl font-bold text-white">4.2k</div>
+                  </div>
+                  <div className="bg-black/40 p-4 rounded-xl border border-white/5">
+                    <span className="text-[10px] text-slate-500 uppercase">Latency</span>
+                    <div className="text-xl font-bold text-white">12ms</div>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+
+          <div id="analytics-details" className="grid lg:grid-cols-2 gap-16 items-center">
+            <motion.div 
+              className="order-2 lg:order-1 bg-slate-900 rounded-3xl p-8 border border-white/10 shadow-2xl"
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+            >
+              <div className="space-y-6">
+                <div className="flex items-center gap-3 border-b border-white/5 pb-4">
+                  <div className="w-10 h-10 bg-yellow-400/10 rounded-xl flex items-center justify-center">
+                    <BarChart className="w-5 h-5 text-yellow-400" />
+                  </div>
+                  <span className="font-bold text-white">Real-time Audience Insights</span>
+                </div>
+                <div className="space-y-4">
+                  {[
+                    { label: "Mobile Traffic", val: 68, color: "bg-yellow-400" },
+                    { label: "Desktop Traffic", val: 24, color: "bg-lime-400" },
+                    { label: "Tablet Traffic", val: 8, color: "bg-orange-400" }
+                  ].map((stat, i) => (
+                    <div key={i} className="space-y-1.5">
+                      <div className="flex justify-between text-xs font-medium">
+                        <span className="text-slate-400">{stat.label}</span>
+                        <span className="text-white">{stat.val}%</span>
+                      </div>
+                      <div className="h-1.5 bg-black rounded-full overflow-hidden">
+                        <div className={`h-full ${stat.color} transition-all duration-1000`} style={{ width: `${stat.val}%` }} />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div className="bg-black/40 p-4 rounded-xl border border-white/5 mt-4">
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className="w-2 h-2 bg-lime-400 rounded-full" />
+                    <span className="text-[10px] text-slate-500 uppercase">Live Map Feed</span>
+                  </div>
+                  <div className="h-24 bg-slate-800/30 rounded-lg flex items-center justify-center italic text-slate-600 text-xs">
+                    Geographic data processing...
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+            <motion.div className="order-1 lg:order-2" initial={{ opacity: 0, x: 20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}>
+              <h2 className="text-3xl md:text-5xl font-black text-white mb-6">Advanced Analytics</h2>
+              <p className="text-lg text-slate-400 mb-8 leading-relaxed">
+                Know your audience better than ever. LinkShrink Analytics provides deep behavioral data 
+                without compromising user privacy.
+              </p>
+              <ul className="space-y-4">
+                {[
+                  "UTM Parameter tracking & preservation",
+                  "Referrer identification & traffic scoring",
+                  "Geographic distribution down to the city level",
+                  "A/B testing link destination performance"
+                ].map((text, i) => (
+                  <li key={i} className="flex items-center gap-3 text-slate-300">
+                    <Check className="w-5 h-5 text-yellow-400 shrink-0" />
+                    <span>{text}</span>
+                  </li>
+                ))}
+              </ul>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* About Detailed Section */}
+      <section id="about-details" className="py-24 bg-black">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="max-w-3xl mx-auto text-center mb-20">
+            <h2 className="text-3xl md:text-5xl font-black text-white mb-6">Our Mission</h2>
+            <p className="text-xl text-slate-400 leading-relaxed">
+              We started LinkShrink to simplify how people share information. In a world of long, 
+              clunky URLs, we provide the elegance and efficiency required for modern communication.
+            </p>
+          </div>
+          <div className="grid md:grid-cols-3 gap-8">
+            {[
+              { title: "Transparency", desc: "Open policies and clear pricing. No hidden fees or bait-and-switch tactics." },
+              { title: "Innovation", desc: "Constantly evolving our tech stack to provide the fastest redirects on the market." },
+              { title: "Privacy", desc: "We don't sell your data. Your audience's privacy is our top priority." }
+            ].map((value, i) => (
+              <Card key={i} className="bg-slate-900 border-white/5 p-8">
+                <h4 className="text-xl font-bold text-lime-400 mb-4">{value.title}</h4>
+                <p className="text-slate-400 leading-relaxed">{value.desc}</p>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Careers Section */}
       <section id="careers" className="py-24 bg-slate-900 border-y border-white/5">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-6 text-white">Join the LinkShrink Team</h2>
-          <p className="text-lg text-slate-400 max-w-2xl mx-auto mb-10">
-            We're always looking for passionate people to help build the future of the web. 
-            Send your resume to <a href="mailto:ProductionLinks@yahoo.com" className="text-lime-400 hover:underline">ProductionLinks@yahoo.com</a>.
-          </p>
-          <Button variant="outline" className="border-lime-400 text-lime-400 hover:bg-lime-400 hover:text-black font-bold">
-            View Open Positions
-          </Button>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-5xl font-black text-white mb-6 text-center">Join the LinkShrink Team</h2>
+            <p className="text-lg text-slate-400 max-w-2xl mx-auto mb-10 text-center">
+              We're a remote-first company building tools for millions of users worldwide. 
+              Help us define the future of link management.
+            </p>
+          </div>
+          <div className="grid gap-4 max-w-4xl mx-auto">
+            {[
+              { role: "Senior Frontend Engineer", type: "Remote", dept: "Engineering" },
+              { role: "Backend Architect (Node.js)", type: "Remote", dept: "Engineering" },
+              { role: "Product Designer", type: "Remote", dept: "Product" },
+              { role: "Growth Marketer", type: "Remote", dept: "Marketing" }
+            ].map((job, i) => (
+              <div key={i} className="group flex items-center justify-between p-6 bg-black rounded-2xl border border-white/5 hover:border-lime-400/50 transition-all cursor-pointer">
+                <div>
+                  <h4 className="text-xl font-bold text-white group-hover:text-lime-400 transition-colors">{job.role}</h4>
+                  <div className="flex gap-4 mt-1 text-sm text-slate-500">
+                    <span>{job.type}</span>
+                    <span>•</span>
+                    <span>{job.dept}</span>
+                  </div>
+                </div>
+                <ArrowRight className="w-6 h-6 text-slate-700 group-hover:text-lime-400 group-hover:translate-x-1 transition-all" />
+              </div>
+            ))}
+          </div>
+          <div className="mt-16 text-center">
+            <p className="text-slate-500 mb-6">Don't see a fit? Send a general application.</p>
+            <Button 
+              variant="outline" 
+              className="border-lime-400 text-lime-400 hover:bg-lime-400 hover:text-black font-bold h-12 px-8"
+              onClick={() => window.location.href = "mailto:ProductionLinks@yahoo.com"}
+            >
+              Email Us Your CV
+            </Button>
+          </div>
         </div>
       </section>
 
@@ -321,14 +506,14 @@ export default function Home() {
               <ul className="space-y-2 text-sm">
                 <li><a href="#features" className="hover:text-lime-400 transition-colors">Features</a></li>
                 <li><a href="/pricing" className="hover:text-lime-400 transition-colors">Pricing</a></li>
-                <li><a href="#enterprise" className="hover:text-lime-400 transition-colors">Enterprise</a></li>
-                <li><a href="#analytics" className="hover:text-lime-400 transition-colors">Analytics</a></li>
+                <li><a href="#enterprise-details" className="hover:text-lime-400 transition-colors">Enterprise</a></li>
+                <li><a href="#analytics-details" className="hover:text-lime-400 transition-colors">Analytics</a></li>
               </ul>
             </div>
             <div>
               <h4 className="text-white font-semibold mb-4">Company</h4>
               <ul className="space-y-2 text-sm">
-                <li><a href="#about" className="hover:text-lime-400 transition-colors">About</a></li>
+                <li><a href="#about-details" className="hover:text-lime-400 transition-colors">About</a></li>
                 <li><a href="#careers" className="hover:text-lime-400 transition-colors">Careers</a></li>
                 <li><a href="mailto:ProductionLinks@yahoo.com" className="hover:text-lime-400 transition-colors">Contact</a></li>
                 <li><a href="/rules" className="hover:text-lime-400 transition-colors">Rules & Policy</a></li>
