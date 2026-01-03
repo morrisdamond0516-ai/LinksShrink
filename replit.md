@@ -2,7 +2,7 @@
 
 ## Overview
 
-This is a URL shortener web application built with a React frontend and Express backend. Users can submit long URLs and receive shortened versions that redirect to the original destination. The app tracks visit counts for each shortened URL and includes a pricing page for potential premium tiers.
+This is LinkShrink, a URL shortener web application built with a React frontend and Express backend. Users can submit long URLs and receive shortened versions that redirect to the original destination. The app tracks visit counts for each shortened URL and includes a pricing page for potential premium tiers.
 
 ## User Preferences
 

@@ -271,7 +271,7 @@ export default function Pricing() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white py-20 px-4">
+    <div className="min-h-screen bg-black text-white py-20 px-4">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-16">
           <motion.div
@@ -279,10 +279,10 @@ export default function Pricing() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <h1 className="text-4xl md:text-6xl font-extrabold mb-6 tracking-tight">
+            <h1 className="text-4xl md:text-6xl font-extrabold mb-6 tracking-tight text-lime-400">
               Simple, transparent pricing
             </h1>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+            <p className="text-xl text-slate-400 max-w-2xl mx-auto leading-relaxed">
               Choose the plan that's right for your links. All plans include our core shortening technology.
             </p>
           </motion.div>
@@ -296,19 +296,19 @@ export default function Pricing() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
             >
-              <Card className={`h-full flex flex-col relative ${plan.recommended ? 'border-primary shadow-xl scale-105 z-10' : 'border-border/50 hover:shadow-lg transition-shadow'}`}>
+              <Card className={`h-full flex flex-col relative bg-slate-900 border-lime-400/20 ${plan.recommended ? 'border-primary shadow-xl scale-105 z-10' : 'hover:shadow-lg transition-shadow'}`}>
                 {plan.recommended && (
                   <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-primary text-primary-foreground text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">
                     Recommended
                   </div>
                 )}
                 <CardHeader>
-                  <CardTitle className="text-2xl font-bold">{plan.name}</CardTitle>
+                  <CardTitle className="text-2xl font-bold text-white">{plan.name}</CardTitle>
                   <div className="flex items-baseline gap-1 mt-2">
-                    <span className="text-4xl font-extrabold">${plan.price}</span>
-                    <span className="text-muted-foreground">/mo</span>
+                    <span className="text-4xl font-extrabold text-white">${plan.price}</span>
+                    <span className="text-slate-500">/mo</span>
                   </div>
-                  <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
+                  <p className="text-sm text-slate-400 mt-2 leading-relaxed">
                     {plan.description}
                   </p>
                 </CardHeader>
@@ -319,14 +319,14 @@ export default function Pricing() {
                         <div className="bg-primary/10 rounded-full p-1 mt-0.5">
                           <Check className="w-3 h-3 text-primary" />
                         </div>
-                        <span className="leading-tight">{feature}</span>
+                        <span className="leading-tight text-slate-300">{feature}</span>
                       </li>
                     ))}
                   </ul>
                 </CardContent>
                 <CardFooter className="pt-6">
                   <Button 
-                    className="w-full font-bold h-12 hover-elevate active-elevate-2"
+                    className={`w-full font-bold h-12 hover-elevate active-elevate-2 ${plan.recommended ? 'bg-primary text-black' : 'border-lime-400 text-lime-400 hover:bg-lime-400 hover:text-black'}`}
                     variant={plan.recommended ? "default" : "outline"}
                     onClick={() => handlePayment(plan.name)}
                   >
@@ -344,7 +344,7 @@ export default function Pricing() {
             <div className="inline-block bg-primary/10 text-primary px-4 py-1.5 rounded-full text-sm font-bold uppercase tracking-widest">
               Exclusive Features
             </div>
-            <h2 className="text-4xl md:text-6xl font-black tracking-tight text-slate-900">Feature Deep Dive</h2>
+            <h2 className="text-4xl md:text-6xl font-black tracking-tight text-white">Feature Deep Dive</h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
               A detailed look at the tools included in our premium plans.
             </p>
@@ -362,7 +362,7 @@ export default function Pricing() {
               >
                 <div className="flex-1 space-y-10 text-center lg:text-left">
                   <div className="space-y-4">
-                    <h3 className="text-4xl font-black text-slate-900">{item.title}</h3>
+                    <h3 className="text-4xl font-black text-white">{item.title}</h3>
                     <p className="text-xl text-muted-foreground leading-relaxed">
                       {item.description}
                     </p>
@@ -370,14 +370,14 @@ export default function Pricing() {
                   <div className="space-y-8">
                     {item.features.map((feature, fIndex) => (
                       <div key={fIndex} className="space-y-3">
-                        <div className="flex items-center gap-4 font-bold text-slate-800">
+                        <div className="flex items-center gap-4 font-bold text-white">
                           <div className="bg-primary/10 rounded-full p-1.5">
                             <Check className="w-5 h-5 text-primary" />
                           </div>
                           <span className="text-lg">{feature.text}</span>
                         </div>
-                        <div className="bg-slate-50 border-l-4 border-primary p-4 rounded-r-lg">
-                          <p className="text-sm text-slate-600 leading-relaxed font-medium">
+                        <div className="bg-slate-900 border-l-4 border-primary p-4 rounded-r-lg">
+                          <p className="text-sm text-slate-400 leading-relaxed font-medium">
                             {feature.example}
                           </p>
                         </div>
