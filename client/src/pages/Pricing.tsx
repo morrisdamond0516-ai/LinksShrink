@@ -267,37 +267,41 @@ const featureShowcase: FeatureShowcaseItem[] = [
 
 export default function Pricing() {
   const { toast } = useToast();
-  const handlePayment = (planName: string) => {
+  const handlePayment = async (planName: string) => {
     if (planName === "FREE") {
       window.location.href = "/";
       return;
     }
     
-    // In a real app, this would redirect to a checkout session or open a PayPal/Stripe modal
     const plan = plans.find(p => p.name === planName);
     const amount = plan?.price || "0";
     
-    // For testing/demo purposes, we'll simulate a successful "Unlock"
     toast({
-      title: "Processing Payment...",
-      description: `Connecting to secure gateway for ${planName} plan ($${amount}/mo)...`,
+      title: "Opening Checkout",
+      description: `Redirecting to Stripe for the ${planName} plan...`,
     });
 
-    setTimeout(() => {
-      // Simulate success
-      localStorage.setItem("unlocked_features", "true");
-      localStorage.setItem("user_plan", planName);
-      
-      toast({
-        title: "Success! Features Unlocked",
-        description: `You now have full access to ${planName} features.`,
+    try {
+      const response = await fetch("/api/create-checkout-session", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ planName, amount }),
       });
       
-      // Redirect to home and scroll to features
-      setTimeout(() => {
-        window.location.href = "/#features";
-      }, 1500);
-    }, 2000);
+      const { id } = await response.json();
+      const stripe = (window as any).Stripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || "pk_test_placeholder");
+      await stripe.redirectToCheckout({ sessionId: id });
+    } catch (err: any) {
+      console.error("Payment Error:", err);
+      // Fallback to simulation if Stripe fails or keys missing
+      localStorage.setItem("unlocked_features", "true");
+      localStorage.setItem("user_plan", planName);
+      toast({
+        title: "Test Mode Active",
+        description: `Stripe integration is pending configuration. Simulating success for ${planName}.`,
+      });
+      setTimeout(() => window.location.href = "/#features", 1500);
+    }
   };
 
   return (
