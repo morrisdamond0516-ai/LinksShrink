@@ -81,42 +81,67 @@ export default function Home() {
     setTimeout(() => setCopied(false), 2000);
   };
 
+  const [isUnlocked, setIsUnlocked] = useState(false);
+
+  useEffect(() => {
+    const unlocked = localStorage.getItem("unlocked_features") === "true";
+    setIsUnlocked(unlocked);
+  }, []);
+
+  const handleUnlockClick = (featureTitle: string) => {
+    if (isUnlocked) {
+      toast({
+        title: "Feature Active",
+        description: `${featureTitle} is already active on your account.`,
+      });
+      return;
+    }
+    // Redirect to pricing with the intent to unlock
+    window.location.href = "/pricing";
+  };
+
   const features = [
     {
       icon: <Globe id="branded-links" className="w-6 h-6 text-lime-400" />,
       title: "Branded Links",
       description: "Build trust with custom domains like brand.link/sale.",
-      benefit: "Example: link.yourbrand.com/summer"
+      benefit: "Example: link.yourbrand.com/summer",
+      premium: true
     },
     {
       icon: <BarChart id="analytics" className="w-6 h-6 text-yellow-400" />,
       title: "Detailed Analytics",
       description: "Track clicks, location, devices, and traffic sources with our advanced tracking engine.",
-      benefit: "Live tracking & geographic heatmaps"
+      benefit: "Live tracking & geographic heatmaps",
+      premium: true
     },
     {
       icon: <QrCode className="w-6 h-6 text-lime-500" />,
       title: "Smart QR Codes",
       description: "High-resolution, custom colors, and fully downloadable for print and web.",
-      benefit: "Custom branded QR menus"
+      benefit: "Custom branded QR menus",
+      premium: true
     },
     {
       icon: <Lock className="w-6 h-6 text-red-500" />,
       title: "Password Protection",
       description: "Secure your content with password-protected links and managed access control.",
-      benefit: "Verified client sharing"
+      benefit: "Verified client sharing",
+      premium: true
     },
     {
       icon: <Clock className="w-6 h-6 text-orange-400" />,
       title: "Expiring Links",
       description: "Set links to expire after a certain date or click count automatically.",
-      benefit: "Auto-closing holiday sales"
+      benefit: "Auto-closing holiday sales",
+      premium: true
     },
     {
       icon: <Layers id="enterprise" className="w-6 h-6 text-yellow-500" />,
       title: "Bulk Creation",
       description: "Generate up to 3,000 links instantly via API or CSV with enterprise-grade stability.",
-      benefit: "Large scale campaign support"
+      benefit: "Large scale campaign support",
+      premium: true
     }
   ];
 
@@ -268,12 +293,12 @@ export default function Home() {
                         {feature.benefit}
                       </span>
                       <Button 
-                        variant="outline" 
+                        variant={isUnlocked ? "ghost" : "outline"} 
                         size="sm" 
-                        className="gap-1 border-lime-400 text-lime-400 hover:bg-lime-400 hover:text-black font-bold"
-                        onClick={() => window.location.href = "/pricing"}
+                        className={`gap-1 font-bold ${isUnlocked ? 'text-lime-400' : 'border-lime-400 text-lime-400 hover:bg-lime-400 hover:text-black'}`}
+                        onClick={() => handleUnlockClick(feature.title)}
                       >
-                        Unlock <ArrowRight className="w-4 h-4" />
+                        {isUnlocked ? "Active" : "Unlock"} <ArrowRight className="w-4 h-4" />
                       </Button>
                     </div>
                   </CardContent>
@@ -289,11 +314,24 @@ export default function Home() {
               className="rounded-full px-12 text-lg font-bold"
               onClick={() => window.location.href = "/pricing"}
             >
-              Unlock All Features
+              {isUnlocked ? "Manage Subscription" : "Unlock All Features"}
             </Button>
             <p className="mt-4 text-sm text-muted-foreground">
-              Upgrade today to access professional marketing tools.
+              {isUnlocked ? "You are currently on a Pro plan." : "Upgrade today to access professional marketing tools."}
             </p>
+            {isUnlocked && (
+              <Button 
+                variant="link" 
+                className="text-xs text-red-500/50 mt-4"
+                onClick={() => {
+                  localStorage.removeItem("unlocked_features");
+                  localStorage.removeItem("user_plan");
+                  window.location.reload();
+                }}
+              >
+                Reset Test State (Lock Features)
+              </Button>
+            )}
           </div>
         </div>
       </section>
