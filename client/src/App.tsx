@@ -14,6 +14,7 @@ import Analytics from "./pages/features/Analytics";
 import SmartQRCode from "./pages/features/SmartQRCode";
 import PasswordProtection from "./pages/features/PasswordProtection";
 import ExpiringLinks from "./pages/features/ExpiringLinks";
+import BrandedLinks from "./pages/features/BrandedLinks";
 
 function Router() {
   return (
@@ -28,6 +29,7 @@ function Router() {
       <Route path="/features/qr" component={SmartQRCode} />
       <Route path="/features/password" component={PasswordProtection} />
       <Route path="/features/expiry" component={ExpiringLinks} />
+      <Route path="/features/branded" component={BrandedLinks} />
       <Route component={NotFound} />
     </Switch>
   );

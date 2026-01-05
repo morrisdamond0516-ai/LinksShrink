@@ -113,6 +113,10 @@ export default function Home() {
 
   const handleUnlockClick = (featureTitle: string) => {
     if (isUnlocked) {
+      if (featureTitle === "Branded Links") {
+        window.location.href = "/features/branded";
+        return;
+      }
       if (featureTitle === "Bulk Creation") {
         window.location.href = "/features/bulk";
         return;
