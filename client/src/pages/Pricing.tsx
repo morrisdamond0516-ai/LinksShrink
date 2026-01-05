@@ -266,8 +266,36 @@ const featureShowcase: FeatureShowcaseItem[] = [
 
 export default function Pricing() {
   const handlePayment = (planName: string) => {
-    if (planName === "FREE") return;
-    window.alert(`Redirecting to secure payment for ${planName} plan ($${plans.find(p => p.name === planName)?.price}/mo)... Check your phone for verification.`);
+    if (planName === "FREE") {
+      window.location.href = "/";
+      return;
+    }
+    
+    // In a real app, this would redirect to a checkout session or open a PayPal/Stripe modal
+    const plan = plans.find(p => p.name === planName);
+    const amount = plan?.price || "0";
+    
+    // For testing/demo purposes, we'll simulate a successful "Unlock"
+    toast({
+      title: "Processing Payment...",
+      description: `Connecting to secure gateway for ${planName} plan ($${amount}/mo)...`,
+    });
+
+    setTimeout(() => {
+      // Simulate success
+      localStorage.setItem("unlocked_features", "true");
+      localStorage.setItem("user_plan", planName);
+      
+      toast({
+        title: "Success! Features Unlocked",
+        description: `You now have full access to ${planName} features.`,
+      });
+      
+      // Redirect to home to see the "unlocked" state
+      setTimeout(() => {
+        window.location.href = "/";
+      }, 1500);
+    }, 2000);
   };
 
   return (
