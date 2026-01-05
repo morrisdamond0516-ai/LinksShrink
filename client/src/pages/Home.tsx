@@ -106,6 +106,18 @@ export default function Home() {
         window.location.href = "/features/analytics";
         return;
       }
+      if (featureTitle === "Smart QR Codes") {
+        window.location.href = "/features/qr";
+        return;
+      }
+      if (featureTitle === "Password Protection") {
+        window.location.href = "/features/password";
+        return;
+      }
+      if (featureTitle === "Expiring Links") {
+        window.location.href = "/features/expiry";
+        return;
+      }
       toast({
         title: "Feature Active",
         description: `${featureTitle} is active. This specific feature page is coming soon.`,

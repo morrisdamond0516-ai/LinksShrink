@@ -11,6 +11,9 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import BulkShortener from "./pages/features/BulkShortener";
 import Analytics from "./pages/features/Analytics";
+import SmartQRCode from "./pages/features/SmartQRCode";
+import PasswordProtection from "./pages/features/PasswordProtection";
+import ExpiringLinks from "./pages/features/ExpiringLinks";
 
 function Router() {
   return (
@@ -22,6 +25,9 @@ function Router() {
       <Route path="/register" component={Register} />
       <Route path="/features/bulk" component={BulkShortener} />
       <Route path="/features/analytics" component={Analytics} />
+      <Route path="/features/qr" component={SmartQRCode} />
+      <Route path="/features/password" component={PasswordProtection} />
+      <Route path="/features/expiry" component={ExpiringLinks} />
       <Route component={NotFound} />
     </Switch>
   );
