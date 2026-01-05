@@ -82,10 +82,25 @@ export default function Home() {
   };
 
   const [isUnlocked, setIsUnlocked] = useState(false);
+  const [userPlan, setUserPlan] = useState("");
 
   useEffect(() => {
+    // Check URL parameters for successful checkout
+    const params = new URLSearchParams(window.location.search);
+    const sessionId = params.get("session_id");
+    const plan = params.get("plan");
+    
+    if (sessionId && plan) {
+      localStorage.setItem("unlocked_features", "true");
+      localStorage.setItem("user_plan", plan);
+      // Clean URL
+      window.history.replaceState({}, document.title, "/#features");
+    }
+
     const unlocked = localStorage.getItem("unlocked_features") === "true";
+    const currentPlan = localStorage.getItem("user_plan") || "";
     setIsUnlocked(unlocked);
+    setUserPlan(currentPlan);
     
     // Check if we should scroll to features
     if (window.location.hash === "#features") {
@@ -345,7 +360,7 @@ export default function Home() {
               {isUnlocked ? "Manage Subscription" : "Unlock All Features"}
             </Button>
             <p className="mt-4 text-sm text-muted-foreground">
-              {isUnlocked ? "You are currently on a Pro plan." : "Upgrade today to access professional marketing tools."}
+              {isUnlocked ? `You are currently on the ${userPlan} plan.` : "Upgrade today to access professional marketing tools."}
             </p>
             {isUnlocked && (
               <Button 
