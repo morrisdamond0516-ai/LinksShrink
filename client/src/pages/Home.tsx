@@ -86,6 +86,14 @@ export default function Home() {
   useEffect(() => {
     const unlocked = localStorage.getItem("unlocked_features") === "true";
     setIsUnlocked(unlocked);
+    
+    // Check if we should scroll to features
+    if (window.location.hash === "#features") {
+      const element = document.getElementById("features");
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth" });
+      }
+    }
   }, []);
 
   const handleUnlockClick = (featureTitle: string) => {

@@ -293,9 +293,9 @@ export default function Pricing() {
         description: `You now have full access to ${planName} features.`,
       });
       
-      // Redirect to home to see the "unlocked" state
+      // Redirect to home and scroll to features
       setTimeout(() => {
-        window.location.href = "/";
+        window.location.href = "/#features";
       }, 1500);
     }, 2000);
   };
