@@ -2,6 +2,7 @@ import { Check, Link2, Lock, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { motion } from "framer-motion";
+import { useToast } from "@/hooks/use-toast";
 
 interface FeatureShowcaseItem {
   title: string;
@@ -265,6 +266,7 @@ const featureShowcase: FeatureShowcaseItem[] = [
 ];
 
 export default function Pricing() {
+  const { toast } = useToast();
   const handlePayment = (planName: string) => {
     if (planName === "FREE") {
       window.location.href = "/";
