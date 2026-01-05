@@ -98,9 +98,17 @@ export default function Home() {
 
   const handleUnlockClick = (featureTitle: string) => {
     if (isUnlocked) {
+      if (featureTitle === "Bulk Creation") {
+        window.location.href = "/features/bulk";
+        return;
+      }
+      if (featureTitle === "Detailed Analytics") {
+        window.location.href = "/features/analytics";
+        return;
+      }
       toast({
         title: "Feature Active",
-        description: `${featureTitle} is already active on your account.`,
+        description: `${featureTitle} is active. This specific feature page is coming soon.`,
       });
       return;
     }

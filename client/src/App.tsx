@@ -9,6 +9,8 @@ import Pricing from "@/pages/Pricing";
 import Rules from "./pages/Rules";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import BulkShortener from "./pages/features/BulkShortener";
+import Analytics from "./pages/features/Analytics";
 
 function Router() {
   return (
@@ -18,6 +20,8 @@ function Router() {
       <Route path="/rules" component={Rules} />
       <Route path="/login" component={Login} />
       <Route path="/register" component={Register} />
+      <Route path="/features/bulk" component={BulkShortener} />
+      <Route path="/features/analytics" component={Analytics} />
       <Route component={NotFound} />
     </Switch>
   );
