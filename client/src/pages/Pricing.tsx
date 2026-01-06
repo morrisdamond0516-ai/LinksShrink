@@ -26,7 +26,7 @@ const plans = [
   },
   {
     name: "Starter",
-    price: "10",
+    price: "20",
     description: "Perfect for growing brands.",
     features: [
       "Click Analytics",
@@ -39,7 +39,7 @@ const plans = [
   },
   {
     name: "Pro",
-    price: "25",
+    price: "35",
     description: "Advanced features for professionals.",
     features: [
       "Custom domain",
