@@ -2,7 +2,10 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Link2, Layers, Check, Copy } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
+import { Link2, Layers, Check, Copy, Lock, Eye, EyeOff } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useShortenUrl } from "@/hooks/use-shortener";
 import { motion } from "framer-motion";
@@ -10,6 +13,9 @@ import { motion } from "framer-motion";
 export default function BulkShortener() {
   const [urls, setUrls] = useState("");
   const [results, setResults] = useState<{ original: string; short: string }[]>([]);
+  const [usePassword, setUsePassword] = useState(false);
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const { toast } = useToast();
   const shortenMutation = useShortenUrl();
 
@@ -17,9 +23,14 @@ export default function BulkShortener() {
     const urlList = urls.split("\n").filter(u => u.trim() !== "");
     if (urlList.length === 0) return;
 
+    if (usePassword && !password) {
+      toast({ title: "Password Required", description: "Please set a password or disable protection.", variant: "destructive" });
+      return;
+    }
+
     toast({
       title: "Processing Bulk URLs",
-      description: `Shortening ${urlList.length} links...`,
+      description: `Shortening ${urlList.length} links${usePassword ? " with password protection" : ""}...`,
     });
 
     const newResults: { original: string; short: string }[] = [];
@@ -71,6 +82,51 @@ export default function BulkShortener() {
               value={urls}
               onChange={(e) => setUrls(e.target.value)}
             />
+
+            <div className="space-y-4 p-4 bg-white/5 rounded-xl border border-white/5">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="bg-red-500/10 p-2 rounded-lg">
+                    <Lock className="w-4 h-4 text-red-500" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-bold">Password Protection</p>
+                    <p className="text-xs text-slate-500">Apply to all links in this batch</p>
+                  </div>
+                </div>
+                <Switch 
+                  checked={usePassword} 
+                  onCheckedChange={setUsePassword}
+                  className="data-[state=checked]:bg-red-500"
+                />
+              </div>
+
+              {usePassword && (
+                <motion.div 
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  className="space-y-2 pt-2"
+                >
+                  <Label className="text-xs text-slate-400">Batch Password</Label>
+                  <div className="relative">
+                    <Input 
+                      type={showPassword ? "text" : "password"}
+                      placeholder="Set password for all links"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className="bg-black border-white/10 pr-10"
+                    />
+                    <button 
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white"
+                      onClick={() => setShowPassword(!showPassword)}
+                    >
+                      {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                  </div>
+                </motion.div>
+              )}
+            </div>
+
             <Button 
               className="w-full bg-lime-400 text-black hover:bg-lime-500 font-bold h-12"
               onClick={handleBulkShorten}
