@@ -22,7 +22,7 @@ export class DatabaseStorage implements IStorage {
   async createUrl(insertUrl: InsertUrl): Promise<Url> {
     let shortCode = "";
     let isUnique = false;
-    let length = 4; // Start with 4 characters for much shorter links
+    let length = 3; // Start with 3 characters for ultra-short links
     let attempts = 0;
     
     while (!isUnique) {
@@ -33,7 +33,7 @@ export class DatabaseStorage implements IStorage {
       } else {
         attempts++;
         if (attempts > 5) {
-          length = Math.min(length + 1, 8); // Cap at 8 for manageable length
+          length = Math.min(length + 1, 5); // Cap at 5 for ultra-short results
           attempts = 0;
         }
       }
