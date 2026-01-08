@@ -93,27 +93,11 @@ export default function Home() {
     const unlocked = localStorage.getItem("unlocked_features") === "true";
     const currentPlan = localStorage.getItem("user_plan") || "";
     
-    // FORCED LOCK: Clear local storage completely if no session is in URL
-    const urlParams = new URLSearchParams(window.location.search);
-    const hasSession = urlParams.get("session_id");
-    const hasPlan = urlParams.get("plan");
-
-    if (hasSession && hasPlan) {
-      localStorage.setItem("unlocked_features", "true");
-      localStorage.setItem("user_plan", hasPlan);
-      setIsUnlocked(true);
-      setUserPlan(hasPlan);
-      window.history.replaceState({}, document.title, "/#features");
-    } else {
-      // PROMPT: This is the strongest way to lock it. 
-      // It will RELOCK the features every time they refresh unless they have the URL params.
-      // If you want them to stay unlocked after purchase, keep the localStorage check.
-      // But to prove it works, let's clear it if there's no session.
-      // localStorage.removeItem("unlocked_features");
-      // localStorage.removeItem("user_plan");
-      setIsUnlocked(unlocked);
-      setUserPlan(currentPlan);
-    }
+    const unlocked = localStorage.getItem("unlocked_features") === "true";
+    const currentPlan = localStorage.getItem("user_plan") || "";
+    
+    setIsUnlocked(unlocked);
+    setUserPlan(currentPlan);
     
     // Check if we should scroll to features
     if (window.location.hash === "#features") {
