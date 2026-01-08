@@ -109,10 +109,10 @@ export default function Home() {
       // It will RELOCK the features every time they refresh unless they have the URL params.
       // If you want them to stay unlocked after purchase, keep the localStorage check.
       // But to prove it works, let's clear it if there's no session.
-      localStorage.removeItem("unlocked_features");
-      localStorage.removeItem("user_plan");
-      setIsUnlocked(false);
-      setUserPlan("");
+      // localStorage.removeItem("unlocked_features");
+      // localStorage.removeItem("user_plan");
+      setIsUnlocked(unlocked);
+      setUserPlan(currentPlan);
     }
     
     // Check if we should scroll to features
