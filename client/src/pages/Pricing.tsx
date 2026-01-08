@@ -292,8 +292,9 @@ export default function Pricing() {
       if (!response.ok) throw new Error(data.message || "Failed to create checkout session");
       
       const { id } = data;
-      const stripe = (window as any).Stripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
-      if (!stripe) throw new Error("Stripe.js failed to load");
+      // Force direct reference to the live key
+      const stripe = (window as any).Stripe("pk_live_51SlP1Z1ZhY8VRAAbOHd0LyO4acBTlNIbd0JKok7QYu1xWSXMzsRk5ue0HGkFuz03P3uM0J8U93hwuhCmIdXLdDr900fdBM0pK1");
+      if (!stripe) throw new Error("Stripe secure connection failed");
       
       await stripe.redirectToCheckout({ sessionId: id });
     } catch (err: any) {
