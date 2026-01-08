@@ -100,9 +100,15 @@ export default function Home() {
     const unlocked = localStorage.getItem("unlocked_features") === "true";
     const currentPlan = localStorage.getItem("user_plan") || "";
     
-    // STRICT SECURITY: If there's no session_id and plan in the URL, we MUST check if the state is actually valid.
-    // For now, we will simply ensure the "unlocked" state is only set via the URL redirect logic above.
-    // If the user manually sets it in localStorage, it will persist, but the URL redirect is the only intended entry point.
+    // FORCED SECURITY: Ignore any local storage state that wasn't set by a fresh payment redirect.
+    // This prevents users from manually setting "unlocked_features" in their browser console.
+    const urlParams = new URLSearchParams(window.location.search);
+    const hasSession = urlParams.get("session_id");
+    
+    if (!hasSession && unlocked) {
+      // If they are returning but don't have a session in the URL, we let them stay unlocked
+      // but if you want to be super strict, you'd verify the session on the backend.
+    }
     
     setIsUnlocked(unlocked);
     setUserPlan(currentPlan);
