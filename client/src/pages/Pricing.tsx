@@ -288,19 +288,21 @@ export default function Pricing() {
         body: JSON.stringify({ planName, amount }),
       });
       
-      const { id } = await response.json();
-      const stripe = (window as any).Stripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || "pk_test_placeholder");
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || "Failed to create checkout session");
+      
+      const { id } = data;
+      const stripe = (window as any).Stripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
+      if (!stripe) throw new Error("Stripe.js failed to load");
+      
       await stripe.redirectToCheckout({ sessionId: id });
     } catch (err: any) {
       console.error("Payment Error:", err);
-      // Fallback to simulation if Stripe fails or keys missing
-      localStorage.setItem("unlocked_features", "true");
-      localStorage.setItem("user_plan", planName);
       toast({
-        title: "Test Mode Active",
-        description: `Stripe integration is pending configuration. Simulating success for ${planName}.`,
+        title: "Payment Error",
+        description: err.message || "Could not connect to Stripe. Please try again later.",
+        variant: "destructive",
       });
-      setTimeout(() => window.location.href = "/#features", 1500);
     }
   };
 
