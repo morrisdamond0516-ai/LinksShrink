@@ -366,19 +366,6 @@ export default function Home() {
             <p className="mt-4 text-sm text-muted-foreground">
               {isUnlocked ? `You are currently on the ${userPlan} plan.` : "Upgrade today to access professional marketing tools."}
             </p>
-            {isUnlocked && (
-              <Button 
-                variant="link" 
-                className="text-xs text-red-500/50 mt-4"
-                onClick={() => {
-                  localStorage.removeItem("unlocked_features");
-                  localStorage.removeItem("user_plan");
-                  window.location.reload();
-                }}
-              >
-                Reset Test State (Lock Features)
-              </Button>
-            )}
           </div>
         </div>
       </section>
