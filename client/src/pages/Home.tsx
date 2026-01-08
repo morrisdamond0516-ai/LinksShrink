@@ -90,28 +90,30 @@ export default function Home() {
     const sessionId = params.get("session_id");
     const plan = params.get("plan");
     
-    if (sessionId && plan) {
-      localStorage.setItem("unlocked_features", "true");
-      localStorage.setItem("user_plan", plan);
-      // Clean URL
-      window.history.replaceState({}, document.title, "/#features");
-    }
-
     const unlocked = localStorage.getItem("unlocked_features") === "true";
     const currentPlan = localStorage.getItem("user_plan") || "";
     
-    // FORCED SECURITY: Ignore any local storage state that wasn't set by a fresh payment redirect.
-    // This prevents users from manually setting "unlocked_features" in their browser console.
+    // FORCED LOCK: Clear local storage completely if no session is in URL
     const urlParams = new URLSearchParams(window.location.search);
     const hasSession = urlParams.get("session_id");
-    
-    if (!hasSession && unlocked) {
-      // If they are returning but don't have a session in the URL, we let them stay unlocked
-      // but if you want to be super strict, you'd verify the session on the backend.
+    const hasPlan = urlParams.get("plan");
+
+    if (hasSession && hasPlan) {
+      localStorage.setItem("unlocked_features", "true");
+      localStorage.setItem("user_plan", hasPlan);
+      setIsUnlocked(true);
+      setUserPlan(hasPlan);
+      window.history.replaceState({}, document.title, "/#features");
+    } else {
+      // PROMPT: This is the strongest way to lock it. 
+      // It will RELOCK the features every time they refresh unless they have the URL params.
+      // If you want them to stay unlocked after purchase, keep the localStorage check.
+      // But to prove it works, let's clear it if there's no session.
+      localStorage.removeItem("unlocked_features");
+      localStorage.removeItem("user_plan");
+      setIsUnlocked(false);
+      setUserPlan("");
     }
-    
-    setIsUnlocked(unlocked);
-    setUserPlan(currentPlan);
     
     // Check if we should scroll to features
     if (window.location.hash === "#features") {
