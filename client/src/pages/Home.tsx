@@ -149,12 +149,6 @@ export default function Home() {
         pendingPlanProcessed.current = true;
         localStorage.removeItem('pendingPlan');
         
-        toast({
-          title: "Completing Your Purchase",
-          description: `Redirecting to checkout for ${pendingPlan} plan. Use test card: 4242 4242 4242 4242`,
-          duration: 10000,
-        });
-        
         try {
           const response = await fetch("/api/create-checkout-session", {
             method: "POST",
@@ -164,7 +158,23 @@ export default function Home() {
           
           const data = await response.json();
           if (response.ok && data.url) {
-            window.location.href = data.url;
+            // Try opening in new tab first (works better in Replit)
+            const newWindow = window.open(data.url, "_blank", "noopener");
+            
+            if (!newWindow || newWindow.closed) {
+              toast({
+                title: "Checkout Ready",
+                description: `Popup blocked. Redirecting... Test card: 4242 4242 4242 4242`,
+                duration: 10000,
+              });
+              window.location.href = data.url;
+            } else {
+              toast({
+                title: "Checkout Opened",
+                description: `Check your new tab. Test card: 4242 4242 4242 4242`,
+                duration: 10000,
+              });
+            }
           }
         } catch (err) {
           console.error("Error creating checkout:", err);

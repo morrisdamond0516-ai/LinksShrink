@@ -381,12 +381,6 @@ export default function Pricing() {
       return;
     }
     
-    toast({
-      title: "Opening Checkout",
-      description: `Redirecting to Stripe for the ${planName} plan. Use test card: 4242 4242 4242 4242`,
-      duration: 10000,
-    });
-
     try {
       const response = await fetch("/api/create-checkout-session", {
         method: "POST",
@@ -398,7 +392,25 @@ export default function Pricing() {
       if (!response.ok) throw new Error(data.message || "Failed to create checkout session");
       
       if (data.url) {
-        window.location.href = data.url;
+        // Try opening in new tab first (works better in Replit)
+        const newWindow = window.open(data.url, "_blank", "noopener");
+        
+        if (!newWindow || newWindow.closed) {
+          // Popup blocked - show the URL for manual copy
+          toast({
+            title: "Checkout Ready",
+            description: `Popup blocked. Copy the checkout link below. Test card: 4242 4242 4242 4242`,
+            duration: 30000,
+          });
+          // Also try direct redirect as fallback
+          window.location.href = data.url;
+        } else {
+          toast({
+            title: "Checkout Opened",
+            description: `Check your new tab. Test card: 4242 4242 4242 4242`,
+            duration: 10000,
+          });
+        }
       } else {
         throw new Error("Checkout URL not available");
       }
