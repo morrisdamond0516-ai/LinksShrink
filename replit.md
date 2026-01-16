@@ -16,11 +16,21 @@ Preferred communication style: Simple, everyday language.
 - **Entitlement Storage**: Verified payments stored in PostgreSQL `entitlements` table
 - **Protected APIs**: Premium endpoints require valid entitlement to access
 
+### Premium Features (Fully Functional)
+- **Smart QR Codes**: Custom color QR code generation with high-res PNG download (2000px)
+- **Advanced Analytics**: Real-time click tracking, device/browser breakdown, referrer analysis, clicks over time
+- **Password Protection**: Secure links with SHA-256 hashed passwords, custom password prompt page
+- **Expiring Links**: Time-limited URLs with automatic deactivation and custom expired page
+- **Bulk Shortener**: Up to 100 URLs per batch with CSV export
+- **Branded Links**: Custom slugs (3-50 chars) for memorable, branded URLs
+- **Shorter Codes**: Premium users get 2-4 char codes vs free 4-6 char codes
+
 ### Key Files Added/Modified
 - `server/stripeClient.ts` - Stripe client using Replit connector API
 - `server/webhookHandlers.ts` - Webhook processing for Stripe events
 - `server/entitlements.ts` - Database-backed entitlement storage and validation
-- `shared/schema.ts` - Added `entitlements` table schema
+- `server/storage.ts` - DatabaseStorage with PremiumUrlOptions, analytics tracking, password verification
+- `shared/schema.ts` - Added `entitlements`, `urlAnalytics` tables, premium URL fields
 
 ## System Architecture
 
@@ -71,8 +81,16 @@ Stores verified Stripe payments: id, sessionId (unique), plan, stripeCustomerId,
 - `POST /api/create-checkout-session` - Create Stripe checkout session
 - `GET /api/verify-session/:sessionId` - Verify payment and store entitlement
 - `GET /api/check-entitlement/:sessionId` - Check if session has valid entitlement
-- `GET /api/premium/analytics` - Protected analytics endpoint (requires entitlement)
-- `GET /api/premium/qr` - Protected QR feature endpoint (requires entitlement)
+
+### Premium Feature Endpoints (all require entitlement)
+- `POST /api/premium/qr/generate` - Generate QR code with custom colors
+- `GET /api/premium/qr/download` - Download high-res PNG QR code
+- `GET /api/premium/analytics/:urlId` - Get detailed analytics for a URL
+- `GET /api/premium/my-urls` - Get all URLs for authenticated user
+- `POST /api/premium/shorten` - Create premium URL with password/expiry/custom slug
+- `POST /api/premium/bulk-shorten` - Bulk create up to 100 URLs
+- `PATCH /api/premium/url/:id` - Update URL settings
+- `POST /api/verify-password/:shortCode` - Verify password for protected links
 
 ### Short Code Generation
 Short codes start at 1 character and progressively increase length as collisions occur. This optimizes for shorter URLs while ensuring uniqueness.
