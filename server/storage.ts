@@ -1,6 +1,6 @@
 import { db } from "./db";
-import { urls, urlAnalytics, type Url, type InsertUrl, type UrlAnalytics, type InsertAnalytics } from "@shared/schema";
-import { eq, desc, sql, and, gte } from "drizzle-orm";
+import { urls, urlAnalytics, usageCredits, type Url, type InsertUrl, type UrlAnalytics, type InsertAnalytics, type UsageCredits } from "@shared/schema";
+import { eq, desc, sql, and, gte, or } from "drizzle-orm";
 import crypto from "crypto";
 
 export interface IStorage {
@@ -14,6 +14,19 @@ export interface IStorage {
   getUrlAnalytics(urlId: number, days?: number): Promise<UrlAnalyticsSummary>;
   verifyPassword(shortCode: string, password: string): Promise<boolean>;
   checkExpiry(shortCode: string): Promise<boolean>;
+  getOrCreateUsage(userId?: string, anonToken?: string, ipHash?: string): Promise<UsageCredits>;
+  getRemainingCredits(userId?: string, anonToken?: string, ipHash?: string): Promise<CreditInfo>;
+  consumeCredit(userId?: string, anonToken?: string, ipHash?: string): Promise<boolean>;
+  grantPaidCredits(credits: number, userId?: string, anonToken?: string, ipHash?: string): Promise<void>;
+}
+
+export interface CreditInfo {
+  freeRemaining: number;
+  paidRemaining: number;
+  totalRemaining: number;
+  freeUsed: number;
+  paidUsed: number;
+  monthKey: string;
 }
 
 export interface PremiumUrlOptions {
@@ -206,6 +219,117 @@ export class DatabaseStorage implements IStorage {
         .map(([browser, count]) => ({ browser, count }))
         .sort((a, b) => b.count - a.count),
     };
+  }
+
+  private getCurrentMonthKey(): string {
+    const now = new Date();
+    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+  }
+
+  async getOrCreateUsage(userId?: string, anonToken?: string, ipHash?: string): Promise<UsageCredits> {
+    const monthKey = this.getCurrentMonthKey();
+    
+    let conditions = [];
+    if (userId) {
+      conditions.push(eq(usageCredits.userId, userId));
+    } else if (anonToken) {
+      conditions.push(eq(usageCredits.anonToken, anonToken));
+    } else if (ipHash) {
+      conditions.push(eq(usageCredits.ipHash, ipHash));
+    }
+
+    if (conditions.length === 0) {
+      throw new Error("Must provide userId, anonToken, or ipHash");
+    }
+
+    const [existing] = await db.select().from(usageCredits)
+      .where(and(conditions[0], eq(usageCredits.monthKey, monthKey)));
+
+    if (existing) {
+      return existing;
+    }
+
+    let previousPaidCredits = 0;
+    let previousPaidUsed = 0;
+    
+    if (userId || anonToken || ipHash) {
+      const [previous] = await db.select().from(usageCredits)
+        .where(conditions[0])
+        .orderBy(desc(usageCredits.createdAt))
+        .limit(1);
+      
+      if (previous) {
+        previousPaidCredits = previous.paidCredits || 0;
+        previousPaidUsed = previous.paidUsed || 0;
+      }
+    }
+
+    const [newUsage] = await db.insert(usageCredits).values({
+      userId: userId || null,
+      anonToken: anonToken || null,
+      ipHash: ipHash || null,
+      monthKey,
+      freeUsed: 0,
+      paidCredits: previousPaidCredits,
+      paidUsed: previousPaidUsed,
+    }).returning();
+
+    return newUsage;
+  }
+
+  async getRemainingCredits(userId?: string, anonToken?: string, ipHash?: string): Promise<CreditInfo> {
+    const FREE_LIMIT = 5;
+    const usage = await this.getOrCreateUsage(userId, anonToken, ipHash);
+    
+    const freeUsed = usage.freeUsed || 0;
+    const paidCredits = usage.paidCredits || 0;
+    const paidUsed = usage.paidUsed || 0;
+    
+    const freeRemaining = Math.max(0, FREE_LIMIT - freeUsed);
+    const paidRemaining = Math.max(0, paidCredits - paidUsed);
+    
+    return {
+      freeRemaining,
+      paidRemaining,
+      totalRemaining: freeRemaining + paidRemaining,
+      freeUsed,
+      paidUsed,
+      monthKey: usage.monthKey,
+    };
+  }
+
+  async consumeCredit(userId?: string, anonToken?: string, ipHash?: string): Promise<boolean> {
+    const FREE_LIMIT = 5;
+    const usage = await this.getOrCreateUsage(userId, anonToken, ipHash);
+    
+    const freeUsed = usage.freeUsed || 0;
+    const paidCredits = usage.paidCredits || 0;
+    const paidUsed = usage.paidUsed || 0;
+    
+    if (freeUsed < FREE_LIMIT) {
+      await db.update(usageCredits)
+        .set({ freeUsed: freeUsed + 1, updatedAt: new Date() })
+        .where(eq(usageCredits.id, usage.id));
+      return true;
+    }
+    
+    if (paidUsed < paidCredits) {
+      await db.update(usageCredits)
+        .set({ paidUsed: paidUsed + 1, updatedAt: new Date() })
+        .where(eq(usageCredits.id, usage.id));
+      return true;
+    }
+    
+    return false;
+  }
+
+  async grantPaidCredits(credits: number, userId?: string, anonToken?: string, ipHash?: string): Promise<void> {
+    const usage = await this.getOrCreateUsage(userId, anonToken, ipHash);
+    const currentPaid = usage.paidCredits || 0;
+    
+    await db.update(usageCredits)
+      .set({ paidCredits: currentPaid + credits, updatedAt: new Date() })
+      .where(eq(usageCredits.id, usage.id));
   }
 }
 
