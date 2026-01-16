@@ -64,7 +64,24 @@ export default function Home() {
       
       const data = await response.json();
       if (response.ok && data.url) {
-        window.location.href = data.url;
+        // Try opening in new tab first (works better in Replit webview)
+        const newWindow = window.open(data.url, "_blank", "noopener");
+        
+        if (!newWindow || newWindow.closed) {
+          // Popup blocked - try direct redirect as fallback
+          toast({
+            title: "Checkout Ready",
+            description: "Redirecting to checkout... Test card: 4242 4242 4242 4242",
+            duration: 5000,
+          });
+          window.location.href = data.url;
+        } else {
+          toast({
+            title: "Checkout Opened",
+            description: "Complete your purchase in the new tab. Test card: 4242 4242 4242 4242",
+            duration: 10000,
+          });
+        }
       } else {
         toast({
           title: "Error",
