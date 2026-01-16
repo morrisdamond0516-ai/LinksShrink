@@ -30,7 +30,7 @@ export default function Register() {
             <div className="flex justify-center mb-4">
               <Link2 className="w-12 h-12 text-lime-400" />
             </div>
-            <CardTitle className="text-2xl text-white">Create your LinkShrink account</CardTitle>
+            <CardTitle className="text-2xl text-white">Create your LinksShrink.com account</CardTitle>
           </CardHeader>
           <CardContent>
             <Form {...form}>

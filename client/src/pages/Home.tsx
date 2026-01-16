@@ -391,7 +391,7 @@ export default function Home() {
             <div className="bg-primary/10 p-2 rounded-lg">
               <Link2 className="w-6 h-6 text-primary" />
             </div>
-            <span className="text-xl font-bold tracking-tight">LinkShrink</span>
+            <span className="text-xl font-bold tracking-tight">LinksShrink.com</span>
           </div>
           <div className="flex items-center gap-4">
             <Link href="/pricing">
@@ -614,7 +614,7 @@ export default function Home() {
             <motion.div initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}>
               <h2 className="text-3xl md:text-5xl font-black text-white mb-6">Enterprise Infrastructure</h2>
               <p className="text-lg text-slate-400 mb-8 leading-relaxed">
-                Built for the most demanding marketing teams. LinkShrink Enterprise provides the stability, 
+                Built for the most demanding marketing teams. LinksShrink.com Enterprise provides the stability, 
                 security, and scale your global brand requires.
               </p>
               <div className="space-y-4">
@@ -733,7 +733,7 @@ export default function Home() {
             <motion.div className="order-1 lg:order-2" initial={{ opacity: 0, x: 20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}>
               <h2 className="text-3xl md:text-5xl font-black text-white mb-6">Advanced Analytics</h2>
               <p className="text-lg text-slate-400 mb-8 leading-relaxed">
-                Know your audience better than ever. LinkShrink Analytics provides deep behavioral data 
+                Know your audience better than ever. LinksShrink.com Analytics provides deep behavioral data 
                 without compromising user privacy.
               </p>
               <ul className="space-y-4">
@@ -760,7 +760,7 @@ export default function Home() {
           <div className="max-w-3xl mx-auto text-center mb-20">
             <h2 className="text-3xl md:text-5xl font-black text-white mb-6">Our Mission</h2>
             <p className="text-xl text-slate-400 leading-relaxed">
-              We started LinkShrink to simplify how people share information. In a world of long, 
+              We started LinksShrink.com to simplify how people share information. In a world of long, 
               clunky URLs, we provide the elegance and efficiency required for modern communication.
             </p>
           </div>
@@ -783,7 +783,7 @@ export default function Home() {
       <section id="careers" className="py-24 bg-slate-900 border-y border-white/5">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-5xl font-black text-white mb-6 text-center">Join the LinkShrink Team</h2>
+            <h2 className="text-3xl md:text-5xl font-black text-white mb-6 text-center">Join the LinksShrink.com Team</h2>
             <p className="text-lg text-slate-400 max-w-2xl mx-auto mb-10 text-center">
               We're a remote-first company building tools for millions of users worldwide. 
               Help us define the future of link management.
@@ -835,7 +835,7 @@ export default function Home() {
             <div className="col-span-2">
               <div className="flex items-center gap-2 text-white mb-4">
                 <Link2 className="w-6 h-6 text-lime-400" />
-                <span className="text-xl font-bold">LinkShrink</span>
+                <span className="text-xl font-bold">LinksShrink.com</span>
               </div>
               <p className="text-slate-400 max-w-sm">
                 The most reliable URL shortener for personal and professional use. Built with modern web technologies.
@@ -861,7 +861,7 @@ export default function Home() {
             </div>
           </div>
           <div className="pt-8 border-t border-slate-800 text-sm text-center md:text-left">
-            © {new Date().getFullYear()} LinkShrink. All rights reserved.
+            © {new Date().getFullYear()} LinksShrink.com. All rights reserved.
           </div>
         </div>
       </footer>

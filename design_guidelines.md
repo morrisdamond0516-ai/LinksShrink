@@ -1,4 +1,4 @@
-# LinkShrink Design Guidelines
+# LinksShrink.com Design Guidelines
 
 ## Design Approach
 **Reference-Based**: Drawing from Stripe's premium feel, Linear's sharp typography, and Vercel's tech-forward aesthetic. The dark theme with lime/yellow creates a cyberpunk-meets-professional vibe that screams modern SaaS.
