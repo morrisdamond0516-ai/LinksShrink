@@ -1,4 +1,4 @@
-import { Check, Link2, Lock, Clock } from "lucide-react";
+import { Check, Link2, Lock, Clock, Globe, QrCode, Smartphone, Monitor, Layers, Download, Palette, Calendar, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { motion } from "framer-motion";
@@ -70,150 +70,238 @@ const featureShowcase: FeatureShowcaseItem[] = [
     title: "Detailed Analytics Dashboard",
     description: "See exactly how your links are performing with real-time data.",
     features: [
-      { text: "Real-time Traffic Monitoring", example: "Clicking this in your dashboard opens a live view of incoming traffic from around the globe." },
-      { text: "Device & Browser Breakdown", example: "This view shows you exactly which devices and browsers your audience is using." },
-      { text: "Traffic Source Analysis", example: "This screen identifies whether your clicks are coming from social media, email, or direct visits." }
+      { text: "Real-time Traffic Monitoring", example: "Track total clicks, unique visitors, and average latency in real-time with percentage growth indicators." },
+      { text: "Geographic Distribution", example: "See exactly where your traffic comes from with country-level breakdowns and visual progress bars." },
+      { text: "Device Breakdown", example: "Understand your audience with detailed mobile, desktop, and other device usage statistics." }
     ],
     visual: (
-      <div className="bg-slate-900 rounded-xl p-6 font-mono text-xs text-green-400 border border-slate-700 shadow-2xl relative overflow-hidden">
-        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500" />
-        <div className="flex justify-between border-b border-slate-700 pb-3 mb-4">
-          <div className="flex items-center gap-2">
-            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-            <span className="font-bold tracking-widest">SYSTEM MONITOR</span>
+      <div className="bg-black rounded-xl p-6 border border-white/10 shadow-2xl space-y-4">
+        <div className="grid grid-cols-3 gap-3">
+          <div className="bg-slate-900 p-3 rounded-lg border border-white/10">
+            <span className="text-slate-500 text-[10px] font-bold uppercase">Total Clicks</span>
+            <div className="text-xl font-black text-lime-400 mt-1">12,842</div>
+            <div className="text-[10px] text-green-500 mt-1">+12% from last week</div>
           </div>
-          <span className="text-slate-500">v4.2.0-STABLE</span>
+          <div className="bg-slate-900 p-3 rounded-lg border border-white/10">
+            <span className="text-slate-500 text-[10px] font-bold uppercase">Unique Visitors</span>
+            <div className="text-xl font-black text-white mt-1">8,211</div>
+            <div className="text-[10px] text-slate-500 mt-1">Global reach</div>
+          </div>
+          <div className="bg-slate-900 p-3 rounded-lg border border-white/10">
+            <span className="text-slate-500 text-[10px] font-bold uppercase">Avg. Latency</span>
+            <div className="text-xl font-black text-white mt-1">12ms</div>
+            <div className="text-[10px] text-lime-500 mt-1">Optimal</div>
+          </div>
         </div>
-        <div className="space-y-4">
-          <div className="grid grid-cols-3 gap-2">
-            <div className="bg-slate-800/50 p-2 rounded border border-slate-700">
-              <div className="text-[10px] text-slate-500">TOTAL CLICKS</div>
-              <div className="text-lg font-bold text-white">12,842</div>
+        <div className="grid grid-cols-2 gap-3">
+          <div className="bg-slate-900 p-3 rounded-lg border border-white/10 space-y-2">
+            <div className="flex items-center gap-2 text-xs font-bold text-white">
+              <Globe className="w-3 h-3 text-blue-400" /> Geographic Distribution
             </div>
-            <div className="bg-slate-800/50 p-2 rounded border border-slate-700">
-              <div className="text-[10px] text-slate-500">AVG. TIME</div>
-              <div className="text-lg font-bold text-white">1.2s</div>
+            {[
+              { label: 'United States', val: 65, color: 'bg-blue-500' },
+              { label: 'United Kingdom', val: 15, color: 'bg-indigo-500' },
+              { label: 'Germany', val: 10, color: 'bg-purple-500' }
+            ].map(geo => (
+              <div key={geo.label} className="space-y-0.5">
+                <div className="flex justify-between text-[10px]">
+                  <span className="text-slate-400">{geo.label}</span>
+                  <span className="text-white font-bold">{geo.val}%</span>
+                </div>
+                <div className="h-1.5 bg-black rounded-full overflow-hidden">
+                  <div className={`${geo.color} h-full`} style={{ width: `${geo.val}%` }} />
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="bg-slate-900 p-3 rounded-lg border border-white/10">
+            <div className="flex items-center gap-2 text-xs font-bold text-white mb-3">
+              <Smartphone className="w-3 h-3 text-lime-400" /> Device Breakdown
             </div>
-            <div className="bg-slate-800/50 p-2 rounded border border-slate-700">
-              <div className="text-[10px] text-slate-500">BOUNCE</div>
-              <div className="text-lg font-bold text-white">14%</div>
+            <div className="flex items-center justify-around py-2">
+              <div className="text-center space-y-1">
+                <Smartphone className="w-6 h-6 text-lime-400 mx-auto" />
+                <p className="font-bold text-sm">68%</p>
+                <p className="text-[9px] text-slate-500">Mobile</p>
+              </div>
+              <div className="text-center space-y-1">
+                <Monitor className="w-6 h-6 text-white mx-auto" />
+                <p className="font-bold text-sm">24%</p>
+                <p className="text-[9px] text-slate-500">Desktop</p>
+              </div>
+              <div className="text-center space-y-1">
+                <Globe className="w-6 h-6 text-slate-500 mx-auto" />
+                <p className="font-bold text-sm">8%</p>
+                <p className="text-[9px] text-slate-500">Other</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  },
+  {
+    title: "Smart QR Codes",
+    description: "Generate custom branded QR codes for print and web with full control.",
+    features: [
+      { text: "Custom Color Selection", example: "Use a color picker to match QR codes to your exact brand hex codes." },
+      { text: "High-Resolution Downloads", example: "Download 4000x4000px PNG files perfect for large-scale printing." },
+      { text: "Logo Integration", example: "Your company logo is centered perfectly within the QR code." }
+    ],
+    visual: (
+      <div className="bg-black rounded-xl p-4 border border-white/10 shadow-2xl">
+        <div className="grid grid-cols-2 gap-4">
+          <div className="bg-slate-900 p-4 rounded-lg border border-white/10 space-y-4">
+            <div className="text-xs font-bold text-white">Configuration</div>
+            <div className="space-y-2">
+              <div className="text-[10px] text-slate-400">Destination URL</div>
+              <div className="h-9 bg-black rounded-lg border border-white/10 flex items-center px-3 text-[10px] text-slate-500">https://yourlink.com</div>
+            </div>
+            <div className="space-y-2">
+              <div className="text-[10px] text-slate-400">Brand Color</div>
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 bg-lime-400 rounded-lg border border-white/20" />
+                <span className="text-[10px] font-mono text-slate-400">#a3e635</span>
+              </div>
+            </div>
+            <div className="h-9 bg-lime-400 rounded-lg flex items-center justify-center gap-2 text-[10px] text-black font-bold">
+              <Palette className="w-3 h-3" /> Apply Branding
+            </div>
+          </div>
+          <div className="bg-white rounded-xl p-4 flex flex-col items-center justify-center gap-3">
+            <div className="w-28 h-28 bg-slate-100 rounded-xl flex items-center justify-center relative border-4 border-slate-200">
+              <div className="grid grid-cols-12 gap-0.5 p-2 w-full h-full text-lime-500">
+                {Array.from({ length: 144 }).map((_, i) => (
+                  <div key={i} className={`aspect-square rounded-[1px] ${[0,1,2,3,4,5,6,12,18,24,30,36,42,43,44,45,46,47,48,54,60,66,72,78,84,5,11,17,23,29,35,41,47,53,59,65,71,77,83,89,95,96,97,98,99,100,101,102,108,114,120,126,132,138,139,140,141,142,143].includes(i) ? 'bg-current' : 'bg-transparent'}`} />
+                ))}
+              </div>
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="w-8 h-8 bg-white rounded-lg border-2 border-lime-500 flex items-center justify-center shadow-xl">
+                  <Link2 className="w-4 h-4 text-lime-500" />
+                </div>
+              </div>
+            </div>
+            <div className="w-full h-9 bg-slate-100 rounded-lg border border-slate-200 flex items-center justify-center gap-2 text-[10px] text-slate-700 font-bold">
+              <Download className="w-3 h-3" /> Download PNG (4000px)
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  },
+  {
+    title: "Password Protection",
+    description: "Secure your links with enterprise-grade access control and expiration.",
+    features: [
+      { text: "Password Protection", example: "Set a password that visitors must enter before accessing the destination URL." },
+      { text: "Managed Access Control", example: "Restrict access to specific referrers or IP ranges for additional security." },
+      { text: "Link Expiration", example: "Set automatic expiration dates so links deactivate after a specific time." }
+    ],
+    visual: (
+      <div className="bg-black rounded-xl p-6 border border-white/10 shadow-2xl space-y-4">
+        <div className="flex items-center gap-3">
+          <div className="bg-red-500/10 p-2 rounded-xl">
+            <Lock className="w-5 h-5 text-red-500" />
+          </div>
+          <div>
+            <div className="text-sm font-bold text-white">Password Protection</div>
+            <div className="text-xs text-slate-500">Enterprise-grade access control</div>
+          </div>
+        </div>
+        <div className="bg-slate-900 p-4 rounded-lg border border-white/10 space-y-4">
+          <div className="space-y-2">
+            <div className="text-xs text-slate-400">Target URL</div>
+            <div className="h-10 bg-black rounded-lg border border-white/10 flex items-center px-3 gap-2">
+              <Link2 className="w-3 h-3 text-slate-500" />
+              <span className="text-xs text-slate-500">https://example.com/sensitive-doc</span>
             </div>
           </div>
           <div className="space-y-2">
-            <div className="flex justify-between text-[10px] text-slate-500 mb-1 uppercase tracking-tighter">Top Geos</div>
+            <div className="text-xs text-slate-400">Set Link Password</div>
+            <div className="h-10 bg-black rounded-lg border border-white/10 flex items-center px-3 justify-between">
+              <span className="text-xs text-slate-600 font-mono tracking-widest">••••••••••••</span>
+              <Lock className="w-3 h-3 text-slate-500" />
+            </div>
+          </div>
+          <div className="flex items-center justify-between p-3 bg-black/40 rounded-lg border border-white/5">
+            <div>
+              <div className="text-xs font-bold text-white">Managed Access Control</div>
+              <div className="text-[10px] text-slate-500">Only allow specific referrers or IPs</div>
+            </div>
+            <div className="w-8 h-4 bg-lime-400 rounded-full relative">
+              <div className="absolute right-0.5 top-0.5 w-3 h-3 bg-white rounded-full" />
+            </div>
+          </div>
+        </div>
+        <div className="h-10 bg-lime-400 rounded-lg flex items-center justify-center text-xs text-black font-bold">
+          Save Security Settings
+        </div>
+      </div>
+    )
+  },
+  {
+    title: "Bulk Link Shortener",
+    description: "Shorten up to 3,000 links at once with optional password protection.",
+    features: [
+      { text: "Bulk URL Input", example: "Enter multiple URLs (one per line) to shorten them all in a single batch process." },
+      { text: "Batch Password Protection", example: "Apply a single password to protect all links in the batch at once." },
+      { text: "Export Results", example: "Copy all shortened links to your clipboard or export as CSV." }
+    ],
+    visual: (
+      <div className="bg-black rounded-xl p-6 border border-white/10 shadow-2xl space-y-4">
+        <div className="flex items-center gap-3">
+          <div className="bg-yellow-500/10 p-2 rounded-xl">
+            <Layers className="w-5 h-5 text-yellow-500" />
+          </div>
+          <div>
+            <div className="text-sm font-bold text-white">Bulk Link Shortener</div>
+            <div className="text-xs text-slate-500">Shorten up to 3,000 links at once</div>
+          </div>
+        </div>
+        <div className="bg-slate-900 p-4 rounded-lg border border-white/10 space-y-3">
+          <div className="text-xs text-slate-400">Enter URLs (one per line)</div>
+          <div className="h-24 bg-black rounded-lg border border-white/10 p-3 text-[10px] font-mono text-slate-500 leading-relaxed">
+            https://example.com/page1<br/>
+            https://example.com/page2<br/>
+            https://example.com/page3
+          </div>
+        </div>
+        <div className="bg-white/5 p-3 rounded-lg border border-white/5 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="bg-red-500/10 p-1.5 rounded">
+              <Lock className="w-3 h-3 text-red-500" />
+            </div>
+            <div>
+              <div className="text-xs font-bold text-white">Password Protection</div>
+              <div className="text-[10px] text-slate-500">Apply to all links</div>
+            </div>
+          </div>
+          <div className="w-8 h-4 bg-slate-600 rounded-full relative">
+            <div className="absolute left-0.5 top-0.5 w-3 h-3 bg-slate-400 rounded-full" />
+          </div>
+        </div>
+        <div className="h-10 bg-lime-400 rounded-lg flex items-center justify-center text-xs text-black font-bold">
+          Generate Bulk Links
+        </div>
+        <div className="bg-slate-900 rounded-lg border border-white/10 overflow-hidden">
+          <div className="p-3 border-b border-white/5 flex items-center justify-between bg-white/5">
+            <span className="text-xs font-bold text-white">Results (3)</span>
+            <span className="text-[10px] text-lime-400">Copy All</span>
+          </div>
+          <div className="divide-y divide-white/5">
             {[
-              { label: 'USA', val: 85, color: 'bg-blue-500' },
-              { label: 'GBR', val: 45, color: 'bg-indigo-500' },
-              { label: 'FRA', val: 30, color: 'bg-purple-500' }
-            ].map(geo => (
-              <div key={geo.label} className="flex items-center gap-2">
-                <div className="w-8 text-slate-400">{geo.label}</div>
-                <div className="flex-1 bg-slate-800 h-1.5 rounded-full overflow-hidden">
-                  <div className={`${geo.color} h-full transition-all duration-1000`} style={{ width: `${geo.val}%` }} />
+              { orig: 'https://example.com/page1', short: 'lnk.sh/x7y' },
+              { orig: 'https://example.com/page2', short: 'lnk.sh/a2b' },
+            ].map((r, i) => (
+              <div key={i} className="p-3 flex items-center justify-between">
+                <div>
+                  <div className="text-[10px] text-slate-500 truncate">{r.orig}</div>
+                  <div className="text-xs font-bold text-lime-400">{r.short}</div>
                 </div>
-                <div className="w-6 text-right text-slate-500">{geo.val}%</div>
               </div>
             ))}
           </div>
         </div>
-      </div>
-    )
-  },
-  {
-    title: "Branded QR Code Engine",
-    description: "Generate high-resolution codes that match your brand identity perfectly.",
-    features: [
-      { text: "Custom Color Selection", example: "Clicking this tool opens a color picker to match the QR code to your brand's exact hex codes." },
-      { text: "High-Resolution Downloads", example: "This button generates a 4000x4000px PNG or SVG file perfect for large-scale printing." },
-      { text: "Logo Integration", example: "This setting allows you to upload your company logo to be centered perfectly within the QR code." }
-    ],
-    visual: (
-      <div className="bg-white rounded-xl p-8 border shadow-xl flex items-center justify-center relative overflow-hidden group">
-        <div className="absolute inset-0 bg-slate-50 opacity-0 group-hover:opacity-100 transition-opacity" />
-        <div className="relative w-48 h-48 bg-slate-100 rounded-2xl flex items-center justify-center overflow-hidden border-4 border-slate-200 shadow-inner">
-          <div className="grid grid-cols-12 gap-1 p-3 opacity-90 w-full h-full text-primary">
-            {Array.from({ length: 144 }).map((_, i) => (
-              <div key={i} className={`aspect-square rounded-[1px] ${Math.random() > 0.7 ? 'bg-current' : 'bg-transparent'}`} />
-            ))}
-          </div>
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="w-14 h-14 bg-white border-2 border-primary rounded-xl flex items-center justify-center shadow-2xl transform group-hover:scale-110 transition-transform">
-              <Link2 className="w-8 h-8 text-primary" />
-            </div>
-          </div>
-        </div>
-      </div>
-    )
-  },
-  {
-    title: "Security & Expiry Control",
-    description: "Protect sensitive links and set automatic expiration dates with ease.",
-    features: [
-      { text: "Password Protection UI", example: "Clicking this will open a modal where you set a password; visitors will see a clean login screen before redirecting." },
-      { text: "Link Expiration Timer", example: "This tool lets you choose a date and time; once reached, the link automatically shows an 'Expired' page." },
-      { text: "Access Request Log", example: "This screen shows you every attempted access to your protected links, including failed password entries." }
-    ],
-    visual: (
-      <div className="bg-white rounded-xl p-6 border-2 border-slate-100 shadow-2xl relative">
-        <div className="flex items-center gap-4 mb-6">
-          <div className="bg-red-50 p-3 rounded-2xl">
-            <Lock className="w-6 h-6 text-red-500" />
-          </div>
-          <div>
-            <div className="text-lg font-extrabold text-slate-900">Secure Access</div>
-            <div className="text-xs text-muted-foreground">Encryption Level: AES-256</div>
-          </div>
-        </div>
-        <div className="space-y-3">
-          <div className="relative">
-            <div className="h-10 bg-slate-50 rounded-lg border flex items-center px-3 text-sm text-slate-400 font-mono tracking-widest italic shadow-sm">••••••••••••</div>
-            <div className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-300">
-              <Lock className="w-4 h-4" />
-            </div>
-          </div>
-          <div className="h-10 bg-primary rounded-lg flex items-center justify-center text-sm text-white font-bold shadow-lg shadow-primary/20 hover:bg-primary/90 transition-all cursor-pointer">
-            Access Protected Link
-          </div>
-        </div>
-        <div className="mt-6 pt-4 border-t border-slate-50 flex items-center justify-between">
-          <div className="flex items-center gap-2 text-xs text-orange-600 font-bold bg-orange-50 px-2 py-1 rounded">
-            <Clock className="w-3 h-3" />
-            <span>EXPIRES: 04:22:11</span>
-          </div>
-          <div className="text-[10px] text-slate-400 font-medium">128 ATTEMPTS</div>
-        </div>
-      </div>
-    )
-  },
-  {
-    title: "Enterprise Bulk Management",
-    description: "Manage up to 3,000 links and 50 custom domains from a single unified interface.",
-    features: [
-      { text: "CSV Bulk Import", example: "Clicking this allows you to upload a file with 3,000 URLs to shorten them all in one batch process." },
-      { text: "Multi-Domain Selector", example: "This dropdown menu allows you to switch between 50 different custom domains you've connected." },
-      { text: "Bulk Security Manager", example: "This page allows you to apply password protection or expiry dates to thousands of links with a single click." }
-    ],
-    visual: (
-      <div className="bg-slate-50 rounded-xl p-6 border-2 border-blue-100 overflow-hidden relative shadow-inner">
-        <div className="flex items-center justify-between mb-4">
-          <div className="text-[10px] font-black text-blue-600 uppercase tracking-widest bg-blue-100 px-2 py-0.5 rounded">Bulk Processing</div>
-          <div className="text-[10px] text-slate-400 font-bold">TASK ID: #8821</div>
-        </div>
-        <div className="space-y-3">
-          {[
-            { id: 2998, name: 'promo_fall_01.link', status: 'COMPLETE' },
-            { id: 2999, name: 'promo_fall_02.link', status: 'COMPLETE' },
-            { id: 3000, name: 'processing...', status: 'ACTIVE' }
-          ].map(row => (
-            <div key={row.id} className="flex items-center gap-3 bg-white p-3 rounded-lg border border-slate-200 text-xs shadow-sm">
-              <div className={`w-2 h-2 rounded-full ${row.status === 'COMPLETE' ? 'bg-green-500' : 'bg-blue-500 animate-pulse'}`} />
-              <span className="font-bold text-slate-400">#{row.id}</span>
-              <span className="flex-1 font-medium truncate">{row.name}</span>
-              <span className={`text-[10px] font-black ${row.status === 'COMPLETE' ? 'text-green-600' : 'text-blue-600'}`}>{row.status}</span>
-            </div>
-          ))}
-        </div>
-        <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-slate-50 to-transparent pointer-events-none" />
       </div>
     )
   },
