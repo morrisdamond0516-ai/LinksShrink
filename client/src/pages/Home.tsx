@@ -473,7 +473,7 @@ export default function Home() {
               <div className="absolute top-0 right-0 w-32 h-32 bg-lime-400/10 blur-3xl rounded-full" />
               <div className="space-y-6">
                 <div className="flex justify-between items-center">
-                  <span className="text-xs font-bold text-lime-400 uppercase">System Status: Optimal</span>
+                  <span className="text-xs font-bold text-lime-400 uppercase">System Status</span>
                   <div className="flex gap-1">
                     <div className="w-1.5 h-1.5 bg-lime-400 rounded-full animate-pulse" />
                     <div className="w-1.5 h-1.5 bg-lime-400 rounded-full" />
@@ -489,11 +489,11 @@ export default function Home() {
                 <div className="grid grid-cols-2 gap-4">
                   <div className="bg-black/40 p-4 rounded-xl border border-white/5">
                     <span className="text-[10px] text-slate-500 uppercase">Requests/sec</span>
-                    <div className="text-xl font-bold text-white">4.2k</div>
+                    <div className="text-xl font-bold text-white">--</div>
                   </div>
                   <div className="bg-black/40 p-4 rounded-xl border border-white/5">
                     <span className="text-[10px] text-slate-500 uppercase">Latency</span>
-                    <div className="text-xl font-bold text-white">12ms</div>
+                    <div className="text-xl font-bold text-white">--</div>
                   </div>
                 </div>
               </div>
@@ -627,14 +627,15 @@ export default function Home() {
           </div>
           <div className="mt-16 text-center">
             <p className="text-slate-500 mb-6">Don't see a fit? Send a general application.</p>
-            <Button 
-              variant="outline" 
-              className="border-lime-400 text-lime-400 hover:bg-lime-400 hover:text-black font-bold h-12 px-8"
-              onClick={handleJobClick}
-              data-testid="button-careers-email"
-            >
-              Email Us Your CV
-            </Button>
+            <a href="mailto:ProductionLinks@yahoo.com">
+              <Button 
+                variant="outline" 
+                className="border-lime-400 text-lime-400 hover:bg-lime-400 hover:text-black font-bold h-12 px-8"
+                data-testid="button-careers-email"
+              >
+                Email Us Your CV
+              </Button>
+            </a>
           </div>
         </div>
       </section>
