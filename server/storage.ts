@@ -1,5 +1,5 @@
 import { db } from "./db";
-import { urls, urlAnalytics, usageCredits, type Url, type InsertUrl, type UrlAnalytics, type InsertAnalytics, type UsageCredits } from "@shared/schema";
+import { urls, urlAnalytics, usageCredits, processedLinkPacks, type Url, type InsertUrl, type UrlAnalytics, type InsertAnalytics, type UsageCredits } from "@shared/schema";
 import { eq, desc, sql, and, gte, or } from "drizzle-orm";
 import crypto from "crypto";
 
@@ -17,7 +17,10 @@ export interface IStorage {
   getOrCreateUsage(userId?: string, anonToken?: string, ipHash?: string): Promise<UsageCredits>;
   getRemainingCredits(userId?: string, anonToken?: string, ipHash?: string): Promise<CreditInfo>;
   consumeCredit(userId?: string, anonToken?: string, ipHash?: string): Promise<boolean>;
+  refundCredit(userId?: string, anonToken?: string, ipHash?: string): Promise<void>;
   grantPaidCredits(credits: number, userId?: string, anonToken?: string, ipHash?: string): Promise<void>;
+  isLinkPackProcessed(sessionId: string): Promise<boolean>;
+  markLinkPackProcessed(sessionId: string, credits: number, userId?: string, anonToken?: string, ipHash?: string): Promise<void>;
 }
 
 export interface CreditInfo {
@@ -330,6 +333,46 @@ export class DatabaseStorage implements IStorage {
     await db.update(usageCredits)
       .set({ paidCredits: currentPaid + credits, updatedAt: new Date() })
       .where(eq(usageCredits.id, usage.id));
+  }
+
+  async refundCredit(userId?: string, anonToken?: string, ipHash?: string): Promise<void> {
+    const FREE_LIMIT = 5;
+    const usage = await this.getOrCreateUsage(userId, anonToken, ipHash);
+    
+    const paidUsed = usage.paidUsed || 0;
+    const freeUsed = usage.freeUsed || 0;
+    
+    // Refund from paid first (reverse of consumption order)
+    if (paidUsed > 0) {
+      await db.update(usageCredits)
+        .set({ paidUsed: paidUsed - 1, updatedAt: new Date() })
+        .where(eq(usageCredits.id, usage.id));
+      return;
+    }
+    
+    // Then refund from free
+    if (freeUsed > 0) {
+      await db.update(usageCredits)
+        .set({ freeUsed: freeUsed - 1, updatedAt: new Date() })
+        .where(eq(usageCredits.id, usage.id));
+    }
+  }
+
+  async isLinkPackProcessed(sessionId: string): Promise<boolean> {
+    const [existing] = await db.select()
+      .from(processedLinkPacks)
+      .where(eq(processedLinkPacks.sessionId, sessionId));
+    return !!existing;
+  }
+
+  async markLinkPackProcessed(sessionId: string, credits: number, userId?: string, anonToken?: string, ipHash?: string): Promise<void> {
+    await db.insert(processedLinkPacks).values({
+      sessionId,
+      credits,
+      userId: userId || null,
+      anonToken: anonToken || null,
+      ipHash: ipHash || null,
+    });
   }
 }
 
