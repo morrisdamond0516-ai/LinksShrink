@@ -108,8 +108,14 @@ Stores verified Stripe payments: id, sessionId (unique), plan, stripeCustomerId,
 - `PATCH /api/premium/url/:id` - Update URL settings
 - `POST /api/verify-password/:shortCode` - Verify password for protected links
 
-### Short Code Generation
-Short codes start at 1 character and progressively increase length as collisions occur. This optimizes for shorter URLs while ensuring uniqueness.
+### Short Code Generation (Ultra-Short)
+Short codes use Base62 encoding (0-9, a-z, A-Z = 62 characters) derived from the URL's database ID. This guarantees the **shortest possible codes**:
+- First 62 URLs: 1-character codes (0, 1, 2, ... a, b, c, ... Z)
+- Next 3,844 URLs: 2-character codes (10, 11, ... ZZ)
+- Next 238,328 URLs: 3-character codes
+- And so on...
+
+The system uses atomic transactions to ensure uniqueness and O(1) code generation.
 
 ## External Dependencies
 
