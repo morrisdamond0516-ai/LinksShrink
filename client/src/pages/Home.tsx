@@ -6,6 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
 import { Link } from "wouter";
+import { useQuery } from "@tanstack/react-query";
 import {
   Link2,
   Copy,
@@ -17,19 +18,71 @@ import {
   Layers,
   ArrowRight,
   Check,
-  Shield
+  Shield,
+  Zap,
+  Plus
 } from "lucide-react";
 import { motion } from "framer-motion";
+
+interface CreditInfo {
+  freeRemaining: number;
+  paidRemaining: number;
+  totalRemaining: number;
+  freeUsed: number;
+  paidUsed: number;
+  monthKey: string;
+}
 
 export default function Home() {
   const [url, setUrl] = useState("");
   const [result, setResult] = useState<{ shortUrl: string; shortCode: string } | null>(null);
   const [copied, setCopied] = useState(false);
+  const [buyingLinks, setBuyingLinks] = useState(false);
   const { toast } = useToast();
   const { user, isAuthenticated, isLoading: authLoading } = useAuth();
   const pendingPlanProcessed = useRef(false);
+  const linkPackProcessed = useRef(false);
   
   const shortenMutation = useShortenUrl();
+  
+  // Fetch credits
+  const { data: credits, refetch: refetchCredits } = useQuery<CreditInfo>({
+    queryKey: ['/api/credits'],
+    staleTime: 0,
+    refetchOnWindowFocus: true,
+  });
+
+  // Handle $20 link pack purchase
+  const handleBuyLinks = async () => {
+    setBuyingLinks(true);
+    try {
+      const response = await fetch("/api/create-link-pack-checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({}),
+      });
+      
+      const data = await response.json();
+      if (response.ok && data.url) {
+        window.location.href = data.url;
+      } else {
+        toast({
+          title: "Error",
+          description: data.message || "Failed to create checkout",
+          variant: "destructive",
+        });
+      }
+    } catch (err) {
+      console.error("Error creating checkout:", err);
+      toast({
+        title: "Error",
+        description: "Failed to start checkout process",
+        variant: "destructive",
+      });
+    } finally {
+      setBuyingLinks(false);
+    }
+  };
 
     const handleJobClick = (e?: React.MouseEvent) => {
       if (e) e.preventDefault();
@@ -58,17 +111,27 @@ export default function Home() {
       onSuccess: (data) => {
         setResult(data);
         setCopied(false);
+        refetchCredits();
         toast({
           title: "URL Shortened!",
           description: "Your link is ready to share.",
         });
       },
-      onError: (error) => {
-        toast({
-          title: "Error",
-          description: error.message,
-          variant: "destructive",
-        });
+      onError: (error: any) => {
+        refetchCredits();
+        if (error.message?.includes("free links")) {
+          toast({
+            title: "Out of Credits",
+            description: "You've used all your free links. Buy 20 more for $20!",
+            variant: "destructive",
+          });
+        } else {
+          toast({
+            title: "Error",
+            description: error.message,
+            variant: "destructive",
+          });
+        }
       },
     });
   };
@@ -92,6 +155,42 @@ export default function Home() {
     const verifyPayment = async () => {
       const params = new URLSearchParams(window.location.search);
       const sessionId = params.get("session_id");
+      const linkPackSession = params.get("link_pack_session");
+      
+      // Handle link pack purchase verification
+      if (linkPackSession && !linkPackProcessed.current) {
+        linkPackProcessed.current = true;
+        setIsVerifying(true);
+        try {
+          const response = await fetch(`/api/verify-session/${linkPackSession}`);
+          const data = await response.json();
+          
+          if (data.success && data.purchaseType === 'link_pack') {
+            refetchCredits();
+            toast({
+              title: "Credits Added!",
+              description: `You now have ${data.credits} additional link credits. Start shortening!`,
+            });
+            window.history.replaceState({}, document.title, "/");
+          } else {
+            toast({
+              title: "Payment Pending",
+              description: "Your payment is being processed. Please check back shortly.",
+              variant: "destructive",
+            });
+          }
+        } catch (err) {
+          console.error("Verification error:", err);
+          toast({
+            title: "Verification Error",
+            description: "Could not verify payment. Please contact support.",
+            variant: "destructive",
+          });
+        } finally {
+          setIsVerifying(false);
+        }
+        return;
+      }
       
       if (sessionId) {
         setIsVerifying(true);
@@ -338,6 +437,50 @@ export default function Home() {
                     {shortenMutation.isPending ? "Shortening..." : "Shorten URL"}
                   </Button>
                 </form>
+
+                {/* Credits Display */}
+                <div className="mt-4 pt-4 border-t border-white/10">
+                  <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
+                    <div className="flex items-center gap-2 text-sm">
+                      <Zap className="w-4 h-4 text-lime-400" />
+                      {credits ? (
+                        <span className="text-slate-300">
+                          <span className="font-bold text-lime-400">{credits.totalRemaining}</span>
+                          {" "}link{credits.totalRemaining !== 1 ? "s" : ""} remaining this month
+                          {credits.paidRemaining > 0 && (
+                            <span className="text-slate-500 text-xs ml-1">
+                              ({credits.freeRemaining} free + {credits.paidRemaining} paid)
+                            </span>
+                          )}
+                        </span>
+                      ) : (
+                        <span className="text-slate-400">Loading credits...</span>
+                      )}
+                    </div>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={handleBuyLinks}
+                      disabled={buyingLinks}
+                      className="gap-1 border-lime-400/50 text-lime-400 hover:bg-lime-400 hover:text-black"
+                      data-testid="button-buy-links"
+                    >
+                      <Plus className="w-3 h-3" />
+                      {buyingLinks ? "Loading..." : "Buy 20 Links - $20"}
+                    </Button>
+                  </div>
+                  {credits && credits.totalRemaining === 0 && (
+                    <motion.div 
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="mt-3 p-3 bg-red-500/10 border border-red-500/20 rounded-lg"
+                    >
+                      <p className="text-red-400 text-sm text-center">
+                        You've used all your free links this month. Buy 20 more for just $20!
+                      </p>
+                    </motion.div>
+                  )}
+                </div>
 
                 {result && (
                   <motion.div 

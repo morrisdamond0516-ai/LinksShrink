@@ -16,6 +16,22 @@ Preferred communication style: Simple, everyday language.
 - **Entitlement Storage**: Verified payments stored in PostgreSQL `entitlements` table
 - **Protected APIs**: Premium endpoints require valid entitlement to access
 
+### Usage Credit System (NEW)
+- **Free Tier**: 5 links per month for all users (resets monthly)
+- **Paid Credits**: $20 for 20 additional link credits (don't expire monthly)
+- **Anonymous Tracking**: Usage tracked via IP hash for users without accounts
+- **UI Display**: Shows remaining credits on homepage with "Buy More" CTA
+- **Idempotent Verification**: Link pack purchases are verified idempotently to prevent duplicate grants
+- **Credit Consumption**: Credits consumed only after successful URL creation
+
+### Credit System Tables
+- `usage_credits` - Tracks free/paid credits per user or anonymous token per month
+- `processed_link_packs` - Ensures link pack purchases are only processed once
+
+### Credit Endpoints
+- `GET /api/credits` - Get remaining credits (free + paid)
+- `POST /api/create-link-pack-checkout` - Create Stripe checkout for $20/20 links (no auth required)
+
 ### Premium Features (Fully Functional)
 - **Smart QR Codes**: Custom color QR code generation with high-res PNG download (2000px)
 - **Advanced Analytics**: Real-time click tracking, device/browser breakdown, referrer analysis, clicks over time

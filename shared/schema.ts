@@ -57,6 +57,16 @@ export const usageCredits = pgTable("usage_credits", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+export const processedLinkPacks = pgTable("processed_link_packs", {
+  id: serial("id").primaryKey(),
+  sessionId: text("session_id").notNull().unique(),
+  credits: integer("credits").notNull(),
+  userId: text("user_id"),
+  anonToken: text("anon_token"),
+  ipHash: text("ip_hash"),
+  processedAt: timestamp("processed_at").defaultNow(),
+});
+
 export const insertUrlSchema = createInsertSchema(urls).pick({
   originalUrl: true,
 });
