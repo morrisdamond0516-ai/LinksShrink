@@ -19,7 +19,7 @@ export default function Rules() {
     {
       title: "Safety & AI Support",
       icon: <Shield className="w-6 h-6 text-lime-500" />,
-      content: "LinkShrink provides an AI support bot to assist with technical issues. If the system malfunctions, the AI can grant a 2-week access extension. Refund requests for the current month are handled via AI, which may offer a free month of access or a full refund for the current period."
+      content: "LinksShrink.com provides an AI support bot to assist with technical issues. If the system malfunctions, the AI can grant a 2-week access extension. Refund requests for the current month are handled via AI, which may offer a free month of access or a full refund for the current period."
     },
     {
       title: "Prohibited Content",
