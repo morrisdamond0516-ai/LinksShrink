@@ -383,7 +383,8 @@ export default function Pricing() {
     
     toast({
       title: "Opening Checkout",
-      description: `Redirecting to Stripe for the ${planName} plan...`,
+      description: `Redirecting to Stripe for the ${planName} plan. Use test card: 4242 4242 4242 4242`,
+      duration: 10000,
     });
 
     try {

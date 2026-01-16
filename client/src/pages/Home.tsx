@@ -151,7 +151,8 @@ export default function Home() {
         
         toast({
           title: "Completing Your Purchase",
-          description: `Redirecting to checkout for ${pendingPlan} plan...`,
+          description: `Redirecting to checkout for ${pendingPlan} plan. Use test card: 4242 4242 4242 4242`,
+          duration: 10000,
         });
         
         try {
