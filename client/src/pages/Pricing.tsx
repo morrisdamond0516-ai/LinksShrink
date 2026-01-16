@@ -292,11 +292,12 @@ export default function Pricing() {
       if (!response.ok) throw new Error(data.message || "Failed to create checkout session");
       
       const { id } = data;
-      // Force direct reference to the live key
-      const stripe = (window as any).Stripe("pk_live_51SlP1Z1ZhY8VRAAbOHd0LyO4acBTlNIbd0JKok7QYu1xWSXMzsRk5ue0HGkFuz03P3uM0J8U93hwuhCmIdXLdDr900fdBM0pK1");
-      if (!stripe) throw new Error("Stripe secure connection failed");
-      
-      await stripe.redirectToCheckout({ sessionId: id });
+    const publishableKey = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || "pk_live_51SlP1Z1ZhY8VRAAbOHd0LyO4acBTlNIbd0JKok7QYu1xWSXMzsRk5ue0HGkFuz03P3uM0J8U93hwuhCmIdXLdDr900fdBM0pK1";
+    // @ts-ignore
+    const stripe = typeof window !== 'undefined' && (window as any).Stripe ? (window as any).Stripe(publishableKey) : null;
+    if (!stripe) throw new Error("Stripe secure connection failed. Please refresh the page.");
+    
+    await stripe.redirectToCheckout({ sessionId: id });
     } catch (err: any) {
       console.error("Payment Error:", err);
       toast({

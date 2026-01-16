@@ -93,9 +93,6 @@ export default function Home() {
     const unlocked = localStorage.getItem("unlocked_features") === "true";
     const currentPlan = localStorage.getItem("user_plan") || "";
     
-    const unlocked = localStorage.getItem("unlocked_features") === "true";
-    const currentPlan = localStorage.getItem("user_plan") || "";
-    
     setIsUnlocked(unlocked);
     setUserPlan(currentPlan);
     
