@@ -10,9 +10,19 @@ export const urls = pgTable("urls", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+export const entitlements = pgTable("entitlements", {
+  id: serial("id").primaryKey(),
+  sessionId: text("session_id").notNull().unique(),
+  plan: text("plan").notNull(),
+  stripeCustomerId: text("stripe_customer_id"),
+  verifiedAt: timestamp("verified_at").defaultNow(),
+  expiresAt: timestamp("expires_at"),
+});
+
 export const insertUrlSchema = createInsertSchema(urls).pick({
   originalUrl: true,
 });
 
 export type Url = typeof urls.$inferSelect;
 export type InsertUrl = z.infer<typeof insertUrlSchema>;
+export type Entitlement = typeof entitlements.$inferSelect;

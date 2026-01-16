@@ -282,6 +282,10 @@ export default function Pricing() {
     });
 
     try {
+      const keyResponse = await fetch("/api/stripe/publishable-key");
+      const keyData = await keyResponse.json();
+      if (!keyResponse.ok) throw new Error("Failed to get Stripe configuration");
+      
       const response = await fetch("/api/create-checkout-session", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -292,12 +296,12 @@ export default function Pricing() {
       if (!response.ok) throw new Error(data.message || "Failed to create checkout session");
       
       const { id } = data;
-    const publishableKey = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || "pk_live_51SlP1Z1ZhY8VRAAbOHd0LyO4acBTlNIbd0JKok7QYu1xWSXMzsRk5ue0HGkFuz03P3uM0J8U93hwuhCmIdXLdDr900fdBM0pK1";
-    // @ts-ignore
-    const stripe = typeof window !== 'undefined' && (window as any).Stripe ? (window as any).Stripe(publishableKey) : null;
-    if (!stripe) throw new Error("Stripe secure connection failed. Please refresh the page.");
+      const stripe = typeof window !== 'undefined' && (window as any).Stripe 
+        ? (window as any).Stripe(keyData.publishableKey) 
+        : null;
+      if (!stripe) throw new Error("Stripe secure connection failed. Please refresh the page.");
     
-    await stripe.redirectToCheckout({ sessionId: id });
+      await stripe.redirectToCheckout({ sessionId: id });
     } catch (err: any) {
       console.error("Payment Error:", err);
       toast({

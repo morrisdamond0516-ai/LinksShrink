@@ -83,33 +83,55 @@ export default function Home() {
 
   const [isUnlocked, setIsUnlocked] = useState(false);
   const [userPlan, setUserPlan] = useState("");
+  const [isVerifying, setIsVerifying] = useState(false);
 
   useEffect(() => {
-    // Check URL parameters for successful checkout
-    const params = new URLSearchParams(window.location.search);
-    const sessionId = params.get("session_id");
-    const plan = params.get("plan");
-    
-    if (sessionId && plan) {
-      localStorage.setItem("unlocked_features", "true");
-      localStorage.setItem("user_plan", plan);
-      setIsUnlocked(true);
-      setUserPlan(plan);
-      window.history.replaceState({}, document.title, "/#features");
-    } else {
-      const unlocked = localStorage.getItem("unlocked_features") === "true";
-      const currentPlan = localStorage.getItem("user_plan") || "";
-      setIsUnlocked(unlocked);
-      setUserPlan(currentPlan);
-    }
-    
-    // Check if we should scroll to features
-    if (window.location.hash === "#features") {
-      const element = document.getElementById("features");
-      if (element) {
-        element.scrollIntoView({ behavior: "smooth" });
+    const verifyPayment = async () => {
+      const params = new URLSearchParams(window.location.search);
+      const sessionId = params.get("session_id");
+      
+      if (sessionId) {
+        setIsVerifying(true);
+        try {
+          const response = await fetch(`/api/verify-session/${sessionId}`);
+          const data = await response.json();
+          
+          if (data.success && data.plan) {
+            setIsUnlocked(true);
+            setUserPlan(data.plan);
+            toast({
+              title: "Payment Successful!",
+              description: `Your ${data.plan} plan is now active. Enjoy premium features!`,
+            });
+            window.history.replaceState({}, document.title, "/#features");
+          } else {
+            toast({
+              title: "Payment Pending",
+              description: "Your payment is being processed. Please check back shortly.",
+              variant: "destructive",
+            });
+          }
+        } catch (err) {
+          console.error("Verification error:", err);
+          toast({
+            title: "Verification Error",
+            description: "Could not verify payment. Please contact support.",
+            variant: "destructive",
+          });
+        } finally {
+          setIsVerifying(false);
+        }
       }
-    }
+      
+      if (window.location.hash === "#features") {
+        const element = document.getElementById("features");
+        if (element) {
+          element.scrollIntoView({ behavior: "smooth" });
+        }
+      }
+    };
+    
+    verifyPayment();
   }, []);
 
   const handleUnlockClick = (featureTitle: string) => {
