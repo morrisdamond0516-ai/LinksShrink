@@ -1,8 +1,9 @@
-import { Check, Link2, Lock, Clock, Globe, QrCode, Smartphone, Monitor, Layers, Download, Palette, Calendar, AlertCircle } from "lucide-react";
+import { Check, Link2, Lock, Clock, Globe, QrCode, Smartphone, Monitor, Layers, Download, Palette, Calendar, AlertCircle, LogIn } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { motion } from "framer-motion";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/use-auth";
 
 interface FeatureShowcaseItem {
   title: string;
@@ -355,14 +356,30 @@ const featureShowcase: FeatureShowcaseItem[] = [
 
 export default function Pricing() {
   const { toast } = useToast();
+  const { user, isLoading, isAuthenticated } = useAuth();
+  
   const handlePayment = async (planName: string) => {
     if (planName === "FREE") {
       window.location.href = "/";
       return;
     }
     
-    const plan = plans.find(p => p.name === planName);
-    const amount = plan?.price || "0";
+    // Check if user is authenticated
+    if (!isAuthenticated) {
+      // Store the plan they want to purchase for after login
+      localStorage.setItem('pendingPlan', planName);
+      
+      toast({
+        title: "Account Required",
+        description: "Please sign in to purchase a plan. You'll be redirected to checkout after signing in.",
+      });
+      
+      // Redirect to login
+      setTimeout(() => {
+        window.location.href = "/api/login";
+      }, 1500);
+      return;
+    }
     
     toast({
       title: "Opening Checkout",
@@ -373,7 +390,7 @@ export default function Pricing() {
       const response = await fetch("/api/create-checkout-session", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ planName, amount }),
+        body: JSON.stringify({ planName }),
       });
       
       const data = await response.json();
