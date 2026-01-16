@@ -39,7 +39,6 @@ export interface PremiumUrlOptions {
   expiresAt?: Date | string;
   qrColor?: string;
   isPremium?: boolean;
-  shorterCode?: boolean;
 }
 
 export interface UrlAnalyticsSummary {
@@ -53,12 +52,19 @@ export interface UrlAnalyticsSummary {
 }
 
 export class DatabaseStorage implements IStorage {
-  private chars = "23456789bcdfghjkmnpqrstvwxyzBCDFGHJKLMNPQRSTVWXYZ";
-
-  private generateCode(length: number): string {
+  // Base62 alphabet for shortest possible codes
+  // Using 0-9, a-z, A-Z = 62 characters
+  // Capacity: 62 1-char codes, 3,844 2-char codes, 238,328 3-char codes, etc.
+  private base62Chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  
+  // Convert a number to Base62 string - O(1) operation
+  // ID 0 = "0", ID 61 = "Z", ID 62 = "10", etc.
+  private numberToBase62(num: number): string {
+    if (num === 0) return this.base62Chars[0];
     let result = "";
-    for (let i = 0; i < length; i++) {
-      result += this.chars.charAt(Math.floor(Math.random() * this.chars.length));
+    while (num > 0) {
+      result = this.base62Chars[num % 62] + result;
+      num = Math.floor(num / 62);
     }
     return result;
   }
@@ -68,51 +74,65 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createUrl(insertUrl: InsertUrl, options: PremiumUrlOptions = {}): Promise<Url> {
-    const { userId, customSlug, password, expiresAt, qrColor, isPremium, shorterCode } = options;
+    const { userId, customSlug, password, expiresAt, qrColor, isPremium } = options;
 
-    let shortCode = "";
-    
+    const hashedPassword = password ? this.hashPassword(password) : null;
+
+    // If custom slug provided, validate and use it directly
     if (customSlug) {
       const existing = await this.getUrl(customSlug);
       if (existing) {
         throw new Error("Custom slug already exists");
       }
-      shortCode = customSlug;
-    } else {
-      let isUnique = false;
-      let length = shorterCode ? 2 : 4;
-      let attempts = 0;
       
-      while (!isUnique) {
-        shortCode = this.generateCode(length);
-        const existing = await this.getUrl(shortCode);
-        if (!existing) {
-          isUnique = true;
-        } else {
-          attempts++;
-          if (attempts > 5) {
-            length = Math.min(length + 1, shorterCode ? 4 : 6);
-            attempts = 0;
-          }
-        }
-      }
+      const [url] = await db
+        .insert(urls)
+        .values({ 
+          ...insertUrl, 
+          shortCode: customSlug,
+          customSlug: customSlug,
+          userId: userId || null,
+          password: hashedPassword,
+          expiresAt: expiresAt ? new Date(expiresAt) : null,
+          qrColor: qrColor || "#000000",
+          isPremium: isPremium || false,
+        })
+        .returning();
+      return url;
     }
 
-    const hashedPassword = password ? this.hashPassword(password) : null;
-
-    const [url] = await db
-      .insert(urls)
-      .values({ 
-        ...insertUrl, 
-        shortCode,
-        customSlug: customSlug || null,
-        userId: userId || null,
-        password: hashedPassword,
-        expiresAt: expiresAt ? new Date(expiresAt) : null,
-        qrColor: qrColor || "#000000",
-        isPremium: isPremium || false,
-      })
-      .returning();
+    // For auto-generated codes: Use transaction to insert with temp code then update with ID-based Base62
+    // This guarantees the SHORTEST possible code (1 char for first 62 URLs, 2 chars for next 3844, etc.)
+    const url = await db.transaction(async (tx) => {
+      const tempCode = `_tmp_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+      
+      const [insertedUrl] = await tx
+        .insert(urls)
+        .values({ 
+          ...insertUrl, 
+          shortCode: tempCode,
+          customSlug: null,
+          userId: userId || null,
+          password: hashedPassword,
+          expiresAt: expiresAt ? new Date(expiresAt) : null,
+          qrColor: qrColor || "#000000",
+          isPremium: isPremium || false,
+        })
+        .returning();
+      
+      // Convert the URL's ID to Base62 for the shortest possible code
+      const shortCode = this.numberToBase62(insertedUrl.id);
+      
+      // Update with the real short code (within same transaction)
+      const [updatedUrl] = await tx
+        .update(urls)
+        .set({ shortCode })
+        .where(eq(urls.id, insertedUrl.id))
+        .returning();
+      
+      return updatedUrl;
+    });
+    
     return url;
   }
 
