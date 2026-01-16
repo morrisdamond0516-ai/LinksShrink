@@ -1,9 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useShortenUrl } from "@/hooks/use-shortener";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/use-auth";
 import { Link } from "wouter";
 import {
   Link2,
@@ -25,6 +26,8 @@ export default function Home() {
   const [result, setResult] = useState<{ shortUrl: string; shortCode: string } | null>(null);
   const [copied, setCopied] = useState(false);
   const { toast } = useToast();
+  const { user, isAuthenticated, isLoading: authLoading } = useAuth();
+  const pendingPlanProcessed = useRef(false);
   
   const shortenMutation = useShortenUrl();
 
@@ -134,6 +137,43 @@ export default function Home() {
     verifyPayment();
   }, []);
 
+  // Handle pending plan purchase after login
+  useEffect(() => {
+    const handlePendingPlan = async () => {
+      // Don't process if still loading auth or already processed
+      if (authLoading || pendingPlanProcessed.current) return;
+      
+      const pendingPlan = localStorage.getItem('pendingPlan');
+      
+      if (pendingPlan && isAuthenticated) {
+        pendingPlanProcessed.current = true;
+        localStorage.removeItem('pendingPlan');
+        
+        toast({
+          title: "Completing Your Purchase",
+          description: `Redirecting to checkout for ${pendingPlan} plan...`,
+        });
+        
+        try {
+          const response = await fetch("/api/create-checkout-session", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ planName: pendingPlan }),
+          });
+          
+          const data = await response.json();
+          if (response.ok && data.url) {
+            window.location.href = data.url;
+          }
+        } catch (err) {
+          console.error("Error creating checkout:", err);
+        }
+      }
+    };
+    
+    handlePendingPlan();
+  }, [isAuthenticated, authLoading]);
+
   const handleUnlockClick = (featureTitle: string) => {
     if (isUnlocked) {
       if (featureTitle === "Branded Links") {
@@ -230,9 +270,9 @@ export default function Home() {
             <Link href="/pricing">
               <Button variant="ghost" className="hidden sm:flex">Pricing</Button>
             </Link>
-            <Link href="/login">
-              <Button variant="ghost" className="hidden sm:flex">Log In</Button>
-            </Link>
+            <a href="/api/login">
+              <Button variant="ghost" className="hidden sm:flex" data-testid="button-login">Log In</Button>
+            </a>
             <Button onClick={() => window.location.href = "/pricing"}>Get Started</Button>
           </div>
         </div>
