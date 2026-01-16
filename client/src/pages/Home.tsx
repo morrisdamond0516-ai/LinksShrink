@@ -473,10 +473,13 @@ export default function Home() {
               <div className="absolute top-0 right-0 w-32 h-32 bg-lime-400/10 blur-3xl rounded-full" />
               <div className="space-y-6">
                 <div className="flex justify-between items-center">
-                  <span className="text-xs font-bold text-lime-400 uppercase">System Status</span>
-                  <div className="flex gap-1">
+                  <div>
+                    <span className="text-xs font-bold text-lime-400 uppercase">Enterprise Dashboard</span>
+                    <span className="text-[10px] text-slate-500 ml-2">(Example data)</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] text-lime-400">Live</span>
                     <div className="w-1.5 h-1.5 bg-lime-400 rounded-full animate-pulse" />
-                    <div className="w-1.5 h-1.5 bg-lime-400 rounded-full" />
                   </div>
                 </div>
                 <div className="h-48 bg-black/40 rounded-xl border border-white/5 flex items-end p-4 gap-2">
@@ -489,11 +492,25 @@ export default function Home() {
                 <div className="grid grid-cols-2 gap-4">
                   <div className="bg-black/40 p-4 rounded-xl border border-white/5">
                     <span className="text-[10px] text-slate-500 uppercase">Requests/sec</span>
-                    <div className="text-xl font-bold text-white">--</div>
+                    <div className="text-xl font-bold text-white">4.2k</div>
                   </div>
                   <div className="bg-black/40 p-4 rounded-xl border border-white/5">
                     <span className="text-[10px] text-slate-500 uppercase">Latency</span>
-                    <div className="text-xl font-bold text-white">--</div>
+                    <div className="text-xl font-bold text-white">12ms</div>
+                  </div>
+                </div>
+                <div className="grid grid-cols-3 gap-3">
+                  <div className="bg-black/40 p-3 rounded-xl border border-white/5 text-center">
+                    <div className="text-lg font-bold text-white">99.99%</div>
+                    <span className="text-[9px] text-slate-500 uppercase">Uptime</span>
+                  </div>
+                  <div className="bg-black/40 p-3 rounded-xl border border-white/5 text-center">
+                    <div className="text-lg font-bold text-white">24</div>
+                    <span className="text-[9px] text-slate-500 uppercase">Domains</span>
+                  </div>
+                  <div className="bg-black/40 p-3 rounded-xl border border-white/5 text-center">
+                    <div className="text-lg font-bold text-white">8</div>
+                    <span className="text-[9px] text-slate-500 uppercase">Team Members</span>
                   </div>
                 </div>
               </div>
