@@ -397,9 +397,9 @@ export default function Home() {
             <Link href="/pricing">
               <Button variant="ghost" className="hidden sm:flex">Pricing</Button>
             </Link>
-            <a href="/api/login">
+            <Link href="/login">
               <Button variant="ghost" className="hidden sm:flex" data-testid="button-login">Log In</Button>
-            </a>
+            </Link>
             <Button onClick={() => window.location.href = "/pricing"}>Get Started</Button>
           </div>
         </div>
