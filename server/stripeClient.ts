@@ -3,6 +3,19 @@ import Stripe from 'stripe';
 let connectionSettings: any;
 
 async function getCredentials() {
+  // First, try to use environment secrets directly (works in both dev and production)
+  const envSecretKey = process.env.STRIPE_SECRET_KEY;
+  const envPublishableKey = process.env.STRIPE_PUBLISHABLE_KEY;
+  
+  if (envSecretKey && envPublishableKey) {
+    console.log('Using Stripe keys from environment secrets');
+    return {
+      publishableKey: envPublishableKey,
+      secretKey: envSecretKey,
+    };
+  }
+
+  // Fallback to Replit connector API
   const hostname = process.env.REPLIT_CONNECTORS_HOSTNAME;
   const xReplitToken = process.env.REPL_IDENTITY
     ? 'repl ' + process.env.REPL_IDENTITY
@@ -10,8 +23,8 @@ async function getCredentials() {
       ? 'depl ' + process.env.WEB_REPL_RENEWAL
       : null;
 
-  if (!xReplitToken) {
-    throw new Error('X_REPLIT_TOKEN not found for repl/depl');
+  if (!xReplitToken || !hostname) {
+    throw new Error('Stripe keys not found in environment and connector API not available');
   }
 
   const connectorName = 'stripe';
@@ -23,25 +36,29 @@ async function getCredentials() {
   url.searchParams.set('connector_names', connectorName);
   url.searchParams.set('environment', targetEnvironment);
 
-  const response = await fetch(url.toString(), {
-    headers: {
-      'Accept': 'application/json',
-      'X_REPLIT_TOKEN': xReplitToken
+  try {
+    const response = await fetch(url.toString(), {
+      headers: {
+        'Accept': 'application/json',
+        'X_REPLIT_TOKEN': xReplitToken
+      }
+    });
+
+    const data = await response.json();
+    
+    connectionSettings = data.items?.[0];
+
+    if (!connectionSettings || (!connectionSettings.settings.publishable || !connectionSettings.settings.secret)) {
+      throw new Error(`Stripe ${targetEnvironment} connection not found via connector`);
     }
-  });
 
-  const data = await response.json();
-  
-  connectionSettings = data.items?.[0];
-
-  if (!connectionSettings || (!connectionSettings.settings.publishable || !connectionSettings.settings.secret)) {
-    throw new Error(`Stripe ${targetEnvironment} connection not found`);
+    return {
+      publishableKey: connectionSettings.settings.publishable,
+      secretKey: connectionSettings.settings.secret,
+    };
+  } catch (error) {
+    throw new Error(`Stripe keys not found. Please set STRIPE_SECRET_KEY and STRIPE_PUBLISHABLE_KEY in secrets.`);
   }
-
-  return {
-    publishableKey: connectionSettings.settings.publishable,
-    secretKey: connectionSettings.settings.secret,
-  };
 }
 
 export async function getUncachableStripeClient() {
