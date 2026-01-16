@@ -90,11 +90,18 @@ export default function Home() {
     const sessionId = params.get("session_id");
     const plan = params.get("plan");
     
-    const unlocked = localStorage.getItem("unlocked_features") === "true";
-    const currentPlan = localStorage.getItem("user_plan") || "";
-    
-    setIsUnlocked(unlocked);
-    setUserPlan(currentPlan);
+    if (sessionId && plan) {
+      localStorage.setItem("unlocked_features", "true");
+      localStorage.setItem("user_plan", plan);
+      setIsUnlocked(true);
+      setUserPlan(plan);
+      window.history.replaceState({}, document.title, "/#features");
+    } else {
+      const unlocked = localStorage.getItem("unlocked_features") === "true";
+      const currentPlan = localStorage.getItem("user_plan") || "";
+      setIsUnlocked(unlocked);
+      setUserPlan(currentPlan);
+    }
     
     // Check if we should scroll to features
     if (window.location.hash === "#features") {
