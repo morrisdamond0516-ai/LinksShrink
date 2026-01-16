@@ -337,7 +337,10 @@ export default function Home() {
                         variant={isUnlocked ? "ghost" : "outline"} 
                         size="sm" 
                         className={`gap-1 font-bold ${isUnlocked ? 'text-lime-400' : 'border-lime-400 text-lime-400 hover:bg-lime-400 hover:text-black'}`}
-                        onClick={() => handleUnlockClick(feature.title)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleUnlockClick(feature.title);
+                        }}
                       >
                         {isUnlocked ? "Active" : "Unlock"} <ArrowRight className="w-4 h-4" />
                       </Button>
