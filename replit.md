@@ -10,6 +10,26 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes (January 2026)
 
+### Custom Email/Password Authentication (NEW)
+- **Registration**: Users create accounts with email, password, first name, last name
+- **Password Security**: bcrypt with 12 salt rounds, stored as passwordHash
+- **Session Management**: express-session with PostgreSQL store, httpOnly cookies
+- **Login/Register Pages**: Client-side forms at /login and /register routes
+- **No Replit Account Required**: Users don't need Replit accounts anymore
+
+### Authentication Endpoints
+- `POST /api/auth/register` - Create new account with { email, password, firstName, lastName }
+- `POST /api/auth/login` - Login with { email, password }
+- `POST /api/auth/logout` - Logout current session
+- `GET /api/auth/user` - Get authenticated user info
+
+### Key Auth Files
+- `server/auth.ts` - Password hashing, registerUser, loginUser functions
+- `server/replit_integrations/auth/replitAuth.ts` - Passport-local strategy, session setup
+- `client/src/pages/Login.tsx` - Login form with email/password
+- `client/src/pages/Register.tsx` - Registration form
+- `client/src/hooks/use-auth.ts` - Auth hook for frontend
+
 ### Stripe Payment Integration
 - **Payment Flow**: Users can purchase premium plans via Stripe Checkout
 - **Server-side Verification**: Payments are verified with Stripe API before unlocking features
