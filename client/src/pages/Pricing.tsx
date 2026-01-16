@@ -282,10 +282,6 @@ export default function Pricing() {
     });
 
     try {
-      const keyResponse = await fetch("/api/stripe/publishable-key");
-      const keyData = await keyResponse.json();
-      if (!keyResponse.ok) throw new Error("Failed to get Stripe configuration");
-      
       const response = await fetch("/api/create-checkout-session", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -295,13 +291,11 @@ export default function Pricing() {
       const data = await response.json();
       if (!response.ok) throw new Error(data.message || "Failed to create checkout session");
       
-      const { id } = data;
-      const stripe = typeof window !== 'undefined' && (window as any).Stripe 
-        ? (window as any).Stripe(keyData.publishableKey) 
-        : null;
-      if (!stripe) throw new Error("Stripe secure connection failed. Please refresh the page.");
-    
-      await stripe.redirectToCheckout({ sessionId: id });
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        throw new Error("Checkout URL not available");
+      }
     } catch (err: any) {
       console.error("Payment Error:", err);
       toast({
