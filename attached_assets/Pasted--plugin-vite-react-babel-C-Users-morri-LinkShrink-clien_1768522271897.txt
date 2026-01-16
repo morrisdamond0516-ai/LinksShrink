@@ -1,0 +1,61 @@
+[plugin:vite:react-babel] C:\Users\morri\LinkShrink\client\src\pages\Pricing.tsx: Expected corresponding JSX closing tag for <motion.div>. (178:14)
+  181 |         </div>
+C:/Users/morri/LinkShrink/client/src/pages/Pricing.tsx:178:14
+183 |          {/* Feature Showcase Section */}
+184 |          <div className="max-w-6xl mx-auto space-y-48 pb-20">
+185 |            <div className="text-center space-y-6">
+    |             ^
+186 |              <div className="inline-block bg-primary/10 text-primary px-4 py-1.5 rounded-full text-sm font-bold upperc...
+187 |                Exclusive Features
+    at constructor (C:\Users\morri\LinkShrink\node_modules\@babel\parser\lib\index.js:367:19)
+    at TypeScriptParserMixin.raise (C:\Users\morri\LinkShrink\node_modules\@babel\parser\lib\index.js:6630:19)
+    at TypeScriptParserMixin.jsxParseElementAt (C:\Users\morri\LinkShrink\node_modules\@babel\parser\lib\index.js:4760:16)
+    at TypeScriptParserMixin.jsxParseElementAt (C:\Users\morri\LinkShrink\node_modules\@babel\parser\lib\index.js:4731:32)
+    at TypeScriptParserMixin.jsxParseElementAt (C:\Users\morri\LinkShrink\node_modules\@babel\parser\lib\index.js:4731:32)
+    at TypeScriptParserMixin.jsxParseElementAt (C:\Users\morri\LinkShrink\node_modules\@babel\parser\lib\index.js:4731:32)
+    at TypeScriptParserMixin.jsxParseElement (C:\Users\morri\LinkShrink\node_modules\@babel\parser\lib\index.js:4782:17)
+    at TypeScriptParserMixin.parseExprAtom (C:\Users\morri\LinkShrink\node_modules\@babel\parser\lib\index.js:4792:19)
+    at TypeScriptParserMixin.parseExprSubscripts (C:\Users\morri\LinkShrink\node_modules\@babel\parser\lib\index.js:11085:23)
+    at TypeScriptParserMixin.parseUpdate (C:\Users\morri\LinkShrink\node_modules\@babel\parser\lib\index.js:11070:21)
+    at TypeScriptParserMixin.parseMaybeUnary (C:\Users\morri\LinkShrink\node_modules\@babel\parser\lib\index.js:11050:23)
+    at TypeScriptParserMixin.parseMaybeUnary (C:\Users\morri\LinkShrink\node_modules\@babel\parser\lib\index.js:9857:18)
+    at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (C:\Users\morri\LinkShrink\node_modules\@babel\parser\lib\index.js:10903:61)
+    at TypeScriptParserMixin.parseExprOps (C:\Users\morri\LinkShrink\node_modules\@babel\parser\lib\index.js:10908:23)
+    at TypeScriptParserMixin.parseMaybeConditional (C:\Users\morri\LinkShrink\node_modules\@babel\parser\lib\index.js:10885:23)
+    at TypeScriptParserMixin.parseMaybeAssign (C:\Users\morri\LinkShrink\node_modules\@babel\parser\lib\index.js:10835:21)
+    at C:\Users\morri\LinkShrink\node_modules\@babel\parser\lib\index.js:9795:39
+    at TypeScriptParserMixin.tryParse (C:\Users\morri\LinkShrink\node_modules\@babel\parser\lib\index.js:6938:20)
+    at TypeScriptParserMixin.parseMaybeAssign (C:\Users\morri\LinkShrink\node_modules\@babel\parser\lib\index.js:9795:18)
+    at C:\Users\morri\LinkShrink\node_modules\@babel\parser\lib\index.js:10804:39
+    at TypeScriptParserMixin.allowInAnd (C:\Users\morri\LinkShrink\node_modules\@babel\parser\lib\index.js:12436:12)
+    at TypeScriptParserMixin.parseMaybeAssignAllowIn (C:\Users\morri\LinkShrink\node_modules\@babel\parser\lib\index.js:10804:17)
+    at TypeScriptParserMixin.parseMaybeAssignAllowInOrVoidPattern (C:\Users\morri\LinkShrink\node_modules\@babel\parser\lib\index.js:12503:17)
+    at TypeScriptParserMixin.parseParenAndDistinguishExpression (C:\Users\morri\LinkShrink\node_modules\@babel\parser\lib\index.js:11683:28)
+    at TypeScriptParserMixin.parseExprAtom (C:\Users\morri\LinkShrink\node_modules\@babel\parser\lib\index.js:11335:23)
+    at TypeScriptParserMixin.parseExprAtom (C:\Users\morri\LinkShrink\node_modules\@babel\parser\lib\index.js:4797:20)
+    at TypeScriptParserMixin.parseExprSubscripts (C:\Users\morri\LinkShrink\node_modules\@babel\parser\lib\index.js:11085:23)
+    at TypeScriptParserMixin.parseUpdate (C:\Users\morri\LinkShrink\node_modules\@babel\parser\lib\index.js:11070:21)
+    at TypeScriptParserMixin.parseMaybeUnary (C:\Users\morri\LinkShrink\node_modules\@babel\parser\lib\index.js:11050:23)
+    at TypeScriptParserMixin.parseMaybeUnary (C:\Users\morri\LinkShrink\node_modules\@babel\parser\lib\index.js:9857:18)
+    at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (C:\Users\morri\LinkShrink\node_modules\@babel\parser\lib\index.js:10903:61)
+    at TypeScriptParserMixin.parseExprOps (C:\Users\morri\LinkShrink\node_modules\@babel\parser\lib\index.js:10908:23)
+    at TypeScriptParserMixin.parseMaybeConditional (C:\Users\morri\LinkShrink\node_modules\@babel\parser\lib\index.js:10885:23)
+    at TypeScriptParserMixin.parseMaybeAssign (C:\Users\morri\LinkShrink\node_modules\@babel\parser\lib\index.js:10835:21)
+    at TypeScriptParserMixin.parseMaybeAssign (C:\Users\morri\LinkShrink\node_modules\@babel\parser\lib\index.js:9806:20)
+    at TypeScriptParserMixin.parseExpressionBase (C:\Users\morri\LinkShrink\node_modules\@babel\parser\lib\index.js:10788:23)
+    at C:\Users\morri\LinkShrink\node_modules\@babel\parser\lib\index.js:10784:39
+    at TypeScriptParserMixin.allowInAnd (C:\Users\morri\LinkShrink\node_modules\@babel\parser\lib\index.js:12431:16)
+    at TypeScriptParserMixin.parseExpression (C:\Users\morri\LinkShrink\node_modules\@babel\parser\lib\index.js:10784:17)
+    at TypeScriptParserMixin.parseReturnStatement (C:\Users\morri\LinkShrink\node_modules\@babel\parser\lib\index.js:13151:28)
+    at TypeScriptParserMixin.parseStatementContent (C:\Users\morri\LinkShrink\node_modules\@babel\parser\lib\index.js:12807:21)
+    at TypeScriptParserMixin.parseStatementContent (C:\Users\morri\LinkShrink\node_modules\@babel\parser\lib\index.js:9532:18)
+    at TypeScriptParserMixin.parseStatementLike (C:\Users\morri\LinkShrink\node_modules\@babel\parser\lib\index.js:12776:17)
+    at TypeScriptParserMixin.parseStatementListItem (C:\Users\morri\LinkShrink\node_modules\@babel\parser\lib\index.js:12756:17)
+    at TypeScriptParserMixin.parseBlockOrModuleBlockBody (C:\Users\morri\LinkShrink\node_modules\@babel\parser\lib\index.js:13325:61)
+    at TypeScriptParserMixin.parseBlockBody (C:\Users\morri\LinkShrink\node_modules\@babel\parser\lib\index.js:13318:10)
+    at TypeScriptParserMixin.parseBlock (C:\Users\morri\LinkShrink\node_modules\@babel\parser\lib\index.js:13306:10)
+    at TypeScriptParserMixin.parseFunctionBody (C:\Users\morri\LinkShrink\node_modules\@babel\parser\lib\index.js:12110:24)
+    at TypeScriptParserMixin.parseFunctionBodyAndFinish (C:\Users\morri\LinkShrink\node_modules\@babel\parser\lib\index.js:12096:10)
+    at TypeScriptParserMixin.parseFunctionBodyAndFinish (C:\Users\morri\LinkShrink\node_modules\@babel\parser\lib\index.js:9252:18)
+Click outside, press Esc key, or fix the code to dismiss.
+You can also disable this overlay by setting server.hmr.overlay to false in vite.config.ts.
