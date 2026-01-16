@@ -44,6 +44,19 @@ export const entitlements = pgTable("entitlements", {
   expiresAt: timestamp("expires_at"),
 });
 
+export const usageCredits = pgTable("usage_credits", {
+  id: serial("id").primaryKey(),
+  userId: text("user_id"),
+  anonToken: text("anon_token"),
+  ipHash: text("ip_hash"),
+  monthKey: text("month_key").notNull(),
+  freeUsed: integer("free_used").default(0),
+  paidCredits: integer("paid_credits").default(0),
+  paidUsed: integer("paid_used").default(0),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 export const insertUrlSchema = createInsertSchema(urls).pick({
   originalUrl: true,
 });
@@ -67,3 +80,4 @@ export type InsertPremiumUrl = z.infer<typeof insertPremiumUrlSchema>;
 export type UrlAnalytics = typeof urlAnalytics.$inferSelect;
 export type InsertAnalytics = z.infer<typeof insertAnalyticsSchema>;
 export type Entitlement = typeof entitlements.$inferSelect;
+export type UsageCredits = typeof usageCredits.$inferSelect;
