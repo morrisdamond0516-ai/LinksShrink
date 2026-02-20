@@ -1,5 +1,5 @@
 import { db } from "./db";
-import { urls, urlAnalytics, usageCredits, processedLinkPacks, type Url, type InsertUrl, type UrlAnalytics, type InsertAnalytics, type UsageCredits } from "@shared/schema";
+import { urls, urlAnalytics, usageCredits, processedLinkPacks, refundRequests, type Url, type InsertUrl, type UrlAnalytics, type InsertAnalytics, type UsageCredits, type RefundRequest, type InsertRefundRequest } from "@shared/schema";
 import { eq, desc, sql, and, gte, or } from "drizzle-orm";
 import crypto from "crypto";
 
@@ -21,6 +21,7 @@ export interface IStorage {
   grantPaidCredits(credits: number, userId?: string, anonToken?: string, ipHash?: string): Promise<void>;
   isLinkPackProcessed(sessionId: string): Promise<boolean>;
   markLinkPackProcessed(sessionId: string, credits: number, userId?: string, anonToken?: string, ipHash?: string): Promise<void>;
+  createRefundRequest(request: InsertRefundRequest): Promise<RefundRequest>;
 }
 
 export interface CreditInfo {
@@ -393,6 +394,11 @@ export class DatabaseStorage implements IStorage {
       anonToken: anonToken || null,
       ipHash: ipHash || null,
     });
+  }
+
+  async createRefundRequest(request: InsertRefundRequest): Promise<RefundRequest> {
+    const [refund] = await db.insert(refundRequests).values(request).returning();
+    return refund;
   }
 }
 

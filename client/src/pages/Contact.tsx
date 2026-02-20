@@ -111,8 +111,11 @@ export default function Contact() {
                 <div>
                   <h3 className="text-white font-semibold mb-2">Account & Billing</h3>
                   <p className="text-slate-400 text-sm leading-relaxed">
-                    For questions about your subscription, billing, refunds, or account management, email us with your registered email address and a description of your issue.
+                    For questions about your subscription, billing, or account management, email us with your registered email address and a description of your issue.
                   </p>
+                  <Link href="/refund" className="text-lime-400 text-sm font-semibold hover:underline mt-2 inline-block" data-testid="link-request-refund">
+                    Request a Refund
+                  </Link>
                 </div>
                 <div>
                   <h3 className="text-white font-semibold mb-2">Technical Support</h3>
