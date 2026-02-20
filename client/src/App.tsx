@@ -15,6 +15,9 @@ import SmartQRCode from "./pages/features/SmartQRCode";
 import PasswordProtection from "./pages/features/PasswordProtection";
 import ExpiringLinks from "./pages/features/ExpiringLinks";
 import BrandedLinks from "./pages/features/BrandedLinks";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import TermsOfService from "./pages/TermsOfService";
+import Contact from "./pages/Contact";
 
 function Router() {
   return (
@@ -22,6 +25,9 @@ function Router() {
       <Route path="/" component={Home} />
       <Route path="/pricing" component={Pricing} />
       <Route path="/rules" component={Rules} />
+      <Route path="/privacy" component={PrivacyPolicy} />
+      <Route path="/terms" component={TermsOfService} />
+      <Route path="/contact" component={Contact} />
       <Route path="/login" component={Login} />
       <Route path="/register" component={Register} />
       <Route path="/features/bulk" component={BulkShortener} />

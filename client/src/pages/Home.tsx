@@ -800,7 +800,7 @@ export default function Home() {
       {/* Footer */}
       <footer className="bg-black text-slate-300 py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid md:grid-cols-4 gap-8 mb-8">
+          <div className="grid md:grid-cols-5 gap-8 mb-8">
             <div className="col-span-2">
               <div className="flex items-center gap-2 text-white mb-4">
                 <Link2 className="w-6 h-6 text-lime-400" />
@@ -824,13 +824,25 @@ export default function Home() {
               <ul className="space-y-2 text-sm">
                 <li><a href="#about-details" className="hover:text-lime-400 transition-colors" data-testid="link-footer-about">About</a></li>
                 <li><a href="#careers" className="hover:text-lime-400 transition-colors" data-testid="link-footer-careers">Careers</a></li>
-                <li><a href="mailto:ProductionLinks@yahoo.com" className="hover:text-lime-400 transition-colors" data-testid="link-footer-contact">Contact</a></li>
+                <li><a href="/contact" className="hover:text-lime-400 transition-colors" data-testid="link-footer-contact">Contact</a></li>
                 <li><a href="/rules" className="hover:text-lime-400 transition-colors" data-testid="link-footer-rules">Rules & Policy</a></li>
               </ul>
             </div>
+            <div>
+              <h4 className="text-white font-semibold mb-4">Legal</h4>
+              <ul className="space-y-2 text-sm">
+                <li><a href="/privacy" className="hover:text-lime-400 transition-colors" data-testid="link-footer-privacy">Privacy Policy</a></li>
+                <li><a href="/terms" className="hover:text-lime-400 transition-colors" data-testid="link-footer-terms">Terms of Service</a></li>
+              </ul>
+            </div>
           </div>
-          <div className="pt-8 border-t border-slate-800 text-sm text-center md:text-left">
-            © {new Date().getFullYear()} LinksShrink.com. All rights reserved.
+          <div className="pt-8 border-t border-slate-800 text-sm text-center md:text-left flex flex-wrap justify-between gap-4">
+            <span>© {new Date().getFullYear()} LinksShrink.com. All rights reserved.</span>
+            <div className="flex gap-4">
+              <a href="/privacy" className="hover:text-lime-400 transition-colors" data-testid="link-footer-privacy-bottom">Privacy</a>
+              <a href="/terms" className="hover:text-lime-400 transition-colors" data-testid="link-footer-terms-bottom">Terms</a>
+              <a href="/contact" className="hover:text-lime-400 transition-colors" data-testid="link-footer-contact-bottom">Contact</a>
+            </div>
           </div>
         </div>
       </footer>
