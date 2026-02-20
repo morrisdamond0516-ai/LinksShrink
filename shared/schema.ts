@@ -67,6 +67,26 @@ export const processedLinkPacks = pgTable("processed_link_packs", {
   processedAt: timestamp("processed_at").defaultNow(),
 });
 
+export const refundRequests = pgTable("refund_requests", {
+  id: serial("id").primaryKey(),
+  email: text("email").notNull(),
+  name: text("name"),
+  reason: text("reason").notNull(),
+  transactionId: text("transaction_id"),
+  status: text("status").default("pending"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertRefundRequestSchema = createInsertSchema(refundRequests).pick({
+  email: true,
+  name: true,
+  reason: true,
+  transactionId: true,
+});
+
+export type RefundRequest = typeof refundRequests.$inferSelect;
+export type InsertRefundRequest = z.infer<typeof insertRefundRequestSchema>;
+
 export const insertUrlSchema = createInsertSchema(urls).pick({
   originalUrl: true,
 });

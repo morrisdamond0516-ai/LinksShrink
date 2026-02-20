@@ -52,6 +52,16 @@ Preferred communication style: Simple, everyday language.
 - `GET /api/credits` - Get remaining credits (free + paid)
 - `POST /api/create-link-pack-checkout` - Create Stripe checkout for $20/20 links (no auth required)
 
+### Refund Request System
+- **Refund Form**: Customers submit refund requests via /refund page
+- **Database Storage**: All requests stored in `refund_requests` table (id, email, name, reason, transactionId, status, createdAt)
+- **Email Notification**: SendGrid sends email to ProductionLinks@yahoo.com when request is submitted
+- **SendGrid Setup**: Requires SENDGRID_API_KEY secret - without it, requests still stored in database but no email sent
+- **Refund Processing**: Manual - owner processes refunds through Stripe Dashboard
+- **Refund Policy**: 7 days for subscriptions and unused link packs
+- `POST /api/refund-request` - Submit refund request { email, name, reason, transactionId }
+- **Key Files**: `server/emailService.ts`, `client/src/pages/RequestRefund.tsx`
+
 ### Premium Features (Fully Functional)
 - **Smart QR Codes**: Custom color QR code generation with high-res PNG download (2000px)
 - **Advanced Analytics**: Real-time click tracking, device/browser breakdown, referrer analysis, clicks over time

@@ -833,6 +833,7 @@ export default function Home() {
               <ul className="space-y-2 text-sm">
                 <li><a href="/privacy" className="hover:text-lime-400 transition-colors" data-testid="link-footer-privacy">Privacy Policy</a></li>
                 <li><a href="/terms" className="hover:text-lime-400 transition-colors" data-testid="link-footer-terms">Terms of Service</a></li>
+                <li><a href="/refund" className="hover:text-lime-400 transition-colors" data-testid="link-footer-refund">Request Refund</a></li>
               </ul>
             </div>
           </div>

@@ -18,6 +18,7 @@ import BrandedLinks from "./pages/features/BrandedLinks";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
 import Contact from "./pages/Contact";
+import RequestRefund from "./pages/RequestRefund";
 
 function Router() {
   return (
@@ -28,6 +29,7 @@ function Router() {
       <Route path="/privacy" component={PrivacyPolicy} />
       <Route path="/terms" component={TermsOfService} />
       <Route path="/contact" component={Contact} />
+      <Route path="/refund" component={RequestRefund} />
       <Route path="/login" component={Login} />
       <Route path="/register" component={Register} />
       <Route path="/features/bulk" component={BulkShortener} />
