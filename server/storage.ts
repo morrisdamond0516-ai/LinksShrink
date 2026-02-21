@@ -21,7 +21,7 @@ export interface IStorage {
   grantPaidCredits(credits: number, userId?: string, anonToken?: string, ipHash?: string): Promise<void>;
   isLinkPackProcessed(sessionId: string): Promise<boolean>;
   markLinkPackProcessed(sessionId: string, credits: number, userId?: string, anonToken?: string, ipHash?: string): Promise<void>;
-  createRefundRequest(request: InsertRefundRequest): Promise<RefundRequest>;
+  createRefundRequest(request: InsertRefundRequest, status?: string): Promise<RefundRequest>;
 }
 
 export interface CreditInfo {
@@ -396,8 +396,11 @@ export class DatabaseStorage implements IStorage {
     });
   }
 
-  async createRefundRequest(request: InsertRefundRequest): Promise<RefundRequest> {
-    const [refund] = await db.insert(refundRequests).values(request).returning();
+  async createRefundRequest(request: InsertRefundRequest, status?: string): Promise<RefundRequest> {
+    const [refund] = await db.insert(refundRequests).values({
+      ...request,
+      ...(status ? { status } : {}),
+    }).returning();
     return refund;
   }
 }

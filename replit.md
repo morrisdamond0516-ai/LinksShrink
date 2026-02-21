@@ -52,13 +52,16 @@ Preferred communication style: Simple, everyday language.
 - `GET /api/credits` - Get remaining credits (free + paid)
 - `POST /api/create-link-pack-checkout` - Create Stripe checkout for $20/20 links (no auth required)
 
-### Refund Request System
-- **Refund Page**: /refund page displays refund policy and directs customers to email ProductionLinks@yahoo.com
-- **Database Storage**: Refund requests submitted via API stored in `refund_requests` table
-- **Refund Processing**: Manual - owner processes refunds through Stripe Dashboard
+### Automated Refund Qualification System
+- **Refund Form**: Customers submit refund requests at /refund with name, email, transaction ID, and reason
+- **Automated Checking**: System looks up transaction in Stripe, checks if within 7 days and credits unused
+- **Qualified**: Email sent to owner (ProductionLinks@yahoo.com) with full details for manual Stripe processing
+- **Not Qualified**: Automated email sent to both customer (explaining why) and owner (for records)
+- **Database Storage**: All requests stored in `refund_requests` table with status (qualified/denied)
+- **Email Delivery**: Nodemailer with Yahoo SMTP (requires YAHOO_APP_PASSWORD secret)
 - **Refund Policy**: 7 days for subscriptions and unused link packs
-- `POST /api/refund-request` - Submit refund request { email, name, reason, transactionId }
-- **Key Files**: `client/src/pages/RequestRefund.tsx`
+- `POST /api/refund-request` - Submit + auto-check eligibility
+- **Key Files**: `server/refundChecker.ts`, `server/emailService.ts`, `client/src/pages/RequestRefund.tsx`
 
 ### Premium Features (Fully Functional)
 - **Smart QR Codes**: Custom color QR code generation with high-res PNG download (2000px)
