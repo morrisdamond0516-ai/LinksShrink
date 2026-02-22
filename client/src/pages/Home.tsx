@@ -91,13 +91,6 @@ export default function Home() {
     }
   };
 
-    const handleJobClick = (e?: React.MouseEvent) => {
-      if (e) e.preventDefault();
-      toast({
-        title: "Applications Closed",
-        description: "We are sorry, but we are not accepting any applications right now. However, if you email us your resume, we will take a look at it in a timely manner. Have a great day!",
-      });
-    };
   const handleShorten = (e: React.FormEvent) => {
     e.preventDefault();
     if (!url) return;
@@ -870,55 +863,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Careers Section */}
-      <section id="careers" className="py-24 bg-slate-900 border-y border-white/5">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-5xl font-black text-white mb-6 text-center">Join the LinksShrink.com Team</h2>
-            <p className="text-lg text-slate-400 max-w-2xl mx-auto mb-10 text-center">
-              We're a remote-first company building tools for millions of users worldwide. 
-              Help us define the future of link management.
-            </p>
-          </div>
-          <div className="grid gap-4 max-w-4xl mx-auto">
-            {[
-              { role: "Senior Frontend Engineer", type: "Remote", dept: "Engineering" },
-              { role: "Backend Architect (Node.js)", type: "Remote", dept: "Engineering" },
-              { role: "Product Designer", type: "Remote", dept: "Product" },
-              { role: "Growth Marketer", type: "Remote", dept: "Marketing" }
-            ].map((job, i) => (
-              <div 
-                key={i} 
-                onClick={handleJobClick}
-                className="group flex items-center justify-between p-6 bg-black rounded-2xl border border-white/5 hover:border-lime-400/50 transition-all cursor-pointer"
-              >
-                <div>
-                  <h4 className="text-xl font-bold text-white group-hover:text-lime-400 transition-colors">{job.role}</h4>
-                  <div className="flex gap-4 mt-1 text-sm text-slate-500">
-                    <span>{job.type}</span>
-                    <span>•</span>
-                    <span>{job.dept}</span>
-                  </div>
-                </div>
-                <ArrowRight className="w-6 h-6 text-slate-700 group-hover:text-lime-400 group-hover:translate-x-1 transition-all" />
-              </div>
-            ))}
-          </div>
-          <div className="mt-16 text-center">
-            <p className="text-slate-500 mb-6">Don't see a fit? Send a general application.</p>
-            <a href="mailto:ProductionLinks@yahoo.com">
-              <Button 
-                variant="outline" 
-                className="border-lime-400 text-lime-400 hover:bg-lime-400 hover:text-black font-bold h-12 px-8"
-                data-testid="button-careers-email"
-              >
-                Email Us Your CV
-              </Button>
-            </a>
-          </div>
-        </div>
-      </section>
-
       {/* Footer */}
       <footer className="bg-black text-slate-300 py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -945,7 +889,6 @@ export default function Home() {
               <h4 className="text-white font-semibold mb-4">Company</h4>
               <ul className="space-y-2 text-sm">
                 <li><a href="#about-details" className="hover:text-lime-400 transition-colors" data-testid="link-footer-about">About</a></li>
-                <li><a href="#careers" className="hover:text-lime-400 transition-colors" data-testid="link-footer-careers">Careers</a></li>
                 <li><a href="/contact" className="hover:text-lime-400 transition-colors" data-testid="link-footer-contact">Contact</a></li>
                 <li><a href="/rules" className="hover:text-lime-400 transition-colors" data-testid="link-footer-rules">Rules & Policy</a></li>
               </ul>
