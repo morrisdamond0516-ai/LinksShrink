@@ -20,7 +20,13 @@ import {
   Check,
   Shield,
   Zap,
-  Plus
+  Plus,
+  ShieldCheck,
+  FileText,
+  Ban,
+  MousePointerClick,
+  TrendingUp,
+  Share2
 } from "lucide-react";
 import { motion } from "framer-motion";
 
@@ -388,8 +394,11 @@ export default function Home() {
                 Expand reach.
               </span>
             </h1>
-            <p className="text-xl text-muted-foreground mb-12 max-w-2xl mx-auto">
-              A powerful, easy-to-use URL shortener for brands, marketers, and creators. No account required to start.
+            <p className="text-xl text-muted-foreground mb-4 max-w-2xl mx-auto">
+              A complete link management platform with analytics, QR codes, branded links, and enterprise tools. Built for marketers, businesses, and creators.
+            </p>
+            <p className="text-sm text-slate-500 mb-12 max-w-xl mx-auto">
+              Free to start — no account required. 5 free links per month with full click tracking included.
             </p>
           </motion.div>
 
@@ -506,6 +515,119 @@ export default function Home() {
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full -z-10 opacity-30 pointer-events-none">
           <div className="absolute top-20 left-10 w-72 h-72 bg-lime-400 rounded-full blur-[120px] opacity-20" />
           <div className="absolute bottom-20 right-10 w-96 h-96 bg-yellow-400 rounded-full blur-[120px] opacity-20" />
+        </div>
+      </section>
+
+      {/* How It Works Section */}
+      <section className="py-20 bg-black border-t border-white/5">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">How LinksShrink Works</h2>
+            <p className="text-lg text-slate-400 max-w-2xl mx-auto">
+              More than just a URL shortener — LinksShrink.com is a complete link management platform for marketers, businesses, and creators.
+            </p>
+          </div>
+          <div className="grid md:grid-cols-3 gap-8">
+            {[
+              {
+                icon: <Share2 className="w-7 h-7 text-lime-400" />,
+                step: "1",
+                title: "Paste Your Link",
+                desc: "Enter any long URL into our shortener. We create a compact, branded short link using Base62 encoding for the shortest codes possible."
+              },
+              {
+                icon: <MousePointerClick className="w-7 h-7 text-yellow-400" />,
+                step: "2",
+                title: "Share Everywhere",
+                desc: "Use your short link in social media, emails, print materials, or anywhere. Every click is tracked with detailed analytics."
+              },
+              {
+                icon: <TrendingUp className="w-7 h-7 text-lime-500" />,
+                step: "3",
+                title: "Measure & Optimize",
+                desc: "See real-time click data, device breakdowns, geographic insights, and referrer analysis to optimize your marketing campaigns."
+              }
+            ].map((item, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.15 }}
+              >
+                <Card className="bg-slate-900 border-white/5 h-full">
+                  <CardContent className="p-8 text-center">
+                    <div className="bg-black w-14 h-14 rounded-2xl flex items-center justify-center shadow-sm mx-auto mb-6 border border-white/10">
+                      {item.icon}
+                    </div>
+                    <div className="text-xs font-bold text-lime-400 uppercase tracking-wider mb-2">Step {item.step}</div>
+                    <h3 className="text-xl font-bold text-white mb-3">{item.title}</h3>
+                    <p className="text-slate-400 leading-relaxed">{item.desc}</p>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Trust & Safety Section */}
+      <section className="py-20 bg-slate-900/50 border-y border-white/5">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">Trust & Safety</h2>
+            <p className="text-lg text-slate-400 max-w-2xl mx-auto">
+              We take platform integrity seriously. LinksShrink.com is built with security, transparency, and compliance at its core.
+            </p>
+          </div>
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[
+              {
+                icon: <Ban className="w-6 h-6 text-red-400" />,
+                title: "Anti-Abuse Policy",
+                desc: "Spam, phishing, malware, and illegal content are strictly prohibited. Violators are permanently banned."
+              },
+              {
+                icon: <ShieldCheck className="w-6 h-6 text-lime-400" />,
+                title: "Secure Payments",
+                desc: "All payments processed through Stripe with industry-standard encryption. We never store card details."
+              },
+              {
+                icon: <FileText className="w-6 h-6 text-yellow-400" />,
+                title: "Clear Policies",
+                desc: "Transparent Terms of Service, Privacy Policy, and 7-day Refund Policy. No hidden fees or surprises."
+              },
+              {
+                icon: <Shield className="w-6 h-6 text-blue-400" />,
+                title: "Privacy First",
+                desc: "We don't sell your data. Analytics are aggregated and anonymized. Your audience's privacy is protected."
+              }
+            ].map((item, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.1 }}
+              >
+                <Card className="bg-black border-white/5 h-full">
+                  <CardContent className="p-6">
+                    <div className="mb-4">{item.icon}</div>
+                    <h3 className="text-white font-bold mb-2">{item.title}</h3>
+                    <p className="text-slate-400 text-sm leading-relaxed">{item.desc}</p>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))}
+          </div>
+          <div className="mt-8 text-center">
+            <p className="text-slate-500 text-sm">
+              Read our full{" "}
+              <a href="/terms" className="text-lime-400 hover:underline">Terms of Service</a>,{" "}
+              <a href="/privacy" className="text-lime-400 hover:underline">Privacy Policy</a>, and{" "}
+              <a href="/rules" className="text-lime-400 hover:underline">Acceptable Use Policy</a>.
+            </p>
+          </div>
         </div>
       </section>
 
@@ -807,7 +929,7 @@ export default function Home() {
                 <span className="text-xl font-bold">LinksShrink.com</span>
               </div>
               <p className="text-slate-400 max-w-sm">
-                The most reliable URL shortener for personal and professional use. Built with modern web technologies.
+                A complete link management platform with analytics, QR codes, password protection, and enterprise tools. Trusted by marketers and businesses worldwide.
               </p>
             </div>
             <div>
