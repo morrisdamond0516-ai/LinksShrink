@@ -523,34 +523,39 @@ export default function Pricing() {
                   >
                     {plan.buttonText}
                   </Button>
-                  {plan.individualFeatures.length > 0 && (
-                    <div className="w-full pt-4 border-t border-white/10">
-                      <p className="text-xs text-slate-500 uppercase tracking-wider font-bold mb-3 text-center">Or buy individually</p>
-                      <div className="space-y-2">
-                        {plan.individualFeatures.map((feature) => (
-                          <button
-                            key={feature.featureKey}
-                            onClick={() => handleFeaturePurchase(feature.featureKey, feature.name)}
-                            disabled={purchasingFeature !== null}
-                            className="w-full flex items-center justify-between px-3 py-2 rounded-lg bg-white/5 hover:bg-lime-400/10 border border-white/5 hover:border-lime-400/30 transition-all group cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-                            data-testid={`button-feature-${feature.featureKey}`}
-                          >
-                            <span className="text-xs text-slate-400 group-hover:text-slate-200 transition-colors">
-                              {purchasingFeature === feature.featureKey ? (
-                                <span className="flex items-center gap-1.5">
-                                  <Loader2 className="w-3 h-3 animate-spin" />
-                                  Processing...
-                                </span>
-                              ) : feature.name}
-                            </span>
-                            <span className="text-xs font-bold text-lime-400">${feature.price}</span>
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  )}
                 </CardFooter>
               </Card>
+              {plan.individualFeatures.length > 0 && (
+                <div className="mt-4 bg-slate-800/60 rounded-2xl border border-lime-400/10 p-5">
+                  <div className="flex items-center justify-center gap-2 mb-4">
+                    <div className="h-px flex-1 bg-lime-400/20" />
+                    <p className="text-sm text-white font-bold uppercase tracking-wider whitespace-nowrap">Or buy individually</p>
+                    <div className="h-px flex-1 bg-lime-400/20" />
+                  </div>
+                  <p className="text-xs text-slate-400 text-center mb-4">No subscription needed — one-time purchase</p>
+                  <div className="space-y-2.5">
+                    {plan.individualFeatures.map((feature) => (
+                      <button
+                        key={feature.featureKey}
+                        onClick={() => handleFeaturePurchase(feature.featureKey, feature.name)}
+                        disabled={purchasingFeature !== null}
+                        className="w-full flex items-center justify-between px-4 py-3 rounded-xl bg-black/40 hover:bg-lime-400/10 border border-white/10 hover:border-lime-400/40 transition-all group cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                        data-testid={`button-feature-${feature.featureKey}`}
+                      >
+                        <span className="text-sm text-slate-300 font-medium group-hover:text-white transition-colors">
+                          {purchasingFeature === feature.featureKey ? (
+                            <span className="flex items-center gap-2">
+                              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                              Processing...
+                            </span>
+                          ) : feature.name}
+                        </span>
+                        <span className="text-sm font-bold text-lime-400 bg-lime-400/10 px-2.5 py-0.5 rounded-full">${feature.price}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
             </motion.div>
           ))}
         </div>
