@@ -156,6 +156,39 @@ export default function Home() {
       const params = new URLSearchParams(window.location.search);
       const sessionId = params.get("session_id");
       const linkPackSession = params.get("link_pack_session");
+      const featureSession = params.get("feature_session");
+      
+      if (featureSession) {
+        setIsVerifying(true);
+        try {
+          const response = await fetch(`/api/verify-session/${featureSession}`);
+          const data = await response.json();
+          
+          if (data.success && data.purchaseType === 'individual_feature') {
+            toast({
+              title: "Purchase Successful!",
+              description: `Your "${data.featureName}" purchase is confirmed. You can now use this feature.`,
+            });
+            window.history.replaceState({}, document.title, "/");
+          } else {
+            toast({
+              title: "Payment Pending",
+              description: "Your payment is being processed. Please check back shortly.",
+              variant: "destructive",
+            });
+          }
+        } catch (err) {
+          console.error("Feature verification error:", err);
+          toast({
+            title: "Verification Error",
+            description: "Could not verify payment. Please contact support.",
+            variant: "destructive",
+          });
+        } finally {
+          setIsVerifying(false);
+        }
+        return;
+      }
       
       // Handle link pack purchase verification
       if (linkPackSession && !linkPackProcessed.current) {
