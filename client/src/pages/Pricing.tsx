@@ -478,7 +478,7 @@ export default function Pricing() {
           </motion.div>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 mb-48">
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 items-start mb-48">
           {plans.map((plan, index) => (
             <motion.div
               key={plan.name}
@@ -486,7 +486,7 @@ export default function Pricing() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
             >
-              <Card className={`h-full flex flex-col relative bg-slate-900 border-lime-400/20 ${plan.recommended ? 'border-primary shadow-xl scale-105 z-10' : 'hover:shadow-lg transition-shadow'}`}>
+              <Card className={`flex flex-col relative bg-slate-900 border-lime-400/20 ${plan.recommended ? 'border-primary shadow-xl scale-105 z-10' : 'hover:shadow-lg transition-shadow'}`}>
                 {plan.recommended && (
                   <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-primary text-primary-foreground text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">
                     Recommended
@@ -526,31 +526,26 @@ export default function Pricing() {
                 </CardFooter>
               </Card>
               {plan.individualFeatures.length > 0 && (
-                <div className="mt-4 bg-slate-800/60 rounded-2xl border border-lime-400/10 p-5">
-                  <div className="flex items-center justify-center gap-2 mb-4">
-                    <div className="h-px flex-1 bg-lime-400/20" />
-                    <p className="text-sm text-white font-bold uppercase tracking-wider whitespace-nowrap">Or buy individually</p>
-                    <div className="h-px flex-1 bg-lime-400/20" />
-                  </div>
-                  <p className="text-xs text-slate-400 text-center mb-4">No subscription needed — one-time purchase</p>
-                  <div className="space-y-2.5">
+                <div className="mt-3 bg-slate-800/50 rounded-xl border border-lime-400/10 p-4">
+                  <p className="text-xs text-slate-300 font-bold uppercase tracking-wider text-center mb-3">Or buy individually</p>
+                  <div className="space-y-1.5">
                     {plan.individualFeatures.map((feature) => (
                       <button
                         key={feature.featureKey}
                         onClick={() => handleFeaturePurchase(feature.featureKey, feature.name)}
                         disabled={purchasingFeature !== null}
-                        className="w-full flex items-center justify-between px-4 py-3 rounded-xl bg-black/40 hover:bg-lime-400/10 border border-white/10 hover:border-lime-400/40 transition-all group cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="w-full flex items-center justify-between px-3 py-2 rounded-lg bg-black/30 hover:bg-lime-400/10 border border-white/5 hover:border-lime-400/30 transition-all group cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                         data-testid={`button-feature-${feature.featureKey}`}
                       >
-                        <span className="text-sm text-slate-300 font-medium group-hover:text-white transition-colors">
+                        <span className="text-xs text-slate-300 font-medium group-hover:text-white transition-colors">
                           {purchasingFeature === feature.featureKey ? (
-                            <span className="flex items-center gap-2">
-                              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                            <span className="flex items-center gap-1.5">
+                              <Loader2 className="w-3 h-3 animate-spin" />
                               Processing...
                             </span>
                           ) : feature.name}
                         </span>
-                        <span className="text-sm font-bold text-lime-400 bg-lime-400/10 px-2.5 py-0.5 rounded-full">${feature.price}</span>
+                        <span className="text-xs font-bold text-lime-400">${feature.price}</span>
                       </button>
                     ))}
                   </div>
