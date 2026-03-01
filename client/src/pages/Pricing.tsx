@@ -1,4 +1,5 @@
-import { Check, Link2, Lock, Clock, Globe, QrCode, Smartphone, Monitor, Layers, Download, Palette, Calendar, AlertCircle, LogIn } from "lucide-react";
+import { useState } from "react";
+import { Check, Link2, Lock, Clock, Globe, QrCode, Smartphone, Monitor, Layers, Download, Palette, Calendar, AlertCircle, LogIn, ShoppingCart, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { motion } from "framer-motion";
@@ -10,6 +11,12 @@ interface FeatureShowcaseItem {
   description: string;
   features: { text: string; example: string }[];
   visual: React.ReactNode;
+}
+
+interface IndividualFeature {
+  name: string;
+  price: string;
+  featureKey: string;
 }
 
 const plans = [
@@ -24,6 +31,7 @@ const plans = [
     ],
     buttonText: "Get Started",
     recommended: false,
+    individualFeatures: [] as IndividualFeature[],
   },
   {
     name: "Starter",
@@ -37,6 +45,11 @@ const plans = [
     ],
     buttonText: "Choose Starter",
     recommended: true,
+    individualFeatures: [
+      { name: "Click Analytics (1 link)", price: "5", featureKey: "analytics_single" },
+      { name: "Custom QR Code (1 code)", price: "3", featureKey: "qr_single" },
+      { name: "Custom Slug (1 link)", price: "2", featureKey: "slug_single" },
+    ],
   },
   {
     name: "Pro",
@@ -50,6 +63,11 @@ const plans = [
     ],
     buttonText: "Go Pro",
     recommended: false,
+    individualFeatures: [
+      { name: "Advanced Analytics (1 link)", price: "8", featureKey: "advanced_analytics_single" },
+      { name: "Expiring Link (1 link)", price: "3", featureKey: "expiring_single" },
+      { name: "Password Protection (1 link)", price: "3", featureKey: "password_single" },
+    ],
   },
   {
     name: "Enterprise",
@@ -63,6 +81,10 @@ const plans = [
     ],
     buttonText: "Get Enterprise",
     recommended: false,
+    individualFeatures: [
+      { name: "Bulk Links (100 links)", price: "10", featureKey: "bulk_100" },
+      { name: "API Access (24hr pass)", price: "15", featureKey: "api_day_pass" },
+    ],
   },
 ];
 
@@ -357,7 +379,38 @@ const featureShowcase: FeatureShowcaseItem[] = [
 export default function Pricing() {
   const { toast } = useToast();
   const { user, isLoading, isAuthenticated } = useAuth();
+  const [purchasingFeature, setPurchasingFeature] = useState<string | null>(null);
   
+  const handleFeaturePurchase = async (featureKey: string, featureName: string) => {
+    if (purchasingFeature) return;
+    setPurchasingFeature(featureKey);
+    try {
+      const response = await fetch("/api/create-feature-checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ featureKey }),
+      });
+      
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || "Failed to create checkout session");
+      
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        throw new Error("Checkout URL not available");
+      }
+    } catch (err: any) {
+      console.error("Feature Purchase Error:", err);
+      toast({
+        title: "Purchase Error",
+        description: err.message || "Could not connect to Stripe. Please try again later.",
+        variant: "destructive",
+      });
+    } finally {
+      setPurchasingFeature(null);
+    }
+  };
+
   const handlePayment = async (planName: string) => {
     if (planName === "FREE") {
       window.location.href = "/";
@@ -461,14 +514,41 @@ export default function Pricing() {
                     ))}
                   </ul>
                 </CardContent>
-                <CardFooter className="pt-6">
+                <CardFooter className="pt-6 flex-col gap-4">
                   <Button 
                     className={`w-full font-bold h-12 hover-elevate active-elevate-2 ${plan.recommended ? 'bg-primary text-black' : 'border-lime-400 text-lime-400 hover:bg-lime-400 hover:text-black'}`}
                     variant={plan.recommended ? "default" : "outline"}
                     onClick={() => handlePayment(plan.name)}
+                    data-testid={`button-plan-${plan.name.toLowerCase()}`}
                   >
                     {plan.buttonText}
                   </Button>
+                  {plan.individualFeatures.length > 0 && (
+                    <div className="w-full pt-4 border-t border-white/10">
+                      <p className="text-xs text-slate-500 uppercase tracking-wider font-bold mb-3 text-center">Or buy individually</p>
+                      <div className="space-y-2">
+                        {plan.individualFeatures.map((feature) => (
+                          <button
+                            key={feature.featureKey}
+                            onClick={() => handleFeaturePurchase(feature.featureKey, feature.name)}
+                            disabled={purchasingFeature !== null}
+                            className="w-full flex items-center justify-between px-3 py-2 rounded-lg bg-white/5 hover:bg-lime-400/10 border border-white/5 hover:border-lime-400/30 transition-all group cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                            data-testid={`button-feature-${feature.featureKey}`}
+                          >
+                            <span className="text-xs text-slate-400 group-hover:text-slate-200 transition-colors">
+                              {purchasingFeature === feature.featureKey ? (
+                                <span className="flex items-center gap-1.5">
+                                  <Loader2 className="w-3 h-3 animate-spin" />
+                                  Processing...
+                                </span>
+                              ) : feature.name}
+                            </span>
+                            <span className="text-xs font-bold text-lime-400">${feature.price}</span>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </CardFooter>
               </Card>
             </motion.div>

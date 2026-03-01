@@ -48,6 +48,14 @@ Preferred communication style: Simple, everyday language.
 - `usage_credits` - Tracks free/paid credits per user or anonymous token per month
 - `processed_link_packs` - Ensures link pack purchases are only processed once
 
+### Individual Feature Purchases (One-Time)
+- Customers can buy individual features without a subscription
+- Displayed as "Or buy individually" options under each subscription tier on the Pricing page
+- **Starter tier features**: Click Analytics ($5), Custom QR Code ($3), Custom Slug ($2)
+- **Pro tier features**: Advanced Analytics ($8), Expiring Link ($3), Password Protection ($3)
+- **Enterprise tier features**: Bulk Links 100 ($10), API Access 24hr ($15)
+- `POST /api/create-feature-checkout` - Create Stripe checkout for individual feature purchase
+
 ### Credit Endpoints
 - `GET /api/credits` - Get remaining credits (free + paid)
 - `POST /api/create-link-pack-checkout` - Create Stripe checkout for $20/20 links (no auth required)
