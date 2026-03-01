@@ -1,0 +1,66 @@
+capability.updated
+The pix_payments capability has new requirements or a new status
+11:24:27 PM
+capability.updated
+The link_payments capability has new requirements or a new status
+11:24:27 PM
+capability.updated
+The klarna_payments capability has new requirements or a new status
+11:24:27 PM
+capability.updated
+The eps_payments capability has new requirements or a new status
+11:24:27 PM
+capability.updated
+The crypto_payments capability has new requirements or a new status
+11:24:27 PM
+capability.updated
+The cashapp_payments capability has new requirements or a new status
+11:24:27 PM
+capability.updated
+The cartes_bancaires_payments capability has new requirements or a new status
+11:24:27 PM
+capability.updated
+The card_payments capability has new requirements or a new status
+11:24:27 PM
+capability.updated
+The bancontact_payments capability has new requirements or a new status
+11:24:27 PM
+capability.updated
+The amazon_pay_payments capability has new requirements or a new status
+11:24:27 PM
+capability.updated
+The afterpay_clearpay_payments capability has new requirements or a new status
+11:24:27 PM
+capability.updated
+The acss_debit_payments capability has new requirements or a new status
+11:24:27 PM
+account.updated
+Your account information was updated
+11:24:27 PM
+capability.updated
+The us_bank_account_ach_payments capability has new requirements or a new status
+11:22:46 PM
+capability.updated
+The transfers capability has new requirements or a new status
+11:22:46 PM
+capability.updated
+The pix_payments capability has new requirements or a new status
+11:22:46 PM
+capability.updated
+The link_payments capability has new requirements or a new status
+11:22:46 PM
+capability.updated
+The klarna_payments capability has new requirements or a new status
+11:22:46 PM
+capability.updated
+The eps_payments capability has new requirements or a new status
+11:22:46 PM
+capability.updated
+The crypto_payments capability has new requirements or a new status
+11:22:46 PM
+capability.updated
+The cashapp_payments capability has new requirements or a new status
+11:22:46 PM
+capability.updated
+The cartes_bancaires_payments capability has new requirements or a new status
+11:22:46 PM
