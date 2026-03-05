@@ -37,7 +37,7 @@ const plans = [
   },
   {
     name: "Starter",
-    price: "20",
+    price: "9.50",
     description: "Perfect for growing brands and creators.",
     features: [
       "Click Analytics",
@@ -62,7 +62,7 @@ const plans = [
   },
   {
     name: "Pro",
-    price: "35",
+    price: "28.50",
     description: "Advanced marketing tools for professionals.",
     features: [
       "Advanced Analytics",
@@ -87,7 +87,7 @@ const plans = [
   },
   {
     name: "Enterprise",
-    price: "50",
+    price: "48.50",
     description: "Maximum scale for agencies and teams.",
     features: [
       "3,000 Bulk Links",
