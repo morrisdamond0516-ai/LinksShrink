@@ -15,6 +15,15 @@ import SmartQRCode from "./pages/features/SmartQRCode";
 import PasswordProtection from "./pages/features/PasswordProtection";
 import ExpiringLinks from "./pages/features/ExpiringLinks";
 import BrandedLinks from "./pages/features/BrandedLinks";
+import BioPageBuilder from "./pages/features/BioPageBuilder";
+import Teams from "./pages/features/Teams";
+import ConversionTracking from "./pages/features/ConversionTracking";
+import UTMBuilder from "./pages/features/UTMBuilder";
+import RetargetingPixels from "./pages/features/RetargetingPixels";
+import LinkScheduling from "./pages/features/LinkScheduling";
+import ClickLimits from "./pages/features/ClickLimits";
+import ABTesting from "./pages/features/ABTesting";
+import GeoRouting from "./pages/features/GeoRouting";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
 import Contact from "./pages/Contact";
@@ -38,6 +47,15 @@ function Router() {
       <Route path="/features/password" component={PasswordProtection} />
       <Route path="/features/expiry" component={ExpiringLinks} />
       <Route path="/features/branded" component={BrandedLinks} />
+      <Route path="/features/bio" component={BioPageBuilder} />
+      <Route path="/features/teams" component={Teams} />
+      <Route path="/features/conversions" component={ConversionTracking} />
+      <Route path="/features/utm" component={UTMBuilder} />
+      <Route path="/features/retargeting" component={RetargetingPixels} />
+      <Route path="/features/scheduling" component={LinkScheduling} />
+      <Route path="/features/click-limits" component={ClickLimits} />
+      <Route path="/features/ab-testing" component={ABTesting} />
+      <Route path="/features/geo-routing" component={GeoRouting} />
       <Route component={NotFound} />
     </Switch>
   );

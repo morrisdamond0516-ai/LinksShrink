@@ -2,90 +2,103 @@
 
 ## Overview
 
-This is LinksShrink.com, a URL shortener web application built with a React frontend and Express backend. Users can submit long URLs and receive shortened versions that redirect to the original destination. The app tracks visit counts for each shortened URL and includes a premium tier system with Stripe payment integration.
+This is LinksShrink.com, a URL shortener web application built with a React frontend and Express backend. Users can submit long URLs and receive shortened versions that redirect to the original destination. The app tracks visit counts for each shortened URL and includes a premium tier system with Stripe payment integration. Features a comprehensive suite of marketing tools including retargeting, UTM tracking, A/B testing, geo-routing, and link-in-bio pages.
 
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.
 
-## Recent Changes (January 2026)
+## Recent Changes (March 2026)
 
-### Custom Email/Password Authentication (NEW)
+### 10 New Premium Features Added
+1. **Link-in-Bio Pages**: Customizable landing pages with themes (default, ocean, sunset, forest, purple, minimal), social links, and shop functionality. Public pages at /b/:slug
+2. **Retargeting Pixels**: Add Facebook, Google, TikTok tracking pixels to links for audience building
+3. **UTM Builder**: Auto-append UTM parameters (source, medium, campaign, term, content) to destination URLs
+4. **Link-in-Bio Shop**: Sell digital products from bio pages with product management
+5. **Geo-Routing**: Route visitors to different URLs based on country detection via Accept-Language headers
+6. **Team Workspaces**: Create workspaces, invite members with roles (owner/admin/member), RBAC-enforced role hierarchy (only owners can assign/remove admins, owners cannot be removed)
+7. **Conversion Tracking**: Track conversions and revenue per link via API endpoint
+8. **Link Scheduling**: Schedule links to activate at future dates
+9. **A/B Testing**: Split traffic between two URLs with configurable percentage
+10. **Click Limits**: Set max clicks before link auto-deactivates
+
+### New Database Tables
+- `bio_pages` - Link-in-bio pages with themes, links (jsonb), socialLinks (jsonb)
+- `bio_page_products` - Digital products for bio page shops
+- `team_workspaces` - Team/workspace management
+- `workspace_members` - Team membership with roles
+- `conversion_events` - Conversion tracking events with revenue
+
+### New URL Columns
+- `retargetingPixels` (text) - JSON string with facebook/google/tiktok pixel IDs
+- `utmSource/utmMedium/utmCampaign/utmTerm/utmContent` (text) - UTM parameters
+- `geoRoutes` (jsonb) - Country code to URL mapping for geo-routing
+- `abTestUrl` (text) + `abTestSplit` (integer) - A/B test configuration
+- `maxClicks` (integer) - Maximum clicks before deactivation
+- `scheduledAt` (timestamp) - Scheduled activation time
+- `deactivatedAt` (timestamp) - When link was deactivated
+
+### New Frontend Pages
+- `/features/bio` - BioPageBuilder.tsx - Link-in-bio page builder
+- `/features/utm` - UTMBuilder.tsx - UTM parameter builder
+- `/features/retargeting` - RetargetingPixels.tsx - Retargeting pixel setup
+- `/features/scheduling` - LinkScheduling.tsx - Link scheduling
+- `/features/click-limits` - ClickLimits.tsx - Click limits
+- `/features/ab-testing` - ABTesting.tsx - A/B testing
+- `/features/geo-routing` - GeoRouting.tsx - Geo-targeting
+- `/features/teams` - Teams.tsx - Team management
+- `/features/conversions` - ConversionTracking.tsx - Conversion tracking
+- `/b/:slug` - Public bio page rendering (server-side HTML)
+
+### New API Endpoints
+- Bio Pages: `POST /api/bio/create`, `GET /api/bio/my-pages`, `GET /api/bio/:slug`, `PATCH /api/bio/:id`, `DELETE /api/bio/:id`
+- Bio Products: `POST /api/bio/:id/products`, `DELETE /api/bio/products/:productId`
+- Teams: `POST /api/teams/create`, `GET /api/teams/my-teams`, `POST /api/teams/:id/invite`, `DELETE /api/teams/:id/members/:userId`
+- Conversions: `POST /api/conversions/track`, `GET /api/conversions/:urlId`
+
+### Updated Individual Feature Purchases
+- **Starter**: Click Analytics ($5), QR Code ($3), Custom Slug ($2), UTM Builder ($3), Link Scheduling ($3), Click Limit ($2), Bio Page ($10)
+- **Pro**: Advanced Analytics ($8), Expiring Link ($3), Password Protection ($3), Retargeting Pixel ($5), A/B Test ($5), Geo Routing ($5), Conversion Tracking ($8)
+- **Enterprise**: Bulk Links 100 ($10), API Access 24hr ($15)
+
+## Authentication
+
+### Custom Email/Password Authentication
 - **Registration**: Users create accounts with email, password, first name, last name
 - **Password Security**: bcrypt with 12 salt rounds, stored as passwordHash
 - **Session Management**: express-session with PostgreSQL store, httpOnly cookies
 - **Login/Register Pages**: Client-side forms at /login and /register routes
-- **No Replit Account Required**: Users don't need Replit accounts anymore
 
 ### Authentication Endpoints
-- `POST /api/auth/register` - Create new account with { email, password, firstName, lastName }
-- `POST /api/auth/login` - Login with { email, password }
+- `POST /api/auth/register` - Create new account
+- `POST /api/auth/login` - Login with email/password
 - `POST /api/auth/logout` - Logout current session
 - `GET /api/auth/user` - Get authenticated user info
 
 ### Key Auth Files
 - `server/auth.ts` - Password hashing, registerUser, loginUser functions
 - `server/replit_integrations/auth/replitAuth.ts` - Passport-local strategy, session setup
-- `client/src/pages/Login.tsx` - Login form with email/password
-- `client/src/pages/Register.tsx` - Registration form
+- `client/src/pages/Login.tsx`, `client/src/pages/Register.tsx`
 - `client/src/hooks/use-auth.ts` - Auth hook for frontend
 
+## Payment & Credits
+
 ### Stripe Payment Integration
-- **Payment Flow**: Users can purchase premium plans via Stripe Checkout
-- **Server-side Verification**: Payments are verified with Stripe API before unlocking features
-- **Entitlement Storage**: Verified payments stored in PostgreSQL `entitlements` table
-- **Protected APIs**: Premium endpoints require valid entitlement to access
+- **Payment Flow**: Users purchase plans via Stripe Checkout
+- **Server-side Verification**: Payments verified with Stripe API
+- **Entitlement Storage**: Verified payments in PostgreSQL `entitlements` table
+- **Webhook**: Configured manually via Stripe Dashboard
 
-### Usage Credit System (NEW)
-- **Free Tier**: 5 links per month for all users (resets monthly)
+### Usage Credit System
+- **Free Tier**: 5 links per month (resets monthly)
 - **Paid Credits**: $20 for 20 additional link credits (don't expire monthly)
-- **Anonymous Tracking**: Usage tracked via IP hash for users without accounts
-- **UI Display**: Shows remaining credits on homepage with "Buy More" CTA
-- **Idempotent Verification**: Link pack purchases are verified idempotently to prevent duplicate grants
-- **Credit Consumption**: Credits consumed only after successful URL creation
+- **Anonymous Tracking**: Usage tracked via persistent localStorage anon_token + IP hash
+- **Idempotent Verification**: Purchases verified idempotently
 
-### Credit System Tables
-- `usage_credits` - Tracks free/paid credits per user or anonymous token per month
-- `processed_link_packs` - Ensures link pack purchases are only processed once
-
-### Individual Feature Purchases (One-Time)
-- Customers can buy individual features without a subscription
-- Displayed as "Or buy individually" options under each subscription tier on the Pricing page
-- **Starter tier features**: Click Analytics ($5), Custom QR Code ($3), Custom Slug ($2)
-- **Pro tier features**: Advanced Analytics ($8), Expiring Link ($3), Password Protection ($3)
-- **Enterprise tier features**: Bulk Links 100 ($10), API Access 24hr ($15)
-- `POST /api/create-feature-checkout` - Create Stripe checkout for individual feature purchase
-
-### Credit Endpoints
-- `GET /api/credits` - Get remaining credits (free + paid)
-- `POST /api/create-link-pack-checkout` - Create Stripe checkout for $20/20 links (no auth required)
-
-### Automated Refund Qualification System
-- **Refund Form**: Customers submit refund requests at /refund with name, email, transaction ID, and reason
-- **Automated Checking**: System looks up transaction in Stripe, checks if within 7 days and credits unused
-- **Qualified**: Email sent to owner (ProductionLinks@yahoo.com) with full details for manual Stripe processing
-- **Not Qualified**: Automated email sent to both customer (explaining why) and owner (for records)
-- **Database Storage**: All requests stored in `refund_requests` table with status (qualified/denied)
-- **Email Delivery**: Nodemailer with Yahoo SMTP (requires YAHOO_APP_PASSWORD secret)
-- **Refund Policy**: 7 days for subscriptions and unused link packs
-- `POST /api/refund-request` - Submit + auto-check eligibility
-- **Key Files**: `server/refundChecker.ts`, `server/emailService.ts`, `client/src/pages/RequestRefund.tsx`
-
-### Premium Features (Fully Functional)
-- **Smart QR Codes**: Custom color QR code generation with high-res PNG download (2000px)
-- **Advanced Analytics**: Real-time click tracking, device/browser breakdown, referrer analysis, clicks over time
-- **Password Protection**: Secure links with SHA-256 hashed passwords, custom password prompt page
-- **Expiring Links**: Time-limited URLs with automatic deactivation and custom expired page
-- **Bulk Shortener**: Up to 100 URLs per batch with CSV export
-- **Branded Links**: Custom slugs (3-50 chars) for memorable, branded URLs
-- **Shorter Codes**: Premium users get 2-4 char codes vs free 4-6 char codes
-
-### Key Files Added/Modified
-- `server/stripeClient.ts` - Stripe client using Replit connector API
-- `server/webhookHandlers.ts` - Webhook processing for Stripe events
-- `server/entitlements.ts` - Database-backed entitlement storage and validation
-- `server/storage.ts` - DatabaseStorage with PremiumUrlOptions, analytics tracking, password verification
-- `shared/schema.ts` - Added `entitlements`, `urlAnalytics` tables, premium URL fields
+### Automated Refund System
+- Refund form at /refund, automated eligibility checking via Stripe
+- Email notifications via Yahoo SMTP (YAHOO_APP_PASSWORD)
+- Contact: ProductionLinks@yahoo.com
 
 ## System Architecture
 
@@ -97,80 +110,44 @@ Preferred communication style: Simple, everyday language.
 - **Animations**: Framer Motion for smooth UI transitions
 - **Build Tool**: Vite with custom plugins for Replit integration
 
-The frontend follows a pages-based structure under `client/src/pages/` with reusable components in `client/src/components/ui/`. Custom hooks in `client/src/hooks/` handle data fetching and mutations.
-
 ### Backend Architecture
 - **Framework**: Express.js with TypeScript
-- **Build**: esbuild for production bundling with selective dependency bundling
+- **Build**: esbuild for production bundling
 - **Development**: tsx for running TypeScript directly
-- **Static Serving**: Serves built frontend from `dist/public` in production
-
-The server uses a clean separation between routes (`server/routes.ts`), database access (`server/db.ts`), and storage logic (`server/storage.ts`).
 
 ### Data Storage
 - **ORM**: Drizzle ORM with PostgreSQL dialect
-- **Schema Location**: `shared/schema.ts` - shared between frontend and backend
-- **Migrations**: Managed via `drizzle-kit push` command
-- **Database**: PostgreSQL (requires `DATABASE_URL` environment variable)
+- **Schema Location**: `shared/schema.ts`
+- **Migrations**: Managed via `drizzle-kit push`
 
-The URL schema stores: id, originalUrl, shortCode (unique), visitCount, and createdAt.
-
-### Entitlements Table
-Stores verified Stripe payments: id, sessionId (unique), plan, stripeCustomerId, verifiedAt, expiresAt.
-
-### Stripe Integration
-- **Package**: `stripe-replit-sync` for managed webhooks and data sync
-- **Key Management**: Uses Replit connector API (no hardcoded keys)
-- **Webhook Handler**: Registered before express.json() for proper payload handling
-
-### API Design
-- **Contract Location**: `shared/routes.ts` - defines API paths, methods, and Zod schemas
-- **Validation**: Zod schemas shared between client and server for type-safe validation
-- **Endpoints**:
-  - `POST /api/shorten` - Create shortened URL
-  - `GET /api/urls/:shortCode` - Get URL stats
-  - `GET /:shortCode` - Redirect to original URL
-
-### Payment & Entitlement Endpoints
-- `GET /api/stripe/publishable-key` - Get Stripe publishable key for frontend
-- `POST /api/create-checkout-session` - Create Stripe checkout session
-- `GET /api/verify-session/:sessionId` - Verify payment and store entitlement
-- `GET /api/check-entitlement/:sessionId` - Check if session has valid entitlement
-
-### Premium Feature Endpoints (all require entitlement)
-- `POST /api/premium/qr/generate` - Generate QR code with custom colors
-- `GET /api/premium/qr/download` - Download high-res PNG QR code
-- `GET /api/premium/analytics/:urlId` - Get detailed analytics for a URL
-- `GET /api/premium/my-urls` - Get all URLs for authenticated user
-- `POST /api/premium/shorten` - Create premium URL with password/expiry/custom slug
-- `POST /api/premium/bulk-shorten` - Bulk create up to 100 URLs
-- `PATCH /api/premium/url/:id` - Update URL settings
-- `POST /api/verify-password/:shortCode` - Verify password for protected links
+### Redirect Handler Logic (GET /:shortCode)
+1. Check scheduled activation (scheduledAt)
+2. Check deactivation status (deactivatedAt)
+3. Check click limit (maxClicks vs visitCount)
+4. Check expiry (expiresAt)
+5. Check password protection
+6. Record analytics (premium URLs)
+7. Increment visit count
+8. Apply UTM parameters to destination URL
+9. Apply geo-routing (country-based redirect)
+10. Apply A/B testing (traffic split)
+11. Inject retargeting pixels (render HTML with delayed redirect)
+12. Final redirect
 
 ### Short Code Generation (Ultra-Short)
-Short codes use Base62 encoding (0-9, a-z, A-Z = 62 characters) derived from the URL's database ID. This guarantees the **shortest possible codes**:
-- First 62 URLs: 1-character codes (0, 1, 2, ... a, b, c, ... Z)
-- Next 3,844 URLs: 2-character codes (10, 11, ... ZZ)
-- Next 238,328 URLs: 3-character codes
-- And so on...
-
-The system uses atomic transactions to ensure uniqueness and O(1) code generation.
+Base62 encoding (0-9, a-z, A-Z) from database ID. Shortest possible codes guaranteed.
 
 ## External Dependencies
 
 ### Database
-- **PostgreSQL**: Primary data store, connection via `DATABASE_URL` environment variable
-- **connect-pg-simple**: Session storage (configured but not actively used for auth)
+- PostgreSQL via DATABASE_URL environment variable
+- connect-pg-simple for session storage
 
 ### UI Component Library
-- **shadcn/ui**: Pre-built accessible components using Radix UI primitives
-- **Radix UI**: Headless UI primitives for accessibility
-- **Lucide React**: Icon library
+- shadcn/ui, Radix UI, Lucide React, react-icons
 
 ### Build & Development
-- **Vite**: Frontend build tool with HMR
-- **esbuild**: Server bundling for production
-- **Replit Plugins**: Runtime error overlay, cartographer, dev banner
+- Vite, esbuild, Replit Plugins
 
 ### Fonts
 - Google Fonts: Inter (body), Outfit (display)
