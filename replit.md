@@ -105,6 +105,7 @@ Preferred communication style: Simple, everyday language.
 - **Server-side Verification**: Payments verified with Stripe API
 - **Entitlement Storage**: Verified payments in PostgreSQL `entitlements` table
 - **Webhook**: Configured manually via Stripe Dashboard
+- **Plan Prices**: Starter $9.50/mo, Pro $28.50/mo, Enterprise $48.50/mo
 
 ### Usage Credit System
 - **Free Tier**: 5 links per month (resets monthly)
