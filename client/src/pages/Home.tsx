@@ -492,7 +492,7 @@ export default function Home() {
               </span>
             </h1>
             <p className="text-xl text-muted-foreground mb-4 max-w-2xl mx-auto">
-              A complete link management platform with analytics, QR codes, branded links, and enterprise tools. Built for marketers, businesses, and creators.
+              The all-in-one link management platform. Analytics, QR codes, retargeting pixels, A/B testing, geo-routing, link-in-bio pages, team workspaces, and 16 premium tools. Built for marketers, businesses, and creators.
             </p>
             <p className="text-sm text-slate-500 mb-12 max-w-xl mx-auto">
               Free to start — no account required. 5 free links per month with full click tracking included.

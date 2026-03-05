@@ -491,7 +491,7 @@ export default function Pricing() {
               Simple, transparent pricing
             </h1>
             <p className="text-xl text-slate-400 max-w-2xl mx-auto leading-relaxed">
-              Choose the plan that's right for your links. All plans include our core shortening technology.
+              Start free with 5 links per month. Upgrade for analytics, QR codes, retargeting, A/B testing, bio pages, and 16 premium tools — or buy features individually.
             </p>
           </motion.div>
         </div>
