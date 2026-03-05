@@ -42,12 +42,22 @@ export default function ConversionTracking() {
 
   const { data: urls = [], isLoading: urlsLoading } = useQuery<UserUrl[]>({
     queryKey: ["/api/premium/my-urls"],
+    queryFn: async () => {
+      const res = await fetch("/api/premium/my-urls", { credentials: "include", headers: { "x-feature-key": "conversion_tracking" } });
+      if (!res.ok) throw new Error("Failed to fetch URLs");
+      return res.json();
+    },
     enabled: isAuthenticated,
     select: (data: any) => data?.urls || data || [],
   });
 
   const { data: conversionData, isLoading: conversionsLoading } = useQuery<ConversionData>({
     queryKey: ["/api/conversions", selectedUrlId],
+    queryFn: async () => {
+      const res = await fetch(`/api/conversions/${selectedUrlId}`, { credentials: "include", headers: { "x-feature-key": "conversion_tracking" } });
+      if (!res.ok) throw new Error("Failed to fetch conversions");
+      return res.json();
+    },
     enabled: isAuthenticated && !!selectedUrlId,
   });
 

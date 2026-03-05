@@ -30,7 +30,7 @@ export default function RetargetingPixels() {
       const res = await apiRequest("POST", "/api/premium/shorten", {
         originalUrl: url,
         retargetingPixels: JSON.stringify(pixels),
-      });
+      }, { "x-feature-key": "retargeting_single" });
       return res.json();
     },
     onSuccess: (data) => {

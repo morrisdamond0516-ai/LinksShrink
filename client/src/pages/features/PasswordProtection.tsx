@@ -32,8 +32,9 @@ export default function PasswordProtection() {
     try {
       const response = await fetch("/api/premium/shorten", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", "x-feature-key": "password_single" },
         body: JSON.stringify({ originalUrl: url, password }),
+        credentials: "include",
       });
 
       if (!response.ok) {

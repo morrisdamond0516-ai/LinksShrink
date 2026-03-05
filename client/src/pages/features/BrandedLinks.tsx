@@ -56,8 +56,9 @@ export default function BrandedLinks() {
     try {
       const response = await fetch("/api/premium/shorten", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", "x-feature-key": "slug_single" },
         body: JSON.stringify({ originalUrl: url, customSlug }),
+        credentials: "include",
       });
 
       if (!response.ok) {

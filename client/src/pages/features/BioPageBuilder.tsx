@@ -90,7 +90,7 @@ export default function BioPageBuilder() {
         ...data,
         userId: user?.id,
         price: undefined,
-      });
+      }, { "x-feature-key": "bio_page" });
       return res.json();
     },
     onSuccess: () => {
