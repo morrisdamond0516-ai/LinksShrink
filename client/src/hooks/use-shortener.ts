@@ -2,15 +2,23 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { api, buildUrl } from "@shared/routes";
 import { z } from "zod";
 
+function getAnonToken(): string {
+  let token = localStorage.getItem('anon_token');
+  if (!token) {
+    token = crypto.randomUUID();
+    localStorage.setItem('anon_token', token);
+  }
+  return token;
+}
+
 export function useShortenUrl() {
   return useMutation({
     mutationFn: async (url: string) => {
-      // Validate input first
       const input = api.shortener.create.input.parse({ originalUrl: url });
       
       const res = await fetch(api.shortener.create.path, {
         method: api.shortener.create.method,
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", "x-anon-token": getAnonToken() },
         body: JSON.stringify(input),
       });
 

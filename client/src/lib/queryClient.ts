@@ -1,5 +1,14 @@
 import { QueryClient, QueryFunction } from "@tanstack/react-query";
 
+function getAnonToken(): string {
+  let token = localStorage.getItem('anon_token');
+  if (!token) {
+    token = crypto.randomUUID();
+    localStorage.setItem('anon_token', token);
+  }
+  return token;
+}
+
 async function throwIfResNotOk(res: Response) {
   if (!res.ok) {
     const text = (await res.text()) || res.statusText;
@@ -14,7 +23,10 @@ export async function apiRequest(
 ): Promise<Response> {
   const res = await fetch(url, {
     method,
-    headers: data ? { "Content-Type": "application/json" } : {},
+    headers: {
+      ...(data ? { "Content-Type": "application/json" } : {}),
+      "x-anon-token": getAnonToken(),
+    },
     body: data ? JSON.stringify(data) : undefined,
     credentials: "include",
   });
@@ -31,6 +43,9 @@ export const getQueryFn: <T>(options: {
   async ({ queryKey }) => {
     const res = await fetch(queryKey.join("/") as string, {
       credentials: "include",
+      headers: {
+        "x-anon-token": getAnonToken(),
+      },
     });
 
     if (unauthorizedBehavior === "returnNull" && res.status === 401) {
