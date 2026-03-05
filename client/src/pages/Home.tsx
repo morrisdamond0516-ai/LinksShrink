@@ -26,7 +26,14 @@ import {
   Ban,
   MousePointerClick,
   TrendingUp,
-  Share2
+  Share2,
+  Tag,
+  Target,
+  CalendarClock,
+  FlaskConical,
+  User,
+  Users,
+  LineChart
 } from "lucide-react";
 import { motion } from "framer-motion";
 
@@ -302,39 +309,30 @@ export default function Home() {
     handlePendingPlan();
   }, [isAuthenticated, authLoading]);
 
+  const featureRoutes: Record<string, string> = {
+    "Branded Links": "/features/branded",
+    "Bulk Creation": "/features/bulk",
+    "Detailed Analytics": "/features/analytics",
+    "Smart QR Codes": "/features/qr",
+    "Password Protection": "/features/password",
+    "Expiring Links": "/features/expiry",
+    "UTM Builder": "/features/utm",
+    "Retargeting Pixels": "/features/retargeting",
+    "A/B Testing": "/features/ab-testing",
+    "Geo Routing": "/features/geo-routing",
+    "Link Scheduling": "/features/scheduling",
+    "Click Limits": "/features/click-limits",
+    "Link-in-Bio Pages": "/features/bio",
+    "Team Workspaces": "/features/teams",
+    "Conversion Tracking": "/features/conversions",
+  };
+
   const handleUnlockClick = (featureTitle: string) => {
-    if (isUnlocked) {
-      if (featureTitle === "Branded Links") {
-        window.location.href = "/features/branded";
-        return;
-      }
-      if (featureTitle === "Bulk Creation") {
-        window.location.href = "/features/bulk";
-        return;
-      }
-      if (featureTitle === "Detailed Analytics") {
-        window.location.href = "/features/analytics";
-        return;
-      }
-      if (featureTitle === "Smart QR Codes") {
-        window.location.href = "/features/qr";
-        return;
-      }
-      if (featureTitle === "Password Protection") {
-        window.location.href = "/features/password";
-        return;
-      }
-      if (featureTitle === "Expiring Links") {
-        window.location.href = "/features/expiry";
-        return;
-      }
-      toast({
-        title: "Feature Active",
-        description: `${featureTitle} is active. This specific feature page is coming soon.`,
-      });
+    const route = featureRoutes[featureTitle];
+    if (route) {
+      window.location.href = route;
       return;
     }
-    // Redirect to pricing with the intent to unlock
     window.location.href = "/pricing";
   };
 
@@ -379,6 +377,69 @@ export default function Home() {
       title: "Bulk Creation",
       description: "Generate up to 3,000 links instantly via API or CSV with enterprise-grade stability.",
       benefit: "Large scale campaign support",
+      premium: true
+    },
+    {
+      icon: <Tag className="w-6 h-6 text-lime-400" />,
+      title: "UTM Builder",
+      description: "Auto-append campaign tracking parameters to your links. Track source, medium, and campaign performance.",
+      benefit: "Example: ?utm_source=newsletter",
+      premium: true
+    },
+    {
+      icon: <Target className="w-6 h-6 text-purple-500" />,
+      title: "Retargeting Pixels",
+      description: "Embed Facebook, Google, and TikTok tracking pixels in your short links to build custom audiences.",
+      benefit: "Build audiences from any link",
+      premium: true
+    },
+    {
+      icon: <FlaskConical className="w-6 h-6 text-cyan-400" />,
+      title: "A/B Testing",
+      description: "Split traffic between two URLs with a configurable percentage to find what converts best.",
+      benefit: "Example: 60/40 traffic split",
+      premium: true
+    },
+    {
+      icon: <Globe className="w-6 h-6 text-emerald-400" />,
+      title: "Geo Routing",
+      description: "Route visitors to different URLs based on their country. Perfect for localized campaigns and multi-region offers.",
+      benefit: "US → /en, DE → /de, JP → /jp",
+      premium: true
+    },
+    {
+      icon: <CalendarClock className="w-6 h-6 text-blue-400" />,
+      title: "Link Scheduling",
+      description: "Schedule links to activate at a future date and time. Perfect for product launches and timed promotions.",
+      benefit: "Set it and forget it",
+      premium: true
+    },
+    {
+      icon: <MousePointerClick className="w-6 h-6 text-red-400" />,
+      title: "Click Limits",
+      description: "Set a maximum number of clicks before a link auto-deactivates. Great for limited offers and giveaways.",
+      benefit: "Example: First 500 clicks only",
+      premium: true
+    },
+    {
+      icon: <User className="w-6 h-6 text-lime-500" />,
+      title: "Link-in-Bio Pages",
+      description: "Build beautiful, customizable landing pages with multiple links, social icons, themes, and a built-in shop.",
+      benefit: "6 themes · Shop · Social links",
+      premium: true
+    },
+    {
+      icon: <Users className="w-6 h-6 text-indigo-400" />,
+      title: "Team Workspaces",
+      description: "Create workspaces, invite team members with role-based access. Owners, admins, and members.",
+      benefit: "Collaborate with your team",
+      premium: true
+    },
+    {
+      icon: <LineChart className="w-6 h-6 text-yellow-400" />,
+      title: "Conversion Tracking",
+      description: "Track conversions and revenue per link via API. Measure ROI on every campaign you run.",
+      benefit: "Revenue attribution per link",
       premium: true
     }
   ];
@@ -691,15 +752,16 @@ export default function Home() {
                         {feature.benefit}
                       </span>
                       <Button 
-                        variant={isUnlocked ? "ghost" : "outline"} 
+                        variant="outline" 
                         size="sm" 
-                        className={`gap-1 font-bold ${isUnlocked ? 'text-lime-400' : 'border-lime-400 text-lime-400 hover:bg-lime-400 hover:text-black'}`}
+                        className="gap-1 font-bold border-lime-400 text-lime-400 hover:bg-lime-400 hover:text-black"
                         onClick={(e) => {
                           e.stopPropagation();
                           handleUnlockClick(feature.title);
                         }}
+                        data-testid={`button-feature-${feature.title.toLowerCase().replace(/\s+/g, '-')}`}
                       >
-                        {isUnlocked ? "Active" : "Unlock"} <ArrowRight className="w-4 h-4" />
+                        Try It <ArrowRight className="w-4 h-4" />
                       </Button>
                     </div>
                   </CardContent>
