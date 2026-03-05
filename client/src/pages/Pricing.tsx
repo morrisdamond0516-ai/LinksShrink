@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Check, Link2, Lock, Clock, Globe, QrCode, Smartphone, Monitor, Layers, Download, Palette, Calendar, AlertCircle, LogIn, ShoppingCart, Loader2 } from "lucide-react";
+import { Check, Link2, Lock, Clock, Globe, QrCode, Smartphone, Monitor, Layers, Download, Palette, Calendar, AlertCircle, LogIn, ShoppingCart, Loader2, Target, BarChart3, Split, MapPin, Pencil, Users, Store, Infinity, MousePointerClick, Timer, Hash, ArrowRight, Eye, TrendingUp, DollarSign, ChevronRight, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { motion } from "framer-motion";
@@ -398,6 +398,702 @@ const featureShowcase: FeatureShowcaseItem[] = [
             <span className="text-green-500 font-bold">LATENCY: 42ms</span>
             <span className="text-slate-600">|</span>
             <span className="text-slate-500">AUTH: Bearer ****</span>
+          </div>
+        </div>
+      </div>
+    )
+  },
+  {
+    title: "Retargeting Pixels",
+    description: "Build custom audiences by embedding tracking pixels in your short links.",
+    features: [
+      { text: "Multi-Platform Support", example: "Add Facebook, Google, and TikTok retargeting pixels to any link with a single click." },
+      { text: "Audience Building", example: "Every click automatically adds visitors to your retargeting audiences for future ad campaigns." },
+      { text: "Zero-Redirect Delay", example: "Pixels fire seamlessly during redirect — visitors never notice the tracking." }
+    ],
+    visual: (
+      <div className="bg-black rounded-xl p-6 border border-white/10 shadow-2xl space-y-4">
+        <div className="flex items-center gap-3">
+          <div className="bg-purple-500/10 p-2 rounded-xl">
+            <Target className="w-5 h-5 text-purple-500" />
+          </div>
+          <div>
+            <div className="text-sm font-bold text-white">Retargeting Pixels</div>
+            <div className="text-xs text-slate-500">Build audiences automatically</div>
+          </div>
+        </div>
+        <div className="bg-slate-900 p-4 rounded-lg border border-white/10 space-y-3">
+          {[
+            { platform: "Facebook Pixel", id: "FB-291847362", color: "text-blue-400", bg: "bg-blue-500/10", active: true },
+            { platform: "Google Ads Tag", id: "AW-384756291", color: "text-yellow-400", bg: "bg-yellow-500/10", active: true },
+            { platform: "TikTok Pixel", id: "TT-938271645", color: "text-pink-400", bg: "bg-pink-500/10", active: false }
+          ].map((pixel) => (
+            <div key={pixel.platform} className="flex items-center justify-between p-3 bg-black/50 rounded-lg border border-white/5">
+              <div className="flex items-center gap-3">
+                <div className={`${pixel.bg} p-1.5 rounded`}>
+                  <Target className={`w-3 h-3 ${pixel.color}`} />
+                </div>
+                <div>
+                  <div className="text-xs font-bold text-white">{pixel.platform}</div>
+                  <div className="text-[10px] text-slate-500 font-mono">{pixel.id}</div>
+                </div>
+              </div>
+              <div className={`w-8 h-4 ${pixel.active ? 'bg-lime-400' : 'bg-slate-600'} rounded-full relative`}>
+                <div className={`absolute ${pixel.active ? 'right-0.5' : 'left-0.5'} top-0.5 w-3 h-3 ${pixel.active ? 'bg-white' : 'bg-slate-400'} rounded-full`} />
+              </div>
+            </div>
+          ))}
+        </div>
+        <div className="bg-slate-900 p-3 rounded-lg border border-white/10 flex items-center gap-3">
+          <div className="bg-green-500/10 p-1.5 rounded">
+            <Eye className="w-3 h-3 text-green-400" />
+          </div>
+          <div>
+            <div className="text-xs font-bold text-white">2,847 audience members added</div>
+            <div className="text-[10px] text-slate-500">Last 30 days across all platforms</div>
+          </div>
+        </div>
+      </div>
+    )
+  },
+  {
+    title: "UTM Builder",
+    description: "Auto-append UTM parameters to every click for precise campaign tracking.",
+    features: [
+      { text: "5 UTM Parameters", example: "Set source, medium, campaign, term, and content — all auto-appended to the destination URL." },
+      { text: "Google Analytics Ready", example: "UTM parameters appear directly in your Google Analytics reports for seamless attribution." },
+      { text: "No Manual Work", example: "Set once per link — every visitor automatically gets the correct UTM parameters appended." }
+    ],
+    visual: (
+      <div className="bg-black rounded-xl p-6 border border-white/10 shadow-2xl space-y-4">
+        <div className="flex items-center gap-3">
+          <div className="bg-orange-500/10 p-2 rounded-xl">
+            <Hash className="w-5 h-5 text-orange-500" />
+          </div>
+          <div>
+            <div className="text-sm font-bold text-white">UTM Parameter Builder</div>
+            <div className="text-xs text-slate-500">Auto-append tracking parameters</div>
+          </div>
+        </div>
+        <div className="bg-slate-900 p-4 rounded-lg border border-white/10 space-y-3">
+          {[
+            { label: "utm_source", value: "newsletter", placeholder: "e.g., newsletter" },
+            { label: "utm_medium", value: "email", placeholder: "e.g., email" },
+            { label: "utm_campaign", value: "spring_sale_2026", placeholder: "e.g., spring_sale" },
+            { label: "utm_term", value: "discount", placeholder: "e.g., keyword" },
+            { label: "utm_content", value: "hero_cta", placeholder: "e.g., hero_button" }
+          ].map((param) => (
+            <div key={param.label} className="flex items-center gap-2">
+              <span className="text-[10px] font-mono text-orange-400 w-24 shrink-0">{param.label}</span>
+              <div className="flex-1 h-8 bg-black rounded border border-white/10 flex items-center px-2">
+                <span className="text-[10px] text-white">{param.value}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+        <div className="bg-slate-900 p-3 rounded-lg border border-white/10">
+          <div className="text-[10px] text-slate-500 mb-1">Generated URL Preview</div>
+          <div className="text-[9px] font-mono text-lime-400 break-all">
+            https://example.com/sale?utm_source=<span className="text-orange-400">newsletter</span>&utm_medium=<span className="text-orange-400">email</span>&utm_campaign=<span className="text-orange-400">spring_sale_2026</span>
+          </div>
+        </div>
+      </div>
+    )
+  },
+  {
+    title: "A/B Testing",
+    description: "Split traffic between two destinations to find what converts best.",
+    features: [
+      { text: "Configurable Split Ratio", example: "Send 50/50, 70/30, or any custom percentage split between two destination URLs." },
+      { text: "Real-Time Results", example: "See click counts for each variation in real-time to determine the winner faster." },
+      { text: "One-Link Testing", example: "Use a single short link to test two landing pages — no need to create separate campaigns." }
+    ],
+    visual: (
+      <div className="bg-black rounded-xl p-6 border border-white/10 shadow-2xl space-y-4">
+        <div className="flex items-center gap-3">
+          <div className="bg-cyan-500/10 p-2 rounded-xl">
+            <Split className="w-5 h-5 text-cyan-500" />
+          </div>
+          <div>
+            <div className="text-sm font-bold text-white">A/B Test Configuration</div>
+            <div className="text-xs text-slate-500">Split traffic automatically</div>
+          </div>
+        </div>
+        <div className="bg-slate-900 p-4 rounded-lg border border-white/10 space-y-4">
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <div className="w-6 h-6 bg-cyan-500 rounded flex items-center justify-center text-[10px] font-bold text-black">A</div>
+              <div className="flex-1 h-8 bg-black rounded border border-white/10 flex items-center px-2">
+                <span className="text-[10px] text-white">https://example.com/page-v1</span>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-6 h-6 bg-purple-500 rounded flex items-center justify-center text-[10px] font-bold text-white">B</div>
+              <div className="flex-1 h-8 bg-black rounded border border-white/10 flex items-center px-2">
+                <span className="text-[10px] text-white">https://example.com/page-v2</span>
+              </div>
+            </div>
+          </div>
+          <div className="space-y-1">
+            <div className="flex justify-between text-[10px]">
+              <span className="text-slate-400">Traffic Split</span>
+              <span className="text-white font-bold">60% / 40%</span>
+            </div>
+            <div className="h-3 bg-black rounded-full overflow-hidden flex">
+              <div className="bg-cyan-500 h-full" style={{ width: '60%' }} />
+              <div className="bg-purple-500 h-full" style={{ width: '40%' }} />
+            </div>
+          </div>
+        </div>
+        <div className="grid grid-cols-2 gap-3">
+          <div className="bg-slate-900 p-3 rounded-lg border border-cyan-500/20">
+            <div className="text-[10px] text-slate-500">Variant A</div>
+            <div className="text-lg font-bold text-cyan-400">3,412</div>
+            <div className="text-[10px] text-green-400">+8.2% CTR</div>
+          </div>
+          <div className="bg-slate-900 p-3 rounded-lg border border-purple-500/20">
+            <div className="text-[10px] text-slate-500">Variant B</div>
+            <div className="text-lg font-bold text-purple-400">2,274</div>
+            <div className="text-[10px] text-slate-400">+5.1% CTR</div>
+          </div>
+        </div>
+      </div>
+    )
+  },
+  {
+    title: "Geo-Routing",
+    description: "Route visitors to different destinations based on their country.",
+    features: [
+      { text: "Country-Level Targeting", example: "Send US visitors to your .com site, UK visitors to .co.uk, and German visitors to .de." },
+      { text: "Automatic Detection", example: "Country is detected automatically from browser headers — no extra setup required." },
+      { text: "Default Fallback", example: "Visitors from non-targeted countries are sent to your default destination URL." }
+    ],
+    visual: (
+      <div className="bg-black rounded-xl p-6 border border-white/10 shadow-2xl space-y-4">
+        <div className="flex items-center gap-3">
+          <div className="bg-green-500/10 p-2 rounded-xl">
+            <MapPin className="w-5 h-5 text-green-500" />
+          </div>
+          <div>
+            <div className="text-sm font-bold text-white">Geo-Routing Rules</div>
+            <div className="text-xs text-slate-500">Country-based redirects</div>
+          </div>
+        </div>
+        <div className="bg-slate-900 p-4 rounded-lg border border-white/10 space-y-2">
+          {[
+            { flag: "🇺🇸", country: "United States", url: "https://example.com/us", clicks: "4,281" },
+            { flag: "🇬🇧", country: "United Kingdom", url: "https://example.co.uk", clicks: "1,892" },
+            { flag: "🇩🇪", country: "Germany", url: "https://example.de", clicks: "967" },
+            { flag: "🇫🇷", country: "France", url: "https://example.fr", clicks: "634" }
+          ].map((route) => (
+            <div key={route.country} className="flex items-center justify-between p-2.5 bg-black/50 rounded-lg border border-white/5">
+              <div className="flex items-center gap-3">
+                <span className="text-lg">{route.flag}</span>
+                <div>
+                  <div className="text-xs font-bold text-white">{route.country}</div>
+                  <div className="text-[10px] text-slate-500 font-mono">{route.url}</div>
+                </div>
+              </div>
+              <div className="text-right">
+                <div className="text-xs font-bold text-lime-400">{route.clicks}</div>
+                <div className="text-[10px] text-slate-500">clicks</div>
+              </div>
+            </div>
+          ))}
+        </div>
+        <div className="bg-white/5 p-3 rounded-lg border border-white/5 flex items-center gap-2">
+          <Globe className="w-3 h-3 text-slate-400" />
+          <div className="text-[10px] text-slate-400">Default: <span className="text-white font-mono">https://example.com</span></div>
+        </div>
+      </div>
+    )
+  },
+  {
+    title: "Link Scheduling",
+    description: "Schedule links to activate at a future date and time.",
+    features: [
+      { text: "Future Activation", example: "Set your link to go live at a specific date and time — perfect for product launches and sales." },
+      { text: "Pre-Activation Page", example: "Visitors who click before activation see a 'not yet available' message instead of an error." },
+      { text: "Timezone Support", example: "Schedule in your local timezone with precise hour and minute control." }
+    ],
+    visual: (
+      <div className="bg-black rounded-xl p-6 border border-white/10 shadow-2xl space-y-4">
+        <div className="flex items-center gap-3">
+          <div className="bg-blue-500/10 p-2 rounded-xl">
+            <Timer className="w-5 h-5 text-blue-500" />
+          </div>
+          <div>
+            <div className="text-sm font-bold text-white">Link Scheduling</div>
+            <div className="text-xs text-slate-500">Time-based activation</div>
+          </div>
+        </div>
+        <div className="bg-slate-900 p-4 rounded-lg border border-white/10 space-y-4">
+          <div className="space-y-2">
+            <div className="text-xs text-slate-400">Activation Date & Time</div>
+            <div className="grid grid-cols-2 gap-2">
+              <div className="h-10 bg-black rounded-lg border border-white/10 flex items-center px-3 gap-2">
+                <Calendar className="w-3 h-3 text-blue-400" />
+                <span className="text-xs text-white">Mar 15, 2026</span>
+              </div>
+              <div className="h-10 bg-black rounded-lg border border-white/10 flex items-center px-3 gap-2">
+                <Clock className="w-3 h-3 text-blue-400" />
+                <span className="text-xs text-white">9:00 AM EST</span>
+              </div>
+            </div>
+          </div>
+          <div className="bg-blue-500/10 p-3 rounded-lg border border-blue-500/20 flex items-center gap-3">
+            <Timer className="w-4 h-4 text-blue-400" />
+            <div>
+              <div className="text-xs font-bold text-white">Activates in 10 days, 4 hours</div>
+              <div className="text-[10px] text-blue-400">Link will go live automatically</div>
+            </div>
+          </div>
+        </div>
+        <div className="bg-slate-900 p-3 rounded-lg border border-white/10 space-y-2">
+          <div className="text-[10px] text-slate-500 uppercase font-bold">Scheduled Links</div>
+          {[
+            { name: "Spring Sale Launch", date: "Mar 15, 9:00 AM", status: "Scheduled" },
+            { name: "Product Hunt Day", date: "Mar 20, 12:01 AM", status: "Scheduled" },
+            { name: "Newsletter Promo", date: "Mar 1, 8:00 AM", status: "Active" }
+          ].map((link) => (
+            <div key={link.name} className="flex items-center justify-between p-2 bg-black/50 rounded border border-white/5">
+              <div>
+                <div className="text-[10px] font-bold text-white">{link.name}</div>
+                <div className="text-[9px] text-slate-500">{link.date}</div>
+              </div>
+              <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full ${link.status === 'Active' ? 'bg-lime-400/10 text-lime-400' : 'bg-blue-500/10 text-blue-400'}`}>{link.status}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    )
+  },
+  {
+    title: "Click Limits",
+    description: "Set maximum clicks before a link automatically deactivates.",
+    features: [
+      { text: "Automatic Deactivation", example: "Link stops working after reaching the set click limit — great for limited offers." },
+      { text: "Real-Time Counter", example: "See how many clicks remain before the link expires with a live progress bar." },
+      { text: "Scarcity Marketing", example: "Create urgency with 'first 100 clicks only' promotions that enforce the limit automatically." }
+    ],
+    visual: (
+      <div className="bg-black rounded-xl p-6 border border-white/10 shadow-2xl space-y-4">
+        <div className="flex items-center gap-3">
+          <div className="bg-red-500/10 p-2 rounded-xl">
+            <MousePointerClick className="w-5 h-5 text-red-500" />
+          </div>
+          <div>
+            <div className="text-sm font-bold text-white">Click Limits</div>
+            <div className="text-xs text-slate-500">Auto-deactivate after N clicks</div>
+          </div>
+        </div>
+        <div className="bg-slate-900 p-4 rounded-lg border border-white/10 space-y-4">
+          <div className="space-y-2">
+            <div className="text-xs text-slate-400">Maximum Clicks</div>
+            <div className="h-10 bg-black rounded-lg border border-white/10 flex items-center px-3">
+              <span className="text-sm font-bold text-white">100</span>
+            </div>
+          </div>
+          <div className="space-y-2">
+            <div className="flex justify-between text-[10px]">
+              <span className="text-slate-400">Progress</span>
+              <span className="text-white font-bold">73 / 100 clicks</span>
+            </div>
+            <div className="h-3 bg-black rounded-full overflow-hidden">
+              <div className="bg-gradient-to-r from-lime-400 to-yellow-400 h-full rounded-full" style={{ width: '73%' }} />
+            </div>
+            <div className="text-[10px] text-yellow-400">27 clicks remaining</div>
+          </div>
+        </div>
+        <div className="grid grid-cols-2 gap-3">
+          <div className="bg-slate-900 p-3 rounded-lg border border-white/10 text-center">
+            <div className="text-lg font-bold text-lime-400">73%</div>
+            <div className="text-[10px] text-slate-500">Utilized</div>
+          </div>
+          <div className="bg-slate-900 p-3 rounded-lg border border-white/10 text-center">
+            <div className="text-lg font-bold text-white">~4 hrs</div>
+            <div className="text-[10px] text-slate-500">Est. remaining</div>
+          </div>
+        </div>
+      </div>
+    )
+  },
+  {
+    title: "Link-in-Bio Pages",
+    description: "Create beautiful landing pages with all your important links in one place.",
+    features: [
+      { text: "6 Premium Themes", example: "Choose from Default, Ocean, Sunset, Forest, Purple, and Minimal themes to match your brand." },
+      { text: "Social Links Integration", example: "Add links to Instagram, Twitter, YouTube, TikTok, and more with auto-detected platform icons." },
+      { text: "Custom Branding", example: "Set your own title, description, and avatar for a fully personalized bio page." }
+    ],
+    visual: (
+      <div className="bg-black rounded-xl p-4 border border-white/10 shadow-2xl">
+        <div className="grid grid-cols-2 gap-4">
+          <div className="bg-gradient-to-b from-purple-900 to-slate-900 rounded-xl p-4 border border-purple-500/20 space-y-3">
+            <div className="flex flex-col items-center text-center space-y-2">
+              <div className="w-12 h-12 bg-purple-500 rounded-full flex items-center justify-center text-lg font-bold text-white">JS</div>
+              <div className="text-xs font-bold text-white">Jane Smith</div>
+              <div className="text-[9px] text-purple-300">Digital creator & designer</div>
+            </div>
+            <div className="space-y-1.5">
+              {["My Portfolio", "Latest Blog Post", "Book a Call", "Free Template"].map((link) => (
+                <div key={link} className="h-8 bg-white/10 backdrop-blur rounded-lg flex items-center justify-center text-[10px] font-bold text-white border border-white/10 hover:bg-white/20 transition-colors">
+                  {link}
+                </div>
+              ))}
+            </div>
+            <div className="flex justify-center gap-3 pt-1">
+              {["IG", "TW", "YT"].map((s) => (
+                <div key={s} className="w-6 h-6 bg-white/10 rounded-full flex items-center justify-center text-[8px] text-purple-300 font-bold">{s}</div>
+              ))}
+            </div>
+          </div>
+          <div className="space-y-3">
+            <div className="text-[10px] font-bold text-white">Choose Theme</div>
+            <div className="grid grid-cols-3 gap-1.5">
+              {[
+                { name: "Default", color: "bg-slate-700" },
+                { name: "Ocean", color: "bg-blue-700" },
+                { name: "Sunset", color: "bg-orange-700" },
+                { name: "Forest", color: "bg-green-700" },
+                { name: "Purple", color: "bg-purple-700 ring-2 ring-lime-400" },
+                { name: "Minimal", color: "bg-white" }
+              ].map((theme) => (
+                <div key={theme.name} className="text-center space-y-1">
+                  <div className={`w-full h-8 ${theme.color} rounded-lg border border-white/10`} />
+                  <div className="text-[8px] text-slate-500">{theme.name}</div>
+                </div>
+              ))}
+            </div>
+            <div className="text-[10px] font-bold text-white mt-2">Add Links</div>
+            <div className="space-y-1.5">
+              <div className="h-7 bg-slate-900 rounded border border-white/10 flex items-center px-2 text-[9px] text-slate-500">Link title...</div>
+              <div className="h-7 bg-slate-900 rounded border border-white/10 flex items-center px-2 text-[9px] text-slate-500">https://...</div>
+            </div>
+            <div className="h-7 bg-lime-400 rounded flex items-center justify-center text-[9px] text-black font-bold">
+              Publish Page
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  },
+  {
+    title: "Bio Page Shop",
+    description: "Sell digital products directly from your link-in-bio page.",
+    features: [
+      { text: "Product Listings", example: "Add digital products with names, descriptions, prices, and download links right on your bio page." },
+      { text: "Integrated Payments", example: "Customers purchase directly through Stripe — funds go straight to your account." },
+      { text: "Unlimited Products", example: "List as many digital products as you want on a single bio page — no product limits." }
+    ],
+    visual: (
+      <div className="bg-black rounded-xl p-6 border border-white/10 shadow-2xl space-y-4">
+        <div className="flex items-center gap-3">
+          <div className="bg-emerald-500/10 p-2 rounded-xl">
+            <Store className="w-5 h-5 text-emerald-500" />
+          </div>
+          <div>
+            <div className="text-sm font-bold text-white">Bio Page Shop</div>
+            <div className="text-xs text-slate-500">Sell digital products from your bio page</div>
+          </div>
+        </div>
+        <div className="bg-slate-900 p-4 rounded-lg border border-white/10 space-y-3">
+          {[
+            { name: "Social Media Template Pack", price: "$29", sales: "142 sold", icon: "📦" },
+            { name: "YouTube Thumbnail Presets", price: "$19", sales: "87 sold", icon: "🎨" },
+            { name: "Content Calendar (Notion)", price: "$9", sales: "234 sold", icon: "📅" }
+          ].map((product) => (
+            <div key={product.name} className="flex items-center justify-between p-3 bg-black/50 rounded-lg border border-white/5">
+              <div className="flex items-center gap-3">
+                <span className="text-xl">{product.icon}</span>
+                <div>
+                  <div className="text-xs font-bold text-white">{product.name}</div>
+                  <div className="text-[10px] text-slate-500">{product.sales}</div>
+                </div>
+              </div>
+              <div className="text-sm font-bold text-emerald-400">{product.price}</div>
+            </div>
+          ))}
+        </div>
+        <div className="grid grid-cols-2 gap-3">
+          <div className="bg-slate-900 p-3 rounded-lg border border-white/10 text-center">
+            <div className="text-lg font-bold text-emerald-400">$2,847</div>
+            <div className="text-[10px] text-slate-500">Revenue this month</div>
+          </div>
+          <div className="bg-slate-900 p-3 rounded-lg border border-white/10 text-center">
+            <div className="text-lg font-bold text-white">463</div>
+            <div className="text-[10px] text-slate-500">Total sales</div>
+          </div>
+        </div>
+      </div>
+    )
+  },
+  {
+    title: "Conversion Tracking",
+    description: "Track conversions and revenue generated from each short link.",
+    features: [
+      { text: "Revenue Attribution", example: "See exactly how much revenue each link generates with per-click value calculations." },
+      { text: "API Integration", example: "Send conversion events from your app via a simple POST request to our tracking API." },
+      { text: "Funnel Analysis", example: "Track the full journey from click to conversion with detailed funnel breakdowns." }
+    ],
+    visual: (
+      <div className="bg-black rounded-xl p-6 border border-white/10 shadow-2xl space-y-4">
+        <div className="flex items-center gap-3">
+          <div className="bg-yellow-500/10 p-2 rounded-xl">
+            <TrendingUp className="w-5 h-5 text-yellow-500" />
+          </div>
+          <div>
+            <div className="text-sm font-bold text-white">Conversion Tracking</div>
+            <div className="text-xs text-slate-500">Revenue attribution per link</div>
+          </div>
+        </div>
+        <div className="bg-slate-900 p-4 rounded-lg border border-white/10 space-y-3">
+          <div className="grid grid-cols-3 gap-2">
+            <div className="bg-black/50 p-2 rounded-lg text-center">
+              <div className="text-[10px] text-slate-500">Clicks</div>
+              <div className="text-sm font-bold text-white">8,421</div>
+            </div>
+            <div className="bg-black/50 p-2 rounded-lg text-center">
+              <div className="text-[10px] text-slate-500">Conversions</div>
+              <div className="text-sm font-bold text-lime-400">342</div>
+            </div>
+            <div className="bg-black/50 p-2 rounded-lg text-center">
+              <div className="text-[10px] text-slate-500">Revenue</div>
+              <div className="text-sm font-bold text-yellow-400">$12,847</div>
+            </div>
+          </div>
+          <div className="space-y-1">
+            <div className="flex justify-between text-[10px]">
+              <span className="text-slate-400">Conversion Rate</span>
+              <span className="text-lime-400 font-bold">4.06%</span>
+            </div>
+            <div className="h-2 bg-black rounded-full overflow-hidden">
+              <div className="bg-lime-400 h-full rounded-full" style={{ width: '40%' }} />
+            </div>
+          </div>
+        </div>
+        <div className="bg-slate-900 p-3 rounded-lg border border-white/10 space-y-2">
+          <div className="text-[10px] text-slate-500 uppercase font-bold">Top Converting Links</div>
+          {[
+            { code: "/spring-sale", conv: "148", revenue: "$5,920", rate: "6.2%" },
+            { code: "/free-trial", conv: "112", revenue: "$4,480", rate: "3.8%" },
+            { code: "/webinar", conv: "82", revenue: "$2,447", rate: "2.9%" }
+          ].map((link) => (
+            <div key={link.code} className="flex items-center justify-between p-2 bg-black/50 rounded border border-white/5">
+              <div className="flex items-center gap-2">
+                <Link2 className="w-3 h-3 text-lime-400" />
+                <span className="text-[10px] font-mono text-white">{link.code}</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <span className="text-[10px] text-slate-400">{link.conv} conv</span>
+                <span className="text-[10px] font-bold text-yellow-400">{link.revenue}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    )
+  },
+  {
+    title: "Link Editing",
+    description: "Change your link's destination URL anytime without creating a new short link.",
+    features: [
+      { text: "Edit Destination", example: "Update where a link points without changing the short URL — keep all existing shares working." },
+      { text: "Campaign Updates", example: "Swap landing pages mid-campaign without reprinting QR codes or updating social posts." },
+      { text: "Instant Effect", example: "Changes take effect immediately — the next click goes to the new destination." }
+    ],
+    visual: (
+      <div className="bg-black rounded-xl p-6 border border-white/10 shadow-2xl space-y-4">
+        <div className="flex items-center gap-3">
+          <div className="bg-emerald-500/10 p-2 rounded-xl">
+            <Pencil className="w-5 h-5 text-emerald-400" />
+          </div>
+          <div>
+            <div className="text-sm font-bold text-white">Link Editing</div>
+            <div className="text-xs text-slate-500">Update destinations on the fly</div>
+          </div>
+        </div>
+        <div className="bg-slate-900 p-4 rounded-lg border border-white/10 space-y-4">
+          <div className="space-y-2">
+            <div className="text-xs text-slate-400">Short Link</div>
+            <div className="h-10 bg-black/50 rounded-lg border border-lime-400/30 flex items-center px-3 gap-2">
+              <Link2 className="w-3 h-3 text-lime-400" />
+              <span className="text-xs text-lime-400 font-bold">linksshrink.com/x7y</span>
+              <Lock className="w-3 h-3 text-slate-500 ml-auto" />
+            </div>
+            <div className="text-[9px] text-slate-500">Short URL stays the same</div>
+          </div>
+          <div className="flex items-center justify-center">
+            <ArrowRight className="w-4 h-4 text-slate-500" />
+          </div>
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <div className="text-xs text-slate-400">Current Destination</div>
+              <span className="text-[9px] text-red-400 line-through">old URL</span>
+            </div>
+            <div className="h-10 bg-black rounded-lg border border-white/10 flex items-center px-3 gap-2 line-through opacity-40">
+              <span className="text-[10px] text-slate-500">https://example.com/old-page</span>
+            </div>
+            <div className="text-xs text-slate-400">New Destination</div>
+            <div className="h-10 bg-black rounded-lg border border-emerald-500/30 flex items-center px-3 gap-2">
+              <span className="text-[10px] text-emerald-400">https://example.com/new-page</span>
+            </div>
+          </div>
+        </div>
+        <div className="h-10 bg-emerald-500 rounded-lg flex items-center justify-center text-xs text-black font-bold gap-2">
+          <Pencil className="w-3 h-3" /> Update Destination
+        </div>
+      </div>
+    )
+  },
+  {
+    title: "Mobile Deep Links",
+    description: "Route mobile visitors directly to your iOS or Android app.",
+    features: [
+      { text: "iOS & Android Support", example: "Set separate deep link URLs for iOS and Android — each platform gets the right app link." },
+      { text: "Smart Detection", example: "Device OS is automatically detected — iPhone users get the iOS link, Android users get theirs." },
+      { text: "Web Fallback", example: "Desktop and non-mobile visitors are sent to the regular web URL as usual." }
+    ],
+    visual: (
+      <div className="bg-black rounded-xl p-6 border border-white/10 shadow-2xl space-y-4">
+        <div className="flex items-center gap-3">
+          <div className="bg-lime-400/10 p-2 rounded-xl">
+            <Smartphone className="w-5 h-5 text-lime-400" />
+          </div>
+          <div>
+            <div className="text-sm font-bold text-white">Mobile Deep Links</div>
+            <div className="text-xs text-slate-500">App-first mobile routing</div>
+          </div>
+        </div>
+        <div className="bg-slate-900 p-4 rounded-lg border border-white/10 space-y-4">
+          <div className="flex items-center gap-3 p-3 bg-black/50 rounded-lg border border-white/5">
+            <div className="bg-slate-800 p-2 rounded-lg">
+              <span className="text-lg">🍎</span>
+            </div>
+            <div className="flex-1">
+              <div className="text-xs font-bold text-white">iOS Deep Link</div>
+              <div className="text-[10px] font-mono text-blue-400 mt-0.5">myapp://product/spring-sale</div>
+            </div>
+            <ChevronRight className="w-4 h-4 text-slate-500" />
+          </div>
+          <div className="flex items-center gap-3 p-3 bg-black/50 rounded-lg border border-white/5">
+            <div className="bg-slate-800 p-2 rounded-lg">
+              <span className="text-lg">🤖</span>
+            </div>
+            <div className="flex-1">
+              <div className="text-xs font-bold text-white">Android Deep Link</div>
+              <div className="text-[10px] font-mono text-green-400 mt-0.5">myapp://product/spring-sale</div>
+            </div>
+            <ChevronRight className="w-4 h-4 text-slate-500" />
+          </div>
+          <div className="flex items-center gap-3 p-3 bg-black/50 rounded-lg border border-white/5">
+            <div className="bg-slate-800 p-2 rounded-lg">
+              <Monitor className="w-5 h-5 text-slate-400" />
+            </div>
+            <div className="flex-1">
+              <div className="text-xs font-bold text-white">Desktop Fallback</div>
+              <div className="text-[10px] font-mono text-slate-400 mt-0.5">https://example.com/sale</div>
+            </div>
+            <ChevronRight className="w-4 h-4 text-slate-500" />
+          </div>
+        </div>
+        <div className="bg-lime-400/10 p-3 rounded-lg border border-lime-400/20 flex items-center gap-2">
+          <Zap className="w-3 h-3 text-lime-400" />
+          <span className="text-[10px] text-lime-400">Auto-detected: routing based on visitor's device</span>
+        </div>
+      </div>
+    )
+  },
+  {
+    title: "Team Workspaces",
+    description: "Collaborate with your team using shared workspaces and role-based access.",
+    features: [
+      { text: "Role-Based Access", example: "Assign Owner, Admin, or Member roles — each with different permission levels for team security." },
+      { text: "Shared Link Management", example: "All team members can view and manage links within the workspace from a single dashboard." },
+      { text: "Invite by Email", example: "Invite team members by email — they get instant access to the workspace after signing up." }
+    ],
+    visual: (
+      <div className="bg-black rounded-xl p-6 border border-white/10 shadow-2xl space-y-4">
+        <div className="flex items-center gap-3">
+          <div className="bg-indigo-500/10 p-2 rounded-xl">
+            <Users className="w-5 h-5 text-indigo-500" />
+          </div>
+          <div>
+            <div className="text-sm font-bold text-white">Marketing Team</div>
+            <div className="text-xs text-slate-500">5 members</div>
+          </div>
+        </div>
+        <div className="bg-slate-900 p-4 rounded-lg border border-white/10 space-y-2">
+          {[
+            { name: "Sarah Chen", role: "Owner", color: "text-yellow-400", bg: "bg-yellow-500/10", initials: "SC" },
+            { name: "Mike Johnson", role: "Admin", color: "text-blue-400", bg: "bg-blue-500/10", initials: "MJ" },
+            { name: "Lisa Park", role: "Member", color: "text-slate-400", bg: "bg-slate-500/10", initials: "LP" },
+            { name: "David Kim", role: "Member", color: "text-slate-400", bg: "bg-slate-500/10", initials: "DK" },
+            { name: "Anna Taylor", role: "Member", color: "text-slate-400", bg: "bg-slate-500/10", initials: "AT" }
+          ].map((member) => (
+            <div key={member.name} className="flex items-center justify-between p-2.5 bg-black/50 rounded-lg border border-white/5">
+              <div className="flex items-center gap-3">
+                <div className="w-7 h-7 bg-indigo-600 rounded-full flex items-center justify-center text-[9px] font-bold text-white">{member.initials}</div>
+                <div>
+                  <div className="text-xs font-bold text-white">{member.name}</div>
+                </div>
+              </div>
+              <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${member.bg} ${member.color}`}>{member.role}</span>
+            </div>
+          ))}
+        </div>
+        <div className="h-10 bg-indigo-500 rounded-lg flex items-center justify-center text-xs text-white font-bold gap-2">
+          <Users className="w-3 h-3" /> Invite Team Member
+        </div>
+      </div>
+    )
+  },
+  {
+    title: "Unlimited Links",
+    description: "All paid plans include unlimited link creation with no monthly caps.",
+    features: [
+      { text: "No Monthly Limits", example: "Create as many short links as you need — no 5-link cap, no restrictions, no surprises." },
+      { text: "Instant Upgrade", example: "The moment you subscribe, the cap is lifted and you can shorten unlimited URLs." },
+      { text: "All Plans Included", example: "Whether you're on Starter, Pro, or Enterprise — unlimited links are included in every paid plan." }
+    ],
+    visual: (
+      <div className="bg-black rounded-xl p-6 border border-white/10 shadow-2xl space-y-4">
+        <div className="flex items-center gap-3">
+          <div className="bg-lime-400/10 p-2 rounded-xl">
+            <Infinity className="w-5 h-5 text-lime-400" />
+          </div>
+          <div>
+            <div className="text-sm font-bold text-white">Unlimited Links</div>
+            <div className="text-xs text-slate-500">No caps on any paid plan</div>
+          </div>
+        </div>
+        <div className="bg-slate-900 p-4 rounded-lg border border-white/10 space-y-4">
+          <div className="grid grid-cols-2 gap-3">
+            <div className="bg-black/50 p-3 rounded-lg border border-red-500/20 text-center space-y-1">
+              <div className="text-[10px] text-red-400 uppercase font-bold">Free Plan</div>
+              <div className="text-xl font-bold text-white">5</div>
+              <div className="text-[10px] text-slate-500">links / month</div>
+              <div className="h-2 bg-black rounded-full overflow-hidden">
+                <div className="bg-red-500 h-full rounded-full" style={{ width: '100%' }} />
+              </div>
+              <div className="text-[9px] text-red-400">Limit reached</div>
+            </div>
+            <div className="bg-black/50 p-3 rounded-lg border border-lime-400/20 text-center space-y-1">
+              <div className="text-[10px] text-lime-400 uppercase font-bold">Paid Plan</div>
+              <div className="text-xl font-bold text-lime-400 flex items-center justify-center"><Infinity className="w-6 h-6" /></div>
+              <div className="text-[10px] text-slate-500">links / month</div>
+              <div className="h-2 bg-lime-400/20 rounded-full overflow-hidden">
+                <div className="bg-lime-400 h-full rounded-full animate-pulse" style={{ width: '30%' }} />
+              </div>
+              <div className="text-[9px] text-lime-400">No limits</div>
+            </div>
+          </div>
+          <div className="bg-lime-400/10 p-3 rounded-lg border border-lime-400/20 flex items-center gap-3">
+            <Zap className="w-4 h-4 text-lime-400 shrink-0" />
+            <div>
+              <div className="text-xs font-bold text-white">Upgrade to unlock</div>
+              <div className="text-[10px] text-lime-400">Starting at just $9.50/mo</div>
+            </div>
           </div>
         </div>
       </div>
