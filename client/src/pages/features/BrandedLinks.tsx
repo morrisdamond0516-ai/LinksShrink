@@ -7,6 +7,7 @@ import { Globe, ArrowLeft, Loader2, Copy, Check, Link2, Sparkles } from "lucide-
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
 import { Link } from "wouter";
+import Footer from "@/components/Footer";
 
 export default function BrandedLinks() {
   const [url, setUrl] = useState("");
@@ -204,6 +205,7 @@ export default function BrandedLinks() {
           </motion.div>
         )}
       </div>
+      <Footer />
     </div>
   );
 }

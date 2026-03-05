@@ -7,6 +7,7 @@ import { QrCode, Download, Palette, Link2, Loader2, ArrowLeft } from "lucide-rea
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
 import { Link } from "wouter";
+import Footer from "@/components/Footer";
 
 export default function SmartQRCode() {
   const [url, setUrl] = useState("");
@@ -187,6 +188,7 @@ export default function SmartQRCode() {
           </Card>
         </div>
       </div>
+      <Footer />
     </div>
   );
 }

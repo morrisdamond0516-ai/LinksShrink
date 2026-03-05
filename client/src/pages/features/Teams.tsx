@@ -11,6 +11,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { Link } from "wouter";
+import Footer from "@/components/Footer";
 
 interface TeamMember {
   id: number;
@@ -329,6 +330,7 @@ export default function Teams() {
           )}
         </div>
       </div>
+      <Footer />
     </div>
   );
 }

@@ -7,6 +7,7 @@ import { Clock, Calendar, AlertCircle, ArrowLeft, Loader2, Copy, Check, Link2 } 
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
 import { Link } from "wouter";
+import Footer from "@/components/Footer";
 
 export default function ExpiringLinks() {
   const [url, setUrl] = useState("");
@@ -166,6 +167,7 @@ export default function ExpiringLinks() {
           </motion.div>
         )}
       </div>
+      <Footer />
     </div>
   );
 }

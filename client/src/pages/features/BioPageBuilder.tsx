@@ -17,6 +17,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
 import { apiRequest, queryClient as qc } from "@/lib/queryClient";
 import { Link } from "wouter";
+import Footer from "@/components/Footer";
 import type { BioPage, BioPageProduct } from "@shared/schema";
 
 interface BioLink {
@@ -629,6 +630,7 @@ export default function BioPageBuilder() {
           </div>
         </div>
       </div>
+      <Footer />
     </div>
   );
 }

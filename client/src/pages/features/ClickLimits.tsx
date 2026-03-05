@@ -9,6 +9,7 @@ import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { motion } from "framer-motion";
 import { Link } from "wouter";
+import Footer from "@/components/Footer";
 
 export default function ClickLimits() {
   const [url, setUrl] = useState("");
@@ -159,6 +160,7 @@ export default function ClickLimits() {
           </motion.div>
         )}
       </div>
+      <Footer />
     </div>
   );
 }

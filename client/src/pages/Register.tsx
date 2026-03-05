@@ -12,6 +12,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { useEffect } from "react";
 import { useAuth } from "@/hooks/use-auth";
+import Footer from "@/components/Footer";
 
 const registerSchema = z.object({
   firstName: z.string().min(1, "First name is required"),
@@ -233,6 +234,7 @@ export default function Register() {
           </CardContent>
         </Card>
       </motion.div>
+      <Footer />
     </div>
   );
 }

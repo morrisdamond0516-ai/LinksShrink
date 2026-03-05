@@ -6,6 +6,7 @@ import { BarChart, TrendingUp, Users, Globe, Monitor, ArrowLeft, Loader2, MouseP
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
 import { Link } from "wouter";
+import Footer from "@/components/Footer";
 
 interface UrlWithAnalytics {
   id: number;
@@ -334,6 +335,7 @@ export default function Analytics() {
           </>
         )}
       </div>
+      <Footer />
     </div>
   );
 }

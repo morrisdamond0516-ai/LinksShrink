@@ -7,6 +7,7 @@ import { Lock, ShieldCheck, Eye, EyeOff, Link2, ArrowLeft, Loader2, Copy, Check 
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
 import { Link } from "wouter";
+import Footer from "@/components/Footer";
 
 export default function PasswordProtection() {
   const [url, setUrl] = useState("");
@@ -164,6 +165,7 @@ export default function PasswordProtection() {
           </motion.div>
         )}
       </div>
+      <Footer />
     </div>
   );
 }

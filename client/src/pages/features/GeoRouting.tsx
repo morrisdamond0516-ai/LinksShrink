@@ -10,6 +10,7 @@ import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { motion } from "framer-motion";
 import { Link } from "wouter";
+import Footer from "@/components/Footer";
 
 const COUNTRIES = [
   { code: "US", name: "United States" },
@@ -237,6 +238,7 @@ export default function GeoRouting() {
           </motion.div>
         )}
       </div>
+      <Footer />
     </div>
   );
 }

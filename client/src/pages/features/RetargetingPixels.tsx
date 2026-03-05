@@ -9,6 +9,7 @@ import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { motion } from "framer-motion";
 import { Link } from "wouter";
+import Footer from "@/components/Footer";
 
 export default function RetargetingPixels() {
   const [url, setUrl] = useState("");
@@ -183,6 +184,7 @@ export default function RetargetingPixels() {
           </motion.div>
         )}
       </div>
+      <Footer />
     </div>
   );
 }

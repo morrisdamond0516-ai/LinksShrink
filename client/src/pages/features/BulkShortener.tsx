@@ -9,6 +9,7 @@ import { Layers, Copy, Lock, Eye, EyeOff, ArrowLeft, Loader2, Check, X, Download
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
 import { Link } from "wouter";
+import Footer from "@/components/Footer";
 
 interface BulkResult {
   originalUrl: string;
@@ -244,6 +245,7 @@ export default function BulkShortener() {
           </motion.div>
         )}
       </div>
+      <Footer />
     </div>
   );
 }
