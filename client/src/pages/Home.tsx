@@ -34,7 +34,10 @@ import {
   User,
   Users,
   LineChart,
-  ShoppingBag
+  ShoppingBag,
+  Pencil,
+  Smartphone,
+  Infinity
 } from "lucide-react";
 import { motion } from "framer-motion";
 import Footer from "@/components/Footer";
@@ -328,6 +331,9 @@ export default function Home() {
     "Bio Page Shop": "/features/bio",
     "Team Workspaces": "/features/teams",
     "Conversion Tracking": "/features/conversions",
+    "Link Editing": "/pricing",
+    "Mobile Deep Links": "/features/deep-links",
+    "Unlimited Links": "/pricing",
   };
 
   const handleUnlockClick = (featureTitle: string) => {
@@ -451,6 +457,27 @@ export default function Home() {
       description: "Track conversions and revenue per link via API. Measure ROI on every campaign you run.",
       benefit: "Revenue attribution per link",
       premium: true
+    },
+    {
+      icon: <Pencil className="w-6 h-6 text-emerald-400" />,
+      title: "Link Editing",
+      description: "Change your link's destination URL anytime without creating a new short link. Update campaigns on the fly.",
+      benefit: "Update links without breaking them",
+      premium: true
+    },
+    {
+      icon: <Smartphone className="w-6 h-6 text-blue-400" />,
+      title: "Mobile Deep Links",
+      description: "Route mobile visitors directly to your iOS or Android app instead of the website.",
+      benefit: "App-first mobile experience",
+      premium: true
+    },
+    {
+      icon: <Infinity className="w-6 h-6 text-lime-400" />,
+      title: "Unlimited Links",
+      description: "All paid plans include unlimited link creation with no monthly caps or restrictions.",
+      benefit: "No limits on growth",
+      premium: true
     }
   ];
 
@@ -492,7 +519,7 @@ export default function Home() {
               </span>
             </h1>
             <p className="text-xl text-muted-foreground mb-4 max-w-2xl mx-auto">
-              The all-in-one link management platform. Analytics, QR codes, retargeting pixels, A/B testing, geo-routing, link-in-bio pages, team workspaces, and 16 premium tools. Built for marketers, businesses, and creators.
+              The all-in-one link management platform. Analytics, QR codes, retargeting pixels, A/B testing, geo-routing, link-in-bio pages, team workspaces, and 19 premium tools. Built for marketers, businesses, and creators.
             </p>
             <p className="text-sm text-slate-500 mb-12 max-w-xl mx-auto">
               Free to start — no account required. 5 free links per month with full click tracking included.

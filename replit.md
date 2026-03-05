@@ -10,7 +10,7 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes (March 2026)
 
-### 10 New Premium Features Added
+### 13 New Premium Features Added
 1. **Link-in-Bio Pages**: Customizable landing pages with themes (default, ocean, sunset, forest, purple, minimal), social links, and shop functionality. Public pages at /b/:slug
 2. **Retargeting Pixels**: Add Facebook, Google, TikTok tracking pixels to links for audience building
 3. **UTM Builder**: Auto-append UTM parameters (source, medium, campaign, term, content) to destination URLs
@@ -21,6 +21,9 @@ Preferred communication style: Simple, everyday language.
 8. **Link Scheduling**: Schedule links to activate at future dates
 9. **A/B Testing**: Split traffic between two URLs with configurable percentage
 10. **Click Limits**: Set max clicks before link auto-deactivates
+11. **Link Editing**: Change destination URL of existing short links without creating new ones
+12. **Mobile Deep Links**: Route iOS/Android mobile visitors to app URLs instead of web (ios_deep_link, android_deep_link columns)
+13. **Unlimited Links**: Paid plan subscribers bypass the 5 links/month free tier limit
 
 ### New Database Tables
 - `bio_pages` - Link-in-bio pages with themes, links (jsonb), socialLinks (jsonb)
@@ -37,6 +40,8 @@ Preferred communication style: Simple, everyday language.
 - `maxClicks` (integer) - Maximum clicks before deactivation
 - `scheduledAt` (timestamp) - Scheduled activation time
 - `deactivatedAt` (timestamp) - When link was deactivated
+- `iosDeepLink` (text) - iOS app deep link URL for mobile routing
+- `androidDeepLink` (text) - Android app deep link URL for mobile routing
 
 ### Microsoft Advertising Compliance (March 2026)
 - **Cookie Consent Banner**: `client/src/components/CookieConsent.tsx` - Fixed bottom banner on first visit, stores consent in localStorage (`cookie_consent`), two buttons (Accept All / Reject Non-Essential), linked from App.tsx
@@ -56,6 +61,7 @@ Preferred communication style: Simple, everyday language.
 - `/features/geo-routing` - GeoRouting.tsx - Geo-targeting
 - `/features/teams` - Teams.tsx - Team management
 - `/features/conversions` - ConversionTracking.tsx - Conversion tracking
+- `/features/deep-links` - DeepLinks.tsx - Mobile deep linking
 - `/b/:slug` - Public bio page rendering (server-side HTML)
 
 ### Individual Feature Purchase System (March 2026 Fix)
@@ -149,8 +155,9 @@ Preferred communication style: Simple, everyday language.
 8. Apply UTM parameters to destination URL
 9. Apply geo-routing (country-based redirect)
 10. Apply A/B testing (traffic split)
-11. Inject retargeting pixels (render HTML with delayed redirect)
-12. Final redirect
+11. Apply mobile deep linking (iOS/Android override)
+12. Inject retargeting pixels (render HTML with delayed redirect)
+13. Final redirect
 
 ### Short Code Generation (Ultra-Short)
 Base62 encoding (0-9, a-z, A-Z) from database ID. Shortest possible codes guaranteed.
