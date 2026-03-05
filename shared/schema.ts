@@ -29,6 +29,8 @@ export const urls = pgTable("urls", {
   maxClicks: integer("max_clicks"),
   scheduledAt: timestamp("scheduled_at"),
   deactivatedAt: timestamp("deactivated_at"),
+  iosDeepLink: text("ios_deep_link"),
+  androidDeepLink: text("android_deep_link"),
 });
 
 export const urlAnalytics = pgTable("url_analytics", {

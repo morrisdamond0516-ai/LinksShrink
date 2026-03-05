@@ -28,7 +28,7 @@ const plans = [
     features: [
       "5 links per month",
       "Basic link shortening",
-      "No analytics",
+      "Basic click counting",
       "No premium features",
     ],
     buttonText: "Get Started",
@@ -40,6 +40,8 @@ const plans = [
     price: "9.50",
     description: "Perfect for growing brands and creators.",
     features: [
+      "Unlimited Links",
+      "Link Editing",
       "Click Analytics",
       "Custom QR Codes",
       "Custom Slugs",
@@ -65,6 +67,10 @@ const plans = [
     price: "28.50",
     description: "Advanced marketing tools for professionals.",
     features: [
+      "Unlimited Links",
+      "Link Editing",
+      "Mobile Deep Links",
+      "Unlimited Analytics History",
       "Advanced Analytics",
       "Expiring Links",
       "Password Protection",
@@ -83,6 +89,7 @@ const plans = [
       { name: "A/B Test (1 link)", price: "5", featureKey: "ab_test_single" },
       { name: "Geo Routing (1 link)", price: "5", featureKey: "geo_routing_single" },
       { name: "Conversion Tracking (1 link)", price: "8", featureKey: "conversion_tracking" },
+      { name: "Mobile Deep Link (1 link)", price: "3", featureKey: "deep_link_single" },
     ],
   },
   {
@@ -90,6 +97,10 @@ const plans = [
     price: "48.50",
     description: "Maximum scale for agencies and teams.",
     features: [
+      "Unlimited Links",
+      "Link Editing",
+      "Mobile Deep Links",
+      "Unlimited Analytics History",
       "3,000 Bulk Links",
       "Full API Access",
       "Team Workspaces",

@@ -24,6 +24,7 @@ import LinkScheduling from "./pages/features/LinkScheduling";
 import ClickLimits from "./pages/features/ClickLimits";
 import ABTesting from "./pages/features/ABTesting";
 import GeoRouting from "./pages/features/GeoRouting";
+import DeepLinks from "./pages/features/DeepLinks";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
 import Contact from "./pages/Contact";
@@ -57,6 +58,7 @@ function Router() {
       <Route path="/features/click-limits" component={ClickLimits} />
       <Route path="/features/ab-testing" component={ABTesting} />
       <Route path="/features/geo-routing" component={GeoRouting} />
+      <Route path="/features/deep-links" component={DeepLinks} />
       <Route component={NotFound} />
     </Switch>
   );
