@@ -1,8 +1,7 @@
-import { pgTable, text, serial, timestamp, integer, boolean } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, timestamp, integer, boolean, jsonb } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
-// Re-export auth models
 export * from "./models/auth";
 
 export const urls = pgTable("urls", {
@@ -18,6 +17,18 @@ export const urls = pgTable("urls", {
   isExpired: boolean("is_expired").default(false),
   qrColor: text("qr_color").default("#000000"),
   isPremium: boolean("is_premium").default(false),
+  retargetingPixels: text("retargeting_pixels"),
+  utmSource: text("utm_source"),
+  utmMedium: text("utm_medium"),
+  utmCampaign: text("utm_campaign"),
+  utmTerm: text("utm_term"),
+  utmContent: text("utm_content"),
+  geoRoutes: jsonb("geo_routes"),
+  abTestUrl: text("ab_test_url"),
+  abTestSplit: integer("ab_test_split"),
+  maxClicks: integer("max_clicks"),
+  scheduledAt: timestamp("scheduled_at"),
+  deactivatedAt: timestamp("deactivated_at"),
 });
 
 export const urlAnalytics = pgTable("url_analytics", {
@@ -77,6 +88,58 @@ export const refundRequests = pgTable("refund_requests", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+export const bioPages = pgTable("bio_pages", {
+  id: serial("id").primaryKey(),
+  userId: text("user_id").notNull(),
+  slug: text("slug").notNull().unique(),
+  title: text("title").notNull(),
+  description: text("description"),
+  theme: text("theme").default("default"),
+  avatarUrl: text("avatar_url"),
+  links: jsonb("links").default([]),
+  socialLinks: jsonb("social_links").default({}),
+  shopEnabled: boolean("shop_enabled").default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const bioPageProducts = pgTable("bio_page_products", {
+  id: serial("id").primaryKey(),
+  bioPageId: integer("bio_page_id").notNull(),
+  name: text("name").notNull(),
+  description: text("description"),
+  price: integer("price").notNull(),
+  fileUrl: text("file_url"),
+  imageUrl: text("image_url"),
+  active: boolean("active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const teamWorkspaces = pgTable("team_workspaces", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  ownerId: text("owner_id").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const workspaceMembers = pgTable("workspace_members", {
+  id: serial("id").primaryKey(),
+  workspaceId: integer("workspace_id").notNull(),
+  userId: text("user_id").notNull(),
+  role: text("role").default("member"),
+  joinedAt: timestamp("joined_at").defaultNow(),
+});
+
+export const conversionEvents = pgTable("conversion_events", {
+  id: serial("id").primaryKey(),
+  urlId: integer("url_id").notNull(),
+  type: text("type").notNull(),
+  revenue: integer("revenue"),
+  currency: text("currency").default("usd"),
+  metadata: jsonb("metadata"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 export const insertRefundRequestSchema = createInsertSchema(refundRequests).pick({
   email: true,
   name: true,
@@ -104,6 +167,22 @@ export const insertAnalyticsSchema = createInsertSchema(urlAnalytics).omit({
   clickedAt: true,
 });
 
+export const insertBioPageSchema = createInsertSchema(bioPages).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertBioProductSchema = createInsertSchema(bioPageProducts).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertWorkspaceSchema = createInsertSchema(teamWorkspaces).omit({
+  id: true,
+  createdAt: true,
+});
+
 export type Url = typeof urls.$inferSelect;
 export type InsertUrl = z.infer<typeof insertUrlSchema>;
 export type InsertPremiumUrl = z.infer<typeof insertPremiumUrlSchema>;
@@ -111,3 +190,11 @@ export type UrlAnalytics = typeof urlAnalytics.$inferSelect;
 export type InsertAnalytics = z.infer<typeof insertAnalyticsSchema>;
 export type Entitlement = typeof entitlements.$inferSelect;
 export type UsageCredits = typeof usageCredits.$inferSelect;
+export type BioPage = typeof bioPages.$inferSelect;
+export type InsertBioPage = z.infer<typeof insertBioPageSchema>;
+export type BioPageProduct = typeof bioPageProducts.$inferSelect;
+export type InsertBioProduct = z.infer<typeof insertBioProductSchema>;
+export type TeamWorkspace = typeof teamWorkspaces.$inferSelect;
+export type InsertWorkspace = z.infer<typeof insertWorkspaceSchema>;
+export type WorkspaceMember = typeof workspaceMembers.$inferSelect;
+export type ConversionEvent = typeof conversionEvents.$inferSelect;

@@ -1,5 +1,5 @@
 import { db } from "./db";
-import { urls, urlAnalytics, usageCredits, processedLinkPacks, refundRequests, type Url, type InsertUrl, type UrlAnalytics, type InsertAnalytics, type UsageCredits, type RefundRequest, type InsertRefundRequest } from "@shared/schema";
+import { urls, urlAnalytics, usageCredits, processedLinkPacks, refundRequests, bioPages, bioPageProducts, teamWorkspaces, workspaceMembers, conversionEvents, type Url, type InsertUrl, type UrlAnalytics, type InsertAnalytics, type UsageCredits, type RefundRequest, type InsertRefundRequest, type BioPage, type InsertBioPage, type BioPageProduct, type InsertBioProduct, type TeamWorkspace, type InsertWorkspace, type WorkspaceMember, type ConversionEvent } from "@shared/schema";
 import { eq, desc, sql, and, gte, or } from "drizzle-orm";
 import crypto from "crypto";
 
@@ -22,6 +22,24 @@ export interface IStorage {
   isLinkPackProcessed(sessionId: string): Promise<boolean>;
   markLinkPackProcessed(sessionId: string, credits: number, userId?: string, anonToken?: string, ipHash?: string): Promise<void>;
   createRefundRequest(request: InsertRefundRequest, status?: string): Promise<RefundRequest>;
+  createBioPage(data: InsertBioPage): Promise<BioPage>;
+  getBioPageBySlug(slug: string): Promise<BioPage | undefined>;
+  getBioPageById(id: number): Promise<BioPage | undefined>;
+  getUserBioPages(userId: string): Promise<BioPage[]>;
+  updateBioPage(id: number, updates: Partial<BioPage>): Promise<BioPage | undefined>;
+  deleteBioPage(id: number): Promise<void>;
+  createBioProduct(data: InsertBioProduct): Promise<BioPageProduct>;
+  getBioProducts(bioPageId: number): Promise<BioPageProduct[]>;
+  updateBioProduct(id: number, updates: Partial<BioPageProduct>): Promise<BioPageProduct | undefined>;
+  getBioProductById(id: number): Promise<BioPageProduct | undefined>;
+  deleteBioProduct(id: number): Promise<void>;
+  createWorkspace(data: InsertWorkspace): Promise<TeamWorkspace>;
+  getUserWorkspaces(userId: string): Promise<TeamWorkspace[]>;
+  addWorkspaceMember(workspaceId: number, userId: string, role?: string): Promise<WorkspaceMember>;
+  getWorkspaceMembers(workspaceId: number): Promise<WorkspaceMember[]>;
+  removeWorkspaceMember(workspaceId: number, userId: string): Promise<void>;
+  recordConversion(urlId: number, type: string, revenue?: number, currency?: string, metadata?: any): Promise<ConversionEvent>;
+  getConversions(urlId: number): Promise<ConversionEvent[]>;
 }
 
 export interface CreditInfo {
@@ -40,6 +58,17 @@ export interface PremiumUrlOptions {
   expiresAt?: Date | string;
   qrColor?: string;
   isPremium?: boolean;
+  retargetingPixels?: string;
+  utmSource?: string;
+  utmMedium?: string;
+  utmCampaign?: string;
+  utmTerm?: string;
+  utmContent?: string;
+  geoRoutes?: any;
+  abTestUrl?: string;
+  abTestSplit?: number;
+  maxClicks?: number;
+  scheduledAt?: Date | string;
 }
 
 export interface UrlAnalyticsSummary {
@@ -50,16 +79,12 @@ export interface UrlAnalyticsSummary {
   topCountries: { country: string; count: number }[];
   deviceBreakdown: { device: string; count: number }[];
   browserBreakdown: { browser: string; count: number }[];
+  conversions?: { total: number; revenue: number };
 }
 
 export class DatabaseStorage implements IStorage {
-  // Base62 alphabet for shortest possible codes
-  // Using 0-9, a-z, A-Z = 62 characters
-  // Capacity: 62 1-char codes, 3,844 2-char codes, 238,328 3-char codes, etc.
   private base62Chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
   
-  // Convert a number to Base62 string - O(1) operation
-  // ID 0 = "0", ID 61 = "Z", ID 62 = "10", etc.
   private numberToBase62(num: number): string {
     if (num === 0) return this.base62Chars[0];
     let result = "";
@@ -75,11 +100,24 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createUrl(insertUrl: InsertUrl, options: PremiumUrlOptions = {}): Promise<Url> {
-    const { userId, customSlug, password, expiresAt, qrColor, isPremium } = options;
+    const { userId, customSlug, password, expiresAt, qrColor, isPremium, retargetingPixels, utmSource, utmMedium, utmCampaign, utmTerm, utmContent, geoRoutes, abTestUrl, abTestSplit, maxClicks, scheduledAt } = options;
 
     const hashedPassword = password ? this.hashPassword(password) : null;
+    
+    const extraFields = {
+      retargetingPixels: retargetingPixels || null,
+      utmSource: utmSource || null,
+      utmMedium: utmMedium || null,
+      utmCampaign: utmCampaign || null,
+      utmTerm: utmTerm || null,
+      utmContent: utmContent || null,
+      geoRoutes: geoRoutes || null,
+      abTestUrl: abTestUrl || null,
+      abTestSplit: abTestSplit || null,
+      maxClicks: maxClicks || null,
+      scheduledAt: scheduledAt ? new Date(scheduledAt) : null,
+    };
 
-    // If custom slug provided, validate and use it directly
     if (customSlug) {
       const existing = await this.getUrl(customSlug);
       if (existing) {
@@ -97,13 +135,12 @@ export class DatabaseStorage implements IStorage {
           expiresAt: expiresAt ? new Date(expiresAt) : null,
           qrColor: qrColor || "#000000",
           isPremium: isPremium || false,
+          ...extraFields,
         })
         .returning();
       return url;
     }
 
-    // For auto-generated codes: Use transaction to insert with temp code then update with ID-based Base62
-    // This guarantees the SHORTEST possible code (1 char for first 62 URLs, 2 chars for next 3844, etc.)
     const url = await db.transaction(async (tx) => {
       const tempCode = `_tmp_${Date.now()}_${Math.random().toString(36).slice(2)}`;
       
@@ -118,13 +155,12 @@ export class DatabaseStorage implements IStorage {
           expiresAt: expiresAt ? new Date(expiresAt) : null,
           qrColor: qrColor || "#000000",
           isPremium: isPremium || false,
+          ...extraFields,
         })
         .returning();
       
-      // Convert the URL's ID to Base62 for the shortest possible code
       const shortCode = this.numberToBase62(insertedUrl.id);
       
-      // Update with the real short code (within same transaction)
       const [updatedUrl] = await tx
         .update(urls)
         .set({ shortCode })
@@ -222,6 +258,9 @@ export class DatabaseStorage implements IStorage {
       browserCounts[browser] = (browserCounts[browser] || 0) + 1;
     }
 
+    const allConversions = await db.select().from(conversionEvents).where(eq(conversionEvents.urlId, urlId));
+    const conversionRevenue = allConversions.reduce((sum, c) => sum + (c.revenue || 0), 0);
+
     return {
       totalClicks: allClicks.length,
       uniqueVisitors: uniqueIps.size,
@@ -242,6 +281,10 @@ export class DatabaseStorage implements IStorage {
       browserBreakdown: Object.entries(browserCounts)
         .map(([browser, count]) => ({ browser, count }))
         .sort((a, b) => b.count - a.count),
+      conversions: {
+        total: allConversions.length,
+        revenue: conversionRevenue,
+      },
     };
   }
 
@@ -363,7 +406,6 @@ export class DatabaseStorage implements IStorage {
     const paidUsed = usage.paidUsed || 0;
     const freeUsed = usage.freeUsed || 0;
     
-    // Refund from paid first (reverse of consumption order)
     if (paidUsed > 0) {
       await db.update(usageCredits)
         .set({ paidUsed: paidUsed - 1, updatedAt: new Date() })
@@ -371,7 +413,6 @@ export class DatabaseStorage implements IStorage {
       return;
     }
     
-    // Then refund from free
     if (freeUsed > 0) {
       await db.update(usageCredits)
         .set({ freeUsed: freeUsed - 1, updatedAt: new Date() })
@@ -402,6 +443,104 @@ export class DatabaseStorage implements IStorage {
       ...(status ? { status } : {}),
     }).returning();
     return refund;
+  }
+
+  async createBioPage(data: InsertBioPage): Promise<BioPage> {
+    const [page] = await db.insert(bioPages).values(data).returning();
+    return page;
+  }
+
+  async getBioPageBySlug(slug: string): Promise<BioPage | undefined> {
+    const [page] = await db.select().from(bioPages).where(eq(bioPages.slug, slug));
+    return page;
+  }
+
+  async getBioPageById(id: number): Promise<BioPage | undefined> {
+    const [page] = await db.select().from(bioPages).where(eq(bioPages.id, id));
+    return page;
+  }
+
+  async getUserBioPages(userId: string): Promise<BioPage[]> {
+    return await db.select().from(bioPages).where(eq(bioPages.userId, userId)).orderBy(desc(bioPages.createdAt));
+  }
+
+  async updateBioPage(id: number, updates: Partial<BioPage>): Promise<BioPage | undefined> {
+    const [page] = await db.update(bioPages).set({ ...updates, updatedAt: new Date() }).where(eq(bioPages.id, id)).returning();
+    return page;
+  }
+
+  async deleteBioPage(id: number): Promise<void> {
+    await db.delete(bioPageProducts).where(eq(bioPageProducts.bioPageId, id));
+    await db.delete(bioPages).where(eq(bioPages.id, id));
+  }
+
+  async createBioProduct(data: InsertBioProduct): Promise<BioPageProduct> {
+    const [product] = await db.insert(bioPageProducts).values(data).returning();
+    return product;
+  }
+
+  async getBioProducts(bioPageId: number): Promise<BioPageProduct[]> {
+    return await db.select().from(bioPageProducts).where(eq(bioPageProducts.bioPageId, bioPageId));
+  }
+
+  async updateBioProduct(id: number, updates: Partial<BioPageProduct>): Promise<BioPageProduct | undefined> {
+    const [product] = await db.update(bioPageProducts).set(updates).where(eq(bioPageProducts.id, id)).returning();
+    return product;
+  }
+
+  async getBioProductById(id: number): Promise<BioPageProduct | undefined> {
+    const [product] = await db.select().from(bioPageProducts).where(eq(bioPageProducts.id, id));
+    return product;
+  }
+
+  async deleteBioProduct(id: number): Promise<void> {
+    await db.delete(bioPageProducts).where(eq(bioPageProducts.id, id));
+  }
+
+  async createWorkspace(data: InsertWorkspace): Promise<TeamWorkspace> {
+    const [workspace] = await db.insert(teamWorkspaces).values(data).returning();
+    await db.insert(workspaceMembers).values({ workspaceId: workspace.id, userId: data.ownerId, role: "owner" });
+    return workspace;
+  }
+
+  async getUserWorkspaces(userId: string): Promise<TeamWorkspace[]> {
+    const memberships = await db.select().from(workspaceMembers).where(eq(workspaceMembers.userId, userId));
+    if (memberships.length === 0) return [];
+    const workspaceIds = memberships.map(m => m.workspaceId);
+    const result: TeamWorkspace[] = [];
+    for (const wid of workspaceIds) {
+      const [ws] = await db.select().from(teamWorkspaces).where(eq(teamWorkspaces.id, wid));
+      if (ws) result.push(ws);
+    }
+    return result;
+  }
+
+  async addWorkspaceMember(workspaceId: number, userId: string, role: string = "member"): Promise<WorkspaceMember> {
+    const [member] = await db.insert(workspaceMembers).values({ workspaceId, userId, role }).returning();
+    return member;
+  }
+
+  async getWorkspaceMembers(workspaceId: number): Promise<WorkspaceMember[]> {
+    return await db.select().from(workspaceMembers).where(eq(workspaceMembers.workspaceId, workspaceId));
+  }
+
+  async removeWorkspaceMember(workspaceId: number, userId: string): Promise<void> {
+    await db.delete(workspaceMembers).where(and(eq(workspaceMembers.workspaceId, workspaceId), eq(workspaceMembers.userId, userId)));
+  }
+
+  async recordConversion(urlId: number, type: string, revenue?: number, currency?: string, metadata?: any): Promise<ConversionEvent> {
+    const [event] = await db.insert(conversionEvents).values({
+      urlId,
+      type,
+      revenue: revenue || null,
+      currency: currency || "usd",
+      metadata: metadata || null,
+    }).returning();
+    return event;
+  }
+
+  async getConversions(urlId: number): Promise<ConversionEvent[]> {
+    return await db.select().from(conversionEvents).where(eq(conversionEvents.urlId, urlId)).orderBy(desc(conversionEvents.createdAt));
   }
 }
 
