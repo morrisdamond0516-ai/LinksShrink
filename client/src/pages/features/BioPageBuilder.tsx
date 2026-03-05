@@ -136,7 +136,7 @@ export default function BioPageBuilder() {
         bioPageId,
         name: product.name,
         description: product.description,
-        price: Math.round(parseFloat(product.price) * 100),
+        price: parseFloat(product.price),
         imageUrl: product.imageUrl || null,
       });
       return res.json();
