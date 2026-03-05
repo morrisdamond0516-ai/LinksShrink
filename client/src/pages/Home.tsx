@@ -37,6 +37,7 @@ import {
   ShoppingBag
 } from "lucide-react";
 import { motion } from "framer-motion";
+import Footer from "@/components/Footer";
 
 interface CreditInfo {
   freeRemaining: number;
@@ -967,55 +968,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="bg-black text-slate-300 py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid md:grid-cols-5 gap-8 mb-8">
-            <div className="col-span-2">
-              <div className="flex items-center gap-2 text-white mb-4">
-                <Link2 className="w-6 h-6 text-lime-400" />
-                <span className="text-xl font-bold">LinksShrink.com</span>
-              </div>
-              <p className="text-slate-400 max-w-sm">
-                A complete link management platform with analytics, QR codes, password protection, and enterprise tools. Trusted by marketers and businesses worldwide.
-              </p>
-            </div>
-            <div>
-              <h4 className="text-white font-semibold mb-4">Product</h4>
-              <ul className="space-y-2 text-sm">
-                <li><a href="#features" className="hover:text-lime-400 transition-colors" data-testid="link-footer-features">Features</a></li>
-                <li><a href="/pricing" className="hover:text-lime-400 transition-colors" data-testid="link-footer-pricing">Pricing</a></li>
-                <li><a href="#enterprise-details" className="hover:text-lime-400 transition-colors" data-testid="link-footer-enterprise">Enterprise</a></li>
-                <li><a href="#analytics-details" className="hover:text-lime-400 transition-colors" data-testid="link-footer-analytics">Analytics</a></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="text-white font-semibold mb-4">Company</h4>
-              <ul className="space-y-2 text-sm">
-                <li><a href="#about-details" className="hover:text-lime-400 transition-colors" data-testid="link-footer-about">About</a></li>
-                <li><a href="/contact" className="hover:text-lime-400 transition-colors" data-testid="link-footer-contact">Contact</a></li>
-                <li><a href="/rules" className="hover:text-lime-400 transition-colors" data-testid="link-footer-rules">Rules & Policy</a></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="text-white font-semibold mb-4">Legal</h4>
-              <ul className="space-y-2 text-sm">
-                <li><a href="/privacy" className="hover:text-lime-400 transition-colors" data-testid="link-footer-privacy">Privacy Policy</a></li>
-                <li><a href="/terms" className="hover:text-lime-400 transition-colors" data-testid="link-footer-terms">Terms of Service</a></li>
-                <li><a href="/refund" className="hover:text-lime-400 transition-colors" data-testid="link-footer-refund">Request Refund</a></li>
-              </ul>
-            </div>
-          </div>
-          <div className="pt-8 border-t border-slate-800 text-sm text-center md:text-left flex flex-wrap justify-between gap-4">
-            <span>© {new Date().getFullYear()} LinksShrink.com. All rights reserved.</span>
-            <div className="flex gap-4">
-              <a href="/privacy" className="hover:text-lime-400 transition-colors" data-testid="link-footer-privacy-bottom">Privacy</a>
-              <a href="/terms" className="hover:text-lime-400 transition-colors" data-testid="link-footer-terms-bottom">Terms</a>
-              <a href="/contact" className="hover:text-lime-400 transition-colors" data-testid="link-footer-contact-bottom">Contact</a>
-            </div>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

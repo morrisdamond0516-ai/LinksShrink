@@ -4,6 +4,7 @@ import { Link } from "wouter";
 import { Shield, Scale, FileText, AlertCircle, Ban, ShieldCheck, Eye, Gavel } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import Footer from "@/components/Footer";
 
 export default function Rules() {
   useEffect(() => {
@@ -137,6 +138,7 @@ export default function Rules() {
           </div>
         </div>
       </div>
+      <Footer />
     </div>
   );
 }

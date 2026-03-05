@@ -38,6 +38,14 @@ Preferred communication style: Simple, everyday language.
 - `scheduledAt` (timestamp) - Scheduled activation time
 - `deactivatedAt` (timestamp) - When link was deactivated
 
+### Microsoft Advertising Compliance (March 2026)
+- **Cookie Consent Banner**: `client/src/components/CookieConsent.tsx` - Fixed bottom banner on first visit, stores consent in localStorage (`cookie_consent`), two buttons (Accept All / Reject Non-Essential), linked from App.tsx
+- **Consent-Gated Retargeting**: Retargeting pixel scripts in redirect handler (server/routes.ts) only fire when user has accepted cookies (checks localStorage `cookie_consent === 'accepted'`)
+- **Privacy Policy**: Updated with Microsoft Advertising/UET disclosure, GDPR rights, CCPA rights, cookie types, consent mode, third-party services, international data transfers
+- **Terms of Service**: Updated with all 17 features listed, user-generated content policy, third-party tracking compliance, team workspace responsibilities, data processing
+- **Contact Page**: Added Business Information card with business identity
+- **Shared Footer**: `client/src/components/Footer.tsx` - Reusable footer with Privacy, Terms, Contact, Rules links added to all pages
+
 ### New Frontend Pages
 - `/features/bio` - BioPageBuilder.tsx - Link-in-bio page builder
 - `/features/utm` - UTMBuilder.tsx - UTM parameter builder

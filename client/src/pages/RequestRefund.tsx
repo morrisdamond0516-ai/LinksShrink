@@ -18,6 +18,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { apiRequest } from "@/lib/queryClient";
+import Footer from "@/components/Footer";
 
 const refundFormSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -314,6 +315,7 @@ export default function RequestRefund() {
           </Card>
         </motion.div>
       </div>
+      <Footer />
     </div>
   );
 }

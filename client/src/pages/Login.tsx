@@ -12,6 +12,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { useEffect } from "react";
 import { useAuth } from "@/hooks/use-auth";
+import Footer from "@/components/Footer";
 
 const loginSchema = z.object({
   email: z.string().email("Please enter a valid email"),
@@ -165,6 +166,7 @@ export default function Login() {
           </CardContent>
         </Card>
       </motion.div>
+      <Footer />
     </div>
   );
 }

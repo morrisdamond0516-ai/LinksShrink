@@ -1,9 +1,10 @@
 import { useEffect } from "react";
 import { motion } from "framer-motion";
 import { Link } from "wouter";
-import { Mail, ArrowLeft, Clock, MessageSquare } from "lucide-react";
+import { Mail, ArrowLeft, Clock, MessageSquare, Building2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import Footer from "@/components/Footer";
 
 export default function Contact() {
   useEffect(() => {
@@ -139,7 +140,52 @@ export default function Contact() {
             </CardContent>
           </Card>
         </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}
+          className="mt-8"
+        >
+          <Card className="bg-slate-900 border-lime-400/20" data-testid="card-business-info">
+            <CardHeader className="flex flex-row items-center gap-4">
+              <div className="p-3 bg-lime-400/10 rounded-lg">
+                <Building2 className="w-6 h-6 text-lime-400" />
+              </div>
+              <CardTitle className="text-xl text-white">Business Information</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                <div>
+                  <span className="text-slate-500 text-sm">Business Name</span>
+                  <p className="text-white font-semibold" data-testid="text-business-name">LinksShrink.com</p>
+                </div>
+                <div>
+                  <span className="text-slate-500 text-sm">Email</span>
+                  <p>
+                    <a
+                      href="mailto:ProductionLinks@yahoo.com"
+                      className="text-lime-400 font-semibold hover:underline"
+                      data-testid="link-business-email"
+                    >
+                      ProductionLinks@yahoo.com
+                    </a>
+                  </p>
+                </div>
+                <div>
+                  <span className="text-slate-500 text-sm">Business Hours</span>
+                  <p className="text-white" data-testid="text-business-hours">Monday - Friday, 9:00 AM - 5:00 PM EST</p>
+                </div>
+                <p className="text-slate-400 text-sm leading-relaxed pt-2" data-testid="text-business-description">
+                  LinksShrink.com is a digital services company providing URL shortening and link management solutions.
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+
       </div>
+      <Footer />
     </div>
   );
 }

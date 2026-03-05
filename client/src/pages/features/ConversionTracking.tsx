@@ -8,6 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "wouter";
+import Footer from "@/components/Footer";
 
 interface ConversionEvent {
   id: number;
@@ -270,6 +271,7 @@ export default function ConversionTracking() {
           </CardContent>
         </Card>
       </div>
+      <Footer />
     </div>
   );
 }
