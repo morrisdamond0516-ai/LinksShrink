@@ -33,7 +33,8 @@ import {
   FlaskConical,
   User,
   Users,
-  LineChart
+  LineChart,
+  ShoppingBag
 } from "lucide-react";
 import { motion } from "framer-motion";
 
@@ -323,6 +324,7 @@ export default function Home() {
     "Link Scheduling": "/features/scheduling",
     "Click Limits": "/features/click-limits",
     "Link-in-Bio Pages": "/features/bio",
+    "Bio Page Shop": "/features/bio",
     "Team Workspaces": "/features/teams",
     "Conversion Tracking": "/features/conversions",
   };
@@ -424,8 +426,15 @@ export default function Home() {
     {
       icon: <User className="w-6 h-6 text-lime-500" />,
       title: "Link-in-Bio Pages",
-      description: "Build beautiful, customizable landing pages with multiple links, social icons, themes, and a built-in shop.",
-      benefit: "6 themes · Shop · Social links",
+      description: "Build beautiful, customizable landing pages with multiple links, social icons, and 6 stunning themes.",
+      benefit: "Your personal landing page",
+      premium: true
+    },
+    {
+      icon: <ShoppingBag className="w-6 h-6 text-pink-400" />,
+      title: "Bio Page Shop",
+      description: "Sell digital products directly from your bio page. Add items with images, descriptions, and pricing.",
+      benefit: "Monetize your bio page",
       premium: true
     },
     {
