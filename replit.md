@@ -10,7 +10,7 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes (March 2026)
 
-### 13 New Premium Features Added
+### 19 Premium Features
 1. **Link-in-Bio Pages**: Customizable landing pages with themes (default, ocean, sunset, forest, purple, minimal), social links, and shop functionality. Public pages at /b/:slug
 2. **Retargeting Pixels**: Add Facebook, Google, TikTok tracking pixels to links for audience building
 3. **UTM Builder**: Auto-append UTM parameters (source, medium, campaign, term, content) to destination URLs
