@@ -522,7 +522,7 @@ export default function Home() {
               The all-in-one link management platform. Analytics, QR codes, retargeting pixels, A/B testing, geo-routing, link-in-bio pages, team workspaces, and 19 premium tools. Built for marketers, businesses, and creators.
             </p>
             <p className="text-sm text-slate-500 mb-12 max-w-xl mx-auto">
-              Free to start — no account required. 5 free links per month with full click tracking included.
+              Free to start — 5 free links per month. Paid plans include unlimited links starting at $9.50/mo.
             </p>
           </motion.div>
 
@@ -648,7 +648,7 @@ export default function Home() {
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">How LinksShrink Works</h2>
             <p className="text-lg text-slate-400 max-w-2xl mx-auto">
-              More than just a URL shortener — LinksShrink.com is a complete link management platform for marketers, businesses, and creators.
+              More than just a URL shortener — LinksShrink.com is a complete link management platform with 19 premium tools including unlimited links, mobile deep linking, A/B testing, retargeting, geo-routing, and link-in-bio pages.
             </p>
           </div>
           <div className="grid md:grid-cols-3 gap-8">
@@ -761,7 +761,7 @@ export default function Home() {
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">Everything you need to grow</h2>
             <p className="text-lg text-slate-400 max-w-2xl mx-auto">
-              Upgrade to Pro to unlock a suite of powerful tools designed for marketers and businesses.
+              Unlock 19 premium tools starting at $9.50/mo — or buy any feature individually.
             </p>
           </div>
 
@@ -835,8 +835,8 @@ export default function Home() {
               </p>
               <div className="space-y-4">
                 {[
-                  { title: "SLA Guarantee", desc: "99.99% uptime with 24/7 dedicated support." },
-                  { title: "Custom Domains", desc: "Connect up to 50 unique domains for localized branding." },
+                  { title: "Unlimited Links", desc: "Create as many short links as you need with no monthly caps." },
+                  { title: "All 19 Premium Tools", desc: "Access every feature including deep links, A/B testing, retargeting, and bio pages." },
                   { title: "Team Management", desc: "Granular RBAC controls for your entire marketing department." }
                 ].map((item, i) => (
                   <div key={i} className="flex gap-4">
@@ -954,10 +954,11 @@ export default function Home() {
               </p>
               <ul className="space-y-4">
                 {[
-                  "UTM Parameter tracking & preservation",
+                  "UTM parameter tracking & preservation",
                   "Referrer identification & traffic scoring",
-                  "Geographic distribution down to the city level",
-                  "A/B testing link destination performance"
+                  "Geographic distribution & device breakdowns",
+                  "A/B testing & conversion tracking",
+                  "Unlimited analytics data retention"
                 ].map((text, i) => (
                   <li key={i} className="flex items-center gap-3 text-slate-300">
                     <Check className="w-5 h-5 text-yellow-400 shrink-0" />

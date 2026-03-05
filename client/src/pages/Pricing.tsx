@@ -104,7 +104,7 @@ const plans = [
       "3,000 Bulk Links",
       "Full API Access",
       "Team Workspaces",
-      "All Pro Features",
+      "All 19 Premium Tools",
       "Priority Support",
       "Bio Page Shop",
     ],
@@ -502,7 +502,7 @@ export default function Pricing() {
               Simple, transparent pricing
             </h1>
             <p className="text-xl text-slate-400 max-w-2xl mx-auto leading-relaxed">
-              Start free with 5 links per month. Upgrade for analytics, QR codes, retargeting, A/B testing, bio pages, and 16 premium tools — or buy features individually.
+              Start free with 5 links per month. Upgrade for unlimited links, analytics, QR codes, retargeting, A/B testing, mobile deep links, bio pages, and 19 premium tools — or buy features individually.
             </p>
           </motion.div>
         </div>
