@@ -1,5 +1,5 @@
 import { db } from "./db";
-import { urls, urlAnalytics, usageCredits, processedLinkPacks, refundRequests, bioPages, bioPageProducts, teamWorkspaces, workspaceMembers, conversionEvents, type Url, type InsertUrl, type UrlAnalytics, type InsertAnalytics, type UsageCredits, type RefundRequest, type InsertRefundRequest, type BioPage, type InsertBioPage, type BioPageProduct, type InsertBioProduct, type TeamWorkspace, type InsertWorkspace, type WorkspaceMember, type ConversionEvent } from "@shared/schema";
+import { urls, urlAnalytics, usageCredits, processedLinkPacks, refundRequests, bioPages, bioPageProducts, teamWorkspaces, workspaceMembers, conversionEvents, featurePurchases, type Url, type InsertUrl, type UrlAnalytics, type InsertAnalytics, type UsageCredits, type RefundRequest, type InsertRefundRequest, type BioPage, type InsertBioPage, type BioPageProduct, type InsertBioProduct, type TeamWorkspace, type InsertWorkspace, type WorkspaceMember, type ConversionEvent, type FeaturePurchase } from "@shared/schema";
 import { eq, desc, sql, and, gte, or } from "drizzle-orm";
 import crypto from "crypto";
 
@@ -40,6 +40,10 @@ export interface IStorage {
   removeWorkspaceMember(workspaceId: number, userId: string): Promise<void>;
   recordConversion(urlId: number, type: string, revenue?: number, currency?: string, metadata?: any): Promise<ConversionEvent>;
   getConversions(urlId: number): Promise<ConversionEvent[]>;
+  storeFeaturePurchase(sessionId: string, featureKey: string, userId?: string, ipHash?: string): Promise<FeaturePurchase>;
+  getUserFeaturePurchases(userId?: string, ipHash?: string): Promise<FeaturePurchase[]>;
+  hasFeatureAccess(featureKey: string, userId?: string, ipHash?: string): Promise<boolean>;
+  consumeFeatureUse(featureKey: string, userId?: string, ipHash?: string): Promise<boolean>;
 }
 
 export interface CreditInfo {
@@ -541,6 +545,79 @@ export class DatabaseStorage implements IStorage {
 
   async getConversions(urlId: number): Promise<ConversionEvent[]> {
     return await db.select().from(conversionEvents).where(eq(conversionEvents.urlId, urlId)).orderBy(desc(conversionEvents.createdAt));
+  }
+
+  async storeFeaturePurchase(sessionId: string, featureKey: string, userId?: string, ipHash?: string): Promise<FeaturePurchase> {
+    const existing = await db.select().from(featurePurchases).where(eq(featurePurchases.sessionId, sessionId));
+    if (existing.length > 0) return existing[0];
+
+    const [purchase] = await db.insert(featurePurchases).values({
+      sessionId,
+      featureKey,
+      userId: userId || null,
+      ipHash: ipHash || null,
+      usesRemaining: 1,
+    }).returning();
+    return purchase;
+  }
+
+  async getUserFeaturePurchases(userId?: string, ipHash?: string): Promise<FeaturePurchase[]> {
+    if (userId) {
+      return await db.select().from(featurePurchases)
+        .where(and(eq(featurePurchases.userId, userId), sql`${featurePurchases.usesRemaining} > 0`))
+        .orderBy(desc(featurePurchases.purchasedAt));
+    }
+    if (ipHash) {
+      return await db.select().from(featurePurchases)
+        .where(and(eq(featurePurchases.ipHash, ipHash), sql`${featurePurchases.usesRemaining} > 0`))
+        .orderBy(desc(featurePurchases.purchasedAt));
+    }
+    return [];
+  }
+
+  async hasFeatureAccess(featureKey: string, userId?: string, ipHash?: string): Promise<boolean> {
+    const baseConditions = [eq(featurePurchases.featureKey, featureKey), sql`${featurePurchases.usesRemaining} > 0`];
+
+    if (userId && ipHash) {
+      const results = await db.select().from(featurePurchases)
+        .where(and(...baseConditions, or(eq(featurePurchases.userId, userId), eq(featurePurchases.ipHash, ipHash))))
+        .limit(1);
+      return results.length > 0;
+    } else if (userId) {
+      const results = await db.select().from(featurePurchases)
+        .where(and(...baseConditions, eq(featurePurchases.userId, userId)))
+        .limit(1);
+      return results.length > 0;
+    } else if (ipHash) {
+      const results = await db.select().from(featurePurchases)
+        .where(and(...baseConditions, eq(featurePurchases.ipHash, ipHash)))
+        .limit(1);
+      return results.length > 0;
+    }
+    return false;
+  }
+
+  async consumeFeatureUse(featureKey: string, userId?: string, ipHash?: string): Promise<boolean> {
+    const baseConditions = [eq(featurePurchases.featureKey, featureKey), sql`${featurePurchases.usesRemaining} > 0`];
+    let identityCondition;
+
+    if (userId && ipHash) {
+      identityCondition = or(eq(featurePurchases.userId, userId), eq(featurePurchases.ipHash, ipHash));
+    } else if (userId) {
+      identityCondition = eq(featurePurchases.userId, userId);
+    } else if (ipHash) {
+      identityCondition = eq(featurePurchases.ipHash, ipHash);
+    } else {
+      return false;
+    }
+
+    const results = await db.select().from(featurePurchases).where(and(...baseConditions, identityCondition)).limit(1);
+    if (results.length === 0) return false;
+
+    await db.update(featurePurchases)
+      .set({ usesRemaining: sql`${featurePurchases.usesRemaining} - 1` })
+      .where(eq(featurePurchases.id, results[0].id));
+    return true;
   }
 }
 

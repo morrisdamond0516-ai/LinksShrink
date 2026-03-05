@@ -68,7 +68,7 @@ export default function GeoRouting() {
       const res = await apiRequest("POST", "/api/premium/shorten", {
         originalUrl: defaultUrl,
         geoRoutes,
-      });
+      }, { "x-feature-key": "geo_routing_single" });
       return res.json();
     },
     onSuccess: (data) => {

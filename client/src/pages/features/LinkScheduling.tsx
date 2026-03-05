@@ -23,7 +23,7 @@ export default function LinkScheduling() {
       const res = await apiRequest("POST", "/api/premium/shorten", {
         originalUrl: url,
         scheduledAt: new Date(scheduledDate).toISOString(),
-      });
+      }, { "x-feature-key": "scheduling_single" });
       return res.json();
     },
     onSuccess: (data) => {

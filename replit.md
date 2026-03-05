@@ -58,11 +58,20 @@ Preferred communication style: Simple, everyday language.
 - `/features/conversions` - ConversionTracking.tsx - Conversion tracking
 - `/b/:slug` - Public bio page rendering (server-side HTML)
 
+### Individual Feature Purchase System (March 2026 Fix)
+- **New DB Table**: `feature_purchases` (userId, ipHash, featureKey, sessionId, usesRemaining, purchasedAt)
+- **Payment Flow**: Stripe checkout → verify-session → stores record in `feature_purchases` table
+- **Access Control**: `requireEntitlement` middleware checks (in order): active subscription plan → session-based entitlement → individual feature purchase via `x-feature-key` header
+- **Feature Key Matching**: Frontend pages send `x-feature-key` header matching the purchased featureKey (e.g., `qr_single`, `utm_builder_single`). Comma-separated keys supported for pages that accept multiple tiers (e.g., analytics accepts `analytics_single,advanced_analytics_single`)
+- **Identity**: Feature purchases checked by both userId AND ipHash (supports anonymous purchases that carry over after login)
+- **Endpoints**: `GET /api/my-features` (list purchased features), `POST /api/consume-feature` (decrement uses)
+
 ### New API Endpoints
-- Bio Pages: `POST /api/bio/create`, `GET /api/bio/my-pages`, `GET /api/bio/:slug`, `PATCH /api/bio/:id`, `DELETE /api/bio/:id`
+- Bio Pages: `POST /api/bio/create` (requireEntitlement), `GET /api/bio/my-pages`, `GET /api/bio/:slug`, `PATCH /api/bio/:id`, `DELETE /api/bio/:id`
 - Bio Products: `POST /api/bio/:id/products`, `DELETE /api/bio/products/:productId`
 - Teams: `POST /api/teams/create`, `GET /api/teams/my-teams`, `POST /api/teams/:id/invite`, `DELETE /api/teams/:id/members/:userId`
 - Conversions: `POST /api/conversions/track`, `GET /api/conversions/:urlId`
+- Features: `GET /api/my-features`, `POST /api/consume-feature`
 
 ### Updated Individual Feature Purchases
 - **Starter**: Click Analytics ($5), QR Code ($3), Custom Slug ($2), UTM Builder ($3), Link Scheduling ($3), Click Limit ($2), Bio Page ($10)

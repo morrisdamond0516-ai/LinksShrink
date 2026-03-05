@@ -49,11 +49,12 @@ export default function BulkShortener() {
     try {
       const response = await fetch("/api/premium/bulk-shorten", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", "x-feature-key": "bulk_100" },
         body: JSON.stringify({ 
           urls: urlList, 
           password: usePassword ? password : undefined 
         }),
+        credentials: "include",
       });
 
       if (!response.ok) {

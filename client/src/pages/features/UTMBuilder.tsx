@@ -46,7 +46,7 @@ export default function UTMBuilder() {
         utmCampaign: utmCampaign || undefined,
         utmTerm: utmTerm || undefined,
         utmContent: utmContent || undefined,
-      });
+      }, { "x-feature-key": "utm_builder_single" });
       return res.json();
     },
     onSuccess: (data) => {

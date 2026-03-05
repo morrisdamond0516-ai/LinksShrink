@@ -26,7 +26,7 @@ export default function ABTesting() {
         originalUrl: primaryUrl,
         abTestUrl: secondaryUrl,
         abTestSplit: split,
-      });
+      }, { "x-feature-key": "ab_test_single" });
       return res.json();
     },
     onSuccess: (data) => {

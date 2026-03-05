@@ -28,8 +28,9 @@ export default function SmartQRCode() {
     try {
       const response = await fetch("/api/premium/qr/generate", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", "x-feature-key": "qr_single" },
         body: JSON.stringify({ url, color, backgroundColor, size: 400 }),
+        credentials: "include",
       });
 
       if (!response.ok) {
@@ -62,7 +63,10 @@ export default function SmartQRCode() {
         size: "2000",
       });
 
-      const response = await fetch(`/api/premium/qr/download?${params}`);
+      const response = await fetch(`/api/premium/qr/download?${params}`, {
+        credentials: "include",
+        headers: { "x-feature-key": "qr_single" },
+      });
       
       if (!response.ok) {
         throw new Error("Failed to download QR code");

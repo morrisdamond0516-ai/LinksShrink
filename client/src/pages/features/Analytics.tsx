@@ -44,7 +44,10 @@ export default function Analytics() {
 
   const fetchUrls = async () => {
     try {
-      const response = await fetch("/api/premium/my-urls");
+      const response = await fetch("/api/premium/my-urls", {
+        credentials: "include",
+        headers: { "x-feature-key": "analytics_single,advanced_analytics_single" },
+      });
       if (!response.ok) throw new Error("Failed to fetch URLs");
       const data = await response.json();
       setUrls(data.urls || []);
@@ -62,7 +65,10 @@ export default function Analytics() {
   const fetchAnalytics = async (urlId: number) => {
     setIsLoadingDetails(true);
     try {
-      const response = await fetch(`/api/premium/analytics/${urlId}?days=30`);
+      const response = await fetch(`/api/premium/analytics/${urlId}?days=30`, {
+        credentials: "include",
+        headers: { "x-feature-key": "analytics_single,advanced_analytics_single" },
+      });
       if (!response.ok) throw new Error("Failed to fetch analytics");
       const data = await response.json();
       setAnalytics(data.analytics);

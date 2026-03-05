@@ -23,7 +23,7 @@ export default function ClickLimits() {
       const res = await apiRequest("POST", "/api/premium/shorten", {
         originalUrl: url,
         maxClicks: parseInt(maxClicks, 10),
-      });
+      }, { "x-feature-key": "click_limit_single" });
       return res.json();
     },
     onSuccess: (data) => {

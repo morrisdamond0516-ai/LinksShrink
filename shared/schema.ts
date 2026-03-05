@@ -140,6 +140,16 @@ export const conversionEvents = pgTable("conversion_events", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+export const featurePurchases = pgTable("feature_purchases", {
+  id: serial("id").primaryKey(),
+  userId: text("user_id"),
+  ipHash: text("ip_hash"),
+  featureKey: text("feature_key").notNull(),
+  sessionId: text("session_id").notNull().unique(),
+  usesRemaining: integer("uses_remaining").default(1),
+  purchasedAt: timestamp("purchased_at").defaultNow(),
+});
+
 export const insertRefundRequestSchema = createInsertSchema(refundRequests).pick({
   email: true,
   name: true,
@@ -198,3 +208,4 @@ export type TeamWorkspace = typeof teamWorkspaces.$inferSelect;
 export type InsertWorkspace = z.infer<typeof insertWorkspaceSchema>;
 export type WorkspaceMember = typeof workspaceMembers.$inferSelect;
 export type ConversionEvent = typeof conversionEvents.$inferSelect;
+export type FeaturePurchase = typeof featurePurchases.$inferSelect;
