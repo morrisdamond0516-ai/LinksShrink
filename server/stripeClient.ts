@@ -86,12 +86,15 @@ export async function getStripeSync() {
     const { StripeSync } = await import('stripe-replit-sync');
     const secretKey = await getStripeSecretKey();
 
+    const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+
     stripeSync = new StripeSync({
       poolConfig: {
         connectionString: process.env.DATABASE_URL!,
         max: 2,
       },
       stripeSecretKey: secretKey,
+      ...(webhookSecret ? { webhookSecret } : {}),
     });
   }
   return stripeSync;
