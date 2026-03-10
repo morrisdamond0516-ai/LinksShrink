@@ -8,6 +8,26 @@ This is LinksShrink.com, a URL shortener web application built with a React fron
 
 Preferred communication style: Simple, everyday language.
 
+## IMPORTANT: Debugging & Error Checking Protocol
+
+**Every time the user asks to check for errors, you MUST:**
+1. Check development workflow logs (refresh_all_logs)
+2. Check PRODUCTION deployment logs (fetch_deployment_logs) — this is critical, many errors only appear in production (e.g., Stripe webhook failures, missing secrets)
+3. Check browser console logs
+4. Verify all required environment secrets exist: STRIPE_SECRET_KEY, STRIPE_PUBLISHABLE_KEY, STRIPE_WEBHOOK_SECRET, YAHOO_APP_PASSWORD, DATABASE_URL
+
+**Never skip production deployment logs.** The March 2026 webhook incident (153 failed Stripe webhooks over 5 days) happened because production logs were not checked during a prior error review session.
+
+## Required Environment Secrets
+
+| Secret | Purpose | Notes |
+|--------|---------|-------|
+| STRIPE_SECRET_KEY | Stripe API (server-side) | Required for all payments |
+| STRIPE_PUBLISHABLE_KEY | Stripe API (client-side) | Required for checkout |
+| STRIPE_WEBHOOK_SECRET | Webhook signature verification | Starts with whsec_ — without this, ALL webhooks fail silently |
+| YAHOO_APP_PASSWORD | Email sending (refunds, contact) | Yahoo SMTP for ProductionLinks@yahoo.com |
+| DATABASE_URL | PostgreSQL connection | Runtime managed by Replit |
+
 ## Recent Changes (March 2026)
 
 ### 19 Premium Features
