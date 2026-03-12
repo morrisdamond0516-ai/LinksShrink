@@ -1,4 +1,8 @@
 import { getUncachableStripeClient } from './stripeClient';
+import { storeEntitlement } from './entitlements';
+import { DatabaseStorage } from './storage';
+
+const storage = new DatabaseStorage();
 
 export class WebhookHandlers {
   static async processWebhook(payload: Buffer, signature: string): Promise<void> {
@@ -20,5 +24,53 @@ export class WebhookHandlers {
     const event = stripe.webhooks.constructEvent(payload, signature, webhookSecret);
 
     console.log(`Webhook verified OK: ${event.type} (${event.id})`);
+
+    if (event.type === 'checkout.session.completed') {
+      const session = event.data.object as any;
+
+      if (session.payment_status !== 'paid') {
+        console.log(`Webhook: session ${session.id} not yet paid, skipping`);
+        return;
+      }
+
+      const purchaseType = session.metadata?.purchaseType;
+      const sessionId = session.id;
+
+      try {
+        const alreadyProcessed = await storage.isLinkPackProcessed(sessionId);
+        if (alreadyProcessed) {
+          console.log(`Webhook: session ${sessionId} already processed, skipping`);
+          return;
+        }
+
+        if (purchaseType === 'link_pack') {
+          const credits = parseInt(session.metadata?.credits || '20');
+          const userId = session.metadata?.userId || undefined;
+          const anonToken = session.metadata?.anonToken || undefined;
+          const ipHash = session.metadata?.ipHash || undefined;
+
+          await storage.grantPaidCredits(credits, userId, anonToken, ipHash);
+          await storage.markLinkPackProcessed(sessionId, credits, userId, anonToken, ipHash);
+          console.log(`Webhook: granted ${credits} link credits for session ${sessionId}`);
+        } else if (purchaseType === 'individual_feature') {
+          const featureKey = session.metadata?.featureKey || '';
+          const userId = session.metadata?.userId || undefined;
+          const ipHash = session.metadata?.ipHash || '';
+
+          await storage.markLinkPackProcessed(sessionId, 0, userId, '', ipHash);
+          await storage.storeFeaturePurchase(sessionId, featureKey, userId, ipHash);
+          console.log(`Webhook: stored feature purchase '${featureKey}' for session ${sessionId}`);
+        } else {
+          const plan = session.metadata?.plan || 'Premium';
+          const customerId = typeof session.customer === 'string' ? session.customer : session.customer?.toString();
+          const userId = session.metadata?.userId;
+
+          await storeEntitlement(sessionId, plan, customerId, userId);
+          console.log(`Webhook: stored ${plan} entitlement for session ${sessionId}`);
+        }
+      } catch (err: any) {
+        console.error(`Webhook processing error for session ${sessionId}:`, err.message);
+      }
+    }
   }
 }

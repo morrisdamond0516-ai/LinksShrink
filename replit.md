@@ -28,6 +28,21 @@ Preferred communication style: Simple, everyday language.
 | YAHOO_APP_PASSWORD | Email sending (refunds, contact) | Yahoo SMTP for ProductionLinks@yahoo.com |
 | DATABASE_URL | PostgreSQL connection | Runtime managed by Replit |
 
+## Payment & Product Delivery Architecture
+
+### Dual Verification System
+Product delivery uses TWO independent paths to ensure customers always get what they paid for:
+1. **Client-side verify-session**: When the customer's browser redirects back from Stripe, the frontend calls `/api/verify-session/:sessionId` which stores the entitlement/credits/feature purchase. This is the primary path.
+2. **Webhook backup**: `checkout.session.completed` webhook events trigger the same storage logic via `server/webhookHandlers.ts`. This catches cases where the customer's browser crashes after payment but before redirect.
+
+Both paths are **idempotent** — using `isLinkPackProcessed()` to prevent double-granting.
+
+### Feature Purchase Consumption
+Individual feature purchases (`usesRemaining: 1`) are consumed in the `requireEntitlement` middleware when the customer uses the feature. The middleware calls `storage.consumeFeatureUse()` immediately upon granting access via `x-feature-key` header.
+
+### Stripe Managed Payments
+All checkout sessions use `managed_payments: { enabled: true }` with tax code `txcd_10103001` (SaaS - business use). Do NOT add `payment_method_types` — Stripe manages this automatically with managed payments.
+
 ## Recent Changes (March 2026)
 
 ### 19 Premium Features
