@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
 import Footer from "@/components/Footer";
+import { usePageView, trackFunnelEvent } from "@/hooks/use-funnel";
 
 interface FeatureShowcaseItem {
   title: string;
@@ -1105,9 +1106,11 @@ export default function Pricing() {
   const { toast } = useToast();
   const { user, isLoading, isAuthenticated } = useAuth();
   const [purchasingFeature, setPurchasingFeature] = useState<string | null>(null);
+  usePageView("/pricing");
   
   const handleFeaturePurchase = async (featureKey: string, featureName: string) => {
     if (purchasingFeature) return;
+    trackFunnelEvent("buy_click", "/pricing", { type: "feature", featureKey, featureName });
     setPurchasingFeature(featureKey);
     try {
       const response = await fetch("/api/create-feature-checkout", {
@@ -1120,6 +1123,7 @@ export default function Pricing() {
       if (!response.ok) throw new Error(data.message || "Failed to create checkout session");
       
       if (data.url) {
+        trackFunnelEvent("checkout_started", "/pricing", { type: "feature", featureKey });
         window.location.href = data.url;
       } else {
         throw new Error("Checkout URL not available");
@@ -1137,6 +1141,7 @@ export default function Pricing() {
   };
 
   const handlePayment = async (planName: string) => {
+    trackFunnelEvent("buy_click", "/pricing", { type: "plan", planName });
     if (planName === "FREE") {
       window.location.href = "/";
       return;
@@ -1170,7 +1175,7 @@ export default function Pricing() {
       if (!response.ok) throw new Error(data.message || "Failed to create checkout session");
       
       if (data.url) {
-        // Redirect the current page to Stripe checkout
+        trackFunnelEvent("checkout_started", "/pricing", { type: "plan", planName });
         window.location.href = data.url;
       } else {
         throw new Error("Checkout URL not available");

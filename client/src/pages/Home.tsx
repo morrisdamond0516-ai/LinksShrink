@@ -7,6 +7,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
 import { Link } from "wouter";
 import { useQuery } from "@tanstack/react-query";
+import { usePageView, trackFunnelEvent } from "@/hooks/use-funnel";
 import {
   Link2,
   Copy,
@@ -60,6 +61,7 @@ export default function Home() {
   const { user, isAuthenticated, isLoading: authLoading } = useAuth();
   const pendingPlanProcessed = useRef(false);
   const linkPackProcessed = useRef(false);
+  usePageView("/");
   
   const shortenMutation = useShortenUrl();
   
@@ -70,8 +72,8 @@ export default function Home() {
     refetchOnWindowFocus: true,
   });
 
-  // Handle $20 link pack purchase
   const handleBuyLinks = async () => {
+    trackFunnelEvent("buy_click", "/", { type: "link_pack", amount: 20 });
     setBuyingLinks(true);
     try {
       const response = await fetch("/api/create-link-pack-checkout", {
@@ -82,7 +84,7 @@ export default function Home() {
       
       const data = await response.json();
       if (response.ok && data.url) {
-        // Redirect the current page to Stripe checkout
+        trackFunnelEvent("checkout_started", "/", { type: "link_pack" });
         window.location.href = data.url;
       } else {
         toast({
@@ -106,6 +108,7 @@ export default function Home() {
   const handleShorten = (e: React.FormEvent) => {
     e.preventDefault();
     if (!url) return;
+    trackFunnelEvent("shorten_click", "/");
     
     // Simple frontend validation for better UX
     try {

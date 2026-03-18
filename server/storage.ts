@@ -1,5 +1,5 @@
 import { db } from "./db";
-import { urls, urlAnalytics, usageCredits, processedLinkPacks, refundRequests, bioPages, bioPageProducts, teamWorkspaces, workspaceMembers, conversionEvents, featurePurchases, type Url, type InsertUrl, type UrlAnalytics, type InsertAnalytics, type UsageCredits, type RefundRequest, type InsertRefundRequest, type BioPage, type InsertBioPage, type BioPageProduct, type InsertBioProduct, type TeamWorkspace, type InsertWorkspace, type WorkspaceMember, type ConversionEvent, type FeaturePurchase } from "@shared/schema";
+import { urls, urlAnalytics, usageCredits, processedLinkPacks, refundRequests, bioPages, bioPageProducts, teamWorkspaces, workspaceMembers, conversionEvents, featurePurchases, funnelEvents, type Url, type InsertUrl, type UrlAnalytics, type InsertAnalytics, type UsageCredits, type RefundRequest, type InsertRefundRequest, type BioPage, type InsertBioPage, type BioPageProduct, type InsertBioProduct, type TeamWorkspace, type InsertWorkspace, type WorkspaceMember, type ConversionEvent, type FeaturePurchase, type FunnelEvent } from "@shared/schema";
 import { eq, desc, sql, and, gte, or } from "drizzle-orm";
 import crypto from "crypto";
 
@@ -44,6 +44,8 @@ export interface IStorage {
   getUserFeaturePurchases(userId?: string, ipHash?: string): Promise<FeaturePurchase[]>;
   hasFeatureAccess(featureKey: string, userId?: string, ipHash?: string): Promise<boolean>;
   consumeFeatureUse(featureKey: string, userId?: string, ipHash?: string): Promise<boolean>;
+  recordFunnelEvent(event: { eventType: string; page?: string; metadata?: any; sessionId?: string; userId?: string; ipHash?: string; userAgent?: string; referrer?: string }): Promise<FunnelEvent>;
+  getFunnelStats(days?: number): Promise<any>;
 }
 
 export interface CreditInfo {
@@ -618,6 +620,65 @@ export class DatabaseStorage implements IStorage {
       .set({ usesRemaining: sql`${featurePurchases.usesRemaining} - 1` })
       .where(eq(featurePurchases.id, results[0].id));
     return true;
+  }
+
+  async recordFunnelEvent(event: { eventType: string; page?: string; metadata?: any; sessionId?: string; userId?: string; ipHash?: string; userAgent?: string; referrer?: string }): Promise<FunnelEvent> {
+    const [result] = await db.insert(funnelEvents).values({
+      eventType: event.eventType,
+      page: event.page || null,
+      metadata: event.metadata || null,
+      sessionId: event.sessionId || null,
+      userId: event.userId || null,
+      ipHash: event.ipHash || null,
+      userAgent: event.userAgent || null,
+      referrer: event.referrer || null,
+    }).returning();
+    return result;
+  }
+
+  async getFunnelStats(days: number = 30): Promise<any> {
+    const since = new Date();
+    since.setDate(since.getDate() - days);
+
+    const events = await db.select({
+      eventType: funnelEvents.eventType,
+      page: funnelEvents.page,
+      count: sql<number>`count(*)::int`,
+      uniqueSessions: sql<number>`count(distinct ${funnelEvents.sessionId})::int`,
+    })
+    .from(funnelEvents)
+    .where(gte(funnelEvents.createdAt, since))
+    .groupBy(funnelEvents.eventType, funnelEvents.page);
+
+    const dailyEvents = await db.select({
+      date: sql<string>`to_char(${funnelEvents.createdAt}, 'YYYY-MM-DD')`,
+      eventType: funnelEvents.eventType,
+      count: sql<number>`count(*)::int`,
+    })
+    .from(funnelEvents)
+    .where(gte(funnelEvents.createdAt, since))
+    .groupBy(sql`to_char(${funnelEvents.createdAt}, 'YYYY-MM-DD')`, funnelEvents.eventType)
+    .orderBy(sql`to_char(${funnelEvents.createdAt}, 'YYYY-MM-DD')`);
+
+    const recentEvents = await db.select()
+    .from(funnelEvents)
+    .orderBy(desc(funnelEvents.createdAt))
+    .limit(50);
+
+    const topReferrers = await db.select({
+      referrer: funnelEvents.referrer,
+      count: sql<number>`count(*)::int`,
+    })
+    .from(funnelEvents)
+    .where(and(
+      gte(funnelEvents.createdAt, since),
+      sql`${funnelEvents.referrer} IS NOT NULL AND ${funnelEvents.referrer} != ''`
+    ))
+    .groupBy(funnelEvents.referrer)
+    .orderBy(desc(sql`count(*)`))
+    .limit(10);
+
+    return { events, dailyEvents, recentEvents, topReferrers };
   }
 }
 

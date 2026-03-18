@@ -211,3 +211,18 @@ export type InsertWorkspace = z.infer<typeof insertWorkspaceSchema>;
 export type WorkspaceMember = typeof workspaceMembers.$inferSelect;
 export type ConversionEvent = typeof conversionEvents.$inferSelect;
 export type FeaturePurchase = typeof featurePurchases.$inferSelect;
+
+export const funnelEvents = pgTable("funnel_events", {
+  id: serial("id").primaryKey(),
+  eventType: text("event_type").notNull(),
+  page: text("page"),
+  metadata: jsonb("metadata"),
+  sessionId: text("session_id"),
+  userId: text("user_id"),
+  ipHash: text("ip_hash"),
+  userAgent: text("user_agent"),
+  referrer: text("referrer"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export type FunnelEvent = typeof funnelEvents.$inferSelect;
