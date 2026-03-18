@@ -13,6 +13,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useEffect } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import Footer from "@/components/Footer";
+import { usePageView, trackFunnelEvent } from "@/hooks/use-funnel";
 
 const loginSchema = z.object({
   email: z.string().email("Please enter a valid email"),
@@ -26,6 +27,7 @@ export default function Login() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const { isAuthenticated, isLoading: authLoading } = useAuth();
+  usePageView("/login");
 
   useEffect(() => {
     if (!authLoading && isAuthenticated) {
@@ -61,6 +63,7 @@ export default function Login() {
       return result;
     },
     onSuccess: () => {
+      trackFunnelEvent("login", "/login");
       queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
       toast({
         title: "Welcome back!",

@@ -60,7 +60,16 @@ All checkout sessions use `managed_payments: { enabled: true }` with tax code `t
 12. **Mobile Deep Links**: Route iOS/Android mobile visitors to app URLs instead of web (ios_deep_link, android_deep_link columns)
 13. **Unlimited Links**: Paid plan subscribers bypass the 5 links/month free tier limit
 
+### Purchase Funnel Analytics (March 2026)
+- **Funnel Tracking**: Automatic tracking of page views, URL shortening, buy button clicks, checkout starts, and checkout completions
+- **Admin Dashboard**: `/admin/funnel` page (login required) shows funnel visualization, page view breakdown, buy click breakdown, top referrers, recent activity feed
+- **Database Table**: `funnel_events` (eventType, page, metadata, sessionId, userId, ipHash, userAgent, referrer, createdAt)
+- **Frontend Tracking**: `usePageView()` hook and `trackFunnelEvent()` on Home, Pricing, Login, Register pages
+- **Server Tracking**: Webhook handler records `checkout_completed` events
+- **API**: `POST /api/funnel/track` (public), `GET /api/funnel/stats?days=30` (auth required)
+
 ### New Database Tables
+- `funnel_events` - Purchase funnel tracking events with page views, clicks, and conversions
 - `bio_pages` - Link-in-bio pages with themes, links (jsonb), socialLinks (jsonb)
 - `bio_page_products` - Digital products for bio page shops
 - `team_workspaces` - Team/workspace management

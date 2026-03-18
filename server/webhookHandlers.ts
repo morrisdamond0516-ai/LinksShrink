@@ -1,6 +1,7 @@
 import { getUncachableStripeClient } from './stripeClient';
 import { storeEntitlement } from './entitlements';
 import { DatabaseStorage } from './storage';
+import crypto from 'crypto';
 
 const storage = new DatabaseStorage();
 
@@ -68,6 +69,14 @@ export class WebhookHandlers {
           await storeEntitlement(sessionId, plan, customerId, userId);
           console.log(`Webhook: stored ${plan} entitlement for session ${sessionId}`);
         }
+        await storage.recordFunnelEvent({
+          eventType: "checkout_completed",
+          page: "/webhook",
+          metadata: { purchaseType, plan: session.metadata?.plan, featureKey: session.metadata?.featureKey, amount: session.amount_total },
+          sessionId,
+          userId: session.metadata?.userId,
+          ipHash: session.metadata?.ipHash,
+        });
       } catch (err: any) {
         console.error(`Webhook processing error for session ${sessionId}:`, err.message);
       }

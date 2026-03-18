@@ -13,6 +13,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useEffect } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import Footer from "@/components/Footer";
+import { usePageView, trackFunnelEvent } from "@/hooks/use-funnel";
 
 const registerSchema = z.object({
   firstName: z.string().min(1, "First name is required"),
@@ -32,6 +33,7 @@ export default function Register() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const { isAuthenticated, isLoading: authLoading } = useAuth();
+  usePageView("/register");
 
   useEffect(() => {
     if (!authLoading && isAuthenticated) {
@@ -72,6 +74,7 @@ export default function Register() {
       return result;
     },
     onSuccess: () => {
+      trackFunnelEvent("register", "/register");
       queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
       toast({
         title: "Account Created!",
