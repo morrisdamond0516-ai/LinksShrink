@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useShortenUrl } from "@/hooks/use-shortener";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -484,8 +484,59 @@ export default function Home() {
     }
   ];
 
+  const bubbleMessages = [
+    "Discover ebooks you won't find anywhere else",
+    "Rare & exclusive digital reads",
+    "New titles added weekly",
+    "Games, guides & hidden gems",
+    "Visit EbookGamez.com",
+  ];
+  const [bubbleIndex, setBubbleIndex] = useState(0);
+  const [bubbleFading, setBubbleFading] = useState(false);
+  const [bubbleDismissed, setBubbleDismissed] = useState(false);
+
+  useEffect(() => {
+    if (bubbleDismissed) return;
+    const interval = setInterval(() => {
+      setBubbleFading(true);
+      setTimeout(() => {
+        setBubbleIndex((i) => (i + 1) % bubbleMessages.length);
+        setBubbleFading(false);
+      }, 400);
+    }, 3500);
+    return () => clearInterval(interval);
+  }, [bubbleDismissed]);
+
   return (
     <div className="min-h-screen bg-black">
+      {!bubbleDismissed && (
+        <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-2" data-testid="ebookgamez-bubble">
+          <div
+            className="relative bg-slate-900/95 border border-lime-400/20 backdrop-blur-md rounded-2xl rounded-br-sm px-4 py-3 shadow-lg shadow-lime-400/5 max-w-[220px] cursor-pointer group hover:border-lime-400/40 transition-all"
+            onClick={() => window.open("https://EbookGamez.com", "_blank")}
+          >
+            <button
+              onClick={(e) => { e.stopPropagation(); setBubbleDismissed(true); }}
+              className="absolute -top-2 -right-2 w-5 h-5 bg-slate-800 border border-slate-700 rounded-full flex items-center justify-center text-slate-500 hover:text-white hover:border-lime-400/50 transition-colors text-xs"
+              data-testid="button-dismiss-bubble"
+              aria-label="Dismiss"
+            >
+              ×
+            </button>
+            <p className={`text-xs text-slate-300 group-hover:text-white transition-all duration-300 ${bubbleFading ? "opacity-0 translate-y-1" : "opacity-100 translate-y-0"}`}>
+              {bubbleMessages[bubbleIndex]}
+            </p>
+            <p className="text-[10px] text-lime-400/70 mt-1 font-medium group-hover:text-lime-400 transition-colors">EbookGamez.com →</p>
+          </div>
+          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-lime-400 to-yellow-400 flex items-center justify-center shadow-lg shadow-lime-400/20 cursor-pointer hover:scale-110 transition-transform animate-bounce"
+            style={{ animationDuration: "3s" }}
+            onClick={() => window.open("https://EbookGamez.com", "_blank")}
+          >
+            <span className="text-xl">📚</span>
+          </div>
+        </div>
+      )}
+
       {/* Navbar */}
       <nav className="border-b border-white/10 bg-black/50 backdrop-blur-md sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between text-white">
@@ -506,22 +557,6 @@ export default function Home() {
           </div>
         </div>
       </nav>
-
-      <a
-        href="https://EbookGamez.com"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="block bg-gradient-to-r from-lime-400/10 via-yellow-400/5 to-lime-400/10 border-b border-lime-400/10 hover:from-lime-400/15 hover:via-yellow-400/10 hover:to-lime-400/15 transition-all group"
-        data-testid="link-ebookgamez-ad"
-      >
-        <div className="max-w-7xl mx-auto px-4 py-2 flex items-center justify-center gap-3 text-sm">
-          <span className="text-slate-400 group-hover:text-slate-300 transition-colors">Check out our sister site</span>
-          <span className="text-lime-400 font-bold group-hover:text-lime-300 transition-colors">EbookGamez.com</span>
-          <span className="text-slate-500">—</span>
-          <span className="text-slate-400 group-hover:text-slate-300 transition-colors hidden sm:inline">Ebooks, games & digital downloads</span>
-          <ArrowRight className="w-3.5 h-3.5 text-lime-400/60 group-hover:text-lime-400 group-hover:translate-x-0.5 transition-all" />
-        </div>
-      </a>
 
       {/* Hero Section */}
       <section id="about" className="relative pt-20 pb-32 px-4 overflow-hidden">
