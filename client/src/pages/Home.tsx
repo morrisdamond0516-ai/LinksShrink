@@ -999,6 +999,28 @@ export default function Home() {
         </div>
       </section>
 
+      <a
+        href="https://EbookGamez.com"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="block mx-4 mb-8 group"
+        data-testid="link-ebookgamez-ad"
+      >
+        <div className="max-w-3xl mx-auto relative overflow-hidden rounded-2xl border border-purple-500/40 bg-gradient-to-r from-purple-900/60 via-indigo-900/60 to-purple-900/60 px-6 py-4 flex items-center justify-between gap-4 transition-all hover:border-purple-400/70 hover:shadow-lg hover:shadow-purple-500/20">
+          <div className="absolute inset-0 bg-gradient-to-r from-purple-500/10 via-pink-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+          <div className="flex items-center gap-3 relative z-10">
+            <span className="text-2xl">🎮</span>
+            <div>
+              <p className="text-white font-bold text-sm">EbookGamez.com</p>
+              <p className="text-purple-300 text-xs">Ebooks, games & digital downloads</p>
+            </div>
+          </div>
+          <span className="relative z-10 bg-purple-500 hover:bg-purple-400 text-white text-xs font-bold px-4 py-2 rounded-full transition-colors whitespace-nowrap">
+            Visit Now →
+          </span>
+        </div>
+      </a>
+
       <Footer />
     </div>
   );
