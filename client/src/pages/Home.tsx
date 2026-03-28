@@ -510,7 +510,7 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-black">
       {!bubbleDismissed && (
-        <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-2" data-testid="ebookgamez-bubble">
+        <div className="fixed top-24 right-6 z-50 flex flex-col items-end gap-2" data-testid="ebookgamez-bubble">
           <div
             className="relative bg-slate-900/95 border border-lime-400/20 backdrop-blur-md rounded-2xl rounded-br-sm px-4 py-3 shadow-lg shadow-lime-400/5 max-w-[220px] cursor-pointer group hover:border-lime-400/40 transition-all"
             onClick={() => window.open("https://EbookGamez.com", "_blank")}
