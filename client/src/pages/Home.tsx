@@ -573,7 +573,7 @@ export default function Home() {
               </span>
             </h1>
             <p className="text-xl text-muted-foreground mb-4 max-w-2xl mx-auto">
-              The all-in-one link management platform. Analytics, QR codes, retargeting pixels, A/B testing, geo-routing, link-in-bio pages, team workspaces, and 19 premium tools. Built for marketers, businesses, and creators.
+              The all-in-one link management platform with AI Video Ad Creator, analytics, QR codes, retargeting pixels, A/B testing, geo-routing, link-in-bio pages, team workspaces, and 20 premium tools. Built for marketers, businesses, and creators.
             </p>
             <p className="text-sm text-slate-500 mb-12 max-w-xl mx-auto">
               Free to start — 5 free links per month. Paid plans include unlimited links starting at $9.50/mo.
@@ -697,12 +697,106 @@ export default function Home() {
       </section>
 
       {/* How It Works Section */}
+      <section className="py-20 bg-gradient-to-b from-black via-slate-900/50 to-black border-t border-white/5 overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+            >
+              <div className="inline-flex items-center gap-2 bg-lime-400/10 text-lime-400 px-4 py-1.5 rounded-full text-sm font-medium mb-6">
+                <Zap className="w-4 h-4" />
+                NEW — AI Video Ad Creator
+              </div>
+              <h2 className="text-3xl md:text-5xl font-extrabold text-white mb-6 leading-tight">
+                Create Video Ads with{" "}
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-lime-400 to-yellow-400">
+                  Realistic AI Presenters
+                </span>
+              </h2>
+              <p className="text-lg text-slate-400 mb-6 leading-relaxed">
+                Generate professional video ads in seconds. Pick a realistic AI person, write your script, and get ready-to-use ads for Google, Microsoft, YouTube, Instagram, and TikTok — all from one click.
+              </p>
+              <div className="space-y-3 mb-8">
+                {[
+                  "Choose from 1,000+ realistic AI avatars & voices",
+                  "One-click Full Ad Package: horizontal, vertical & square videos",
+                  "Perfect for Google Ads, Performance Max & social media",
+                  "Download and upload directly to your ad campaigns",
+                ].map((item, i) => (
+                  <div key={i} className="flex items-start gap-3">
+                    <Check className="w-5 h-5 text-lime-400 mt-0.5 shrink-0" />
+                    <span className="text-slate-300 text-sm">{item}</span>
+                  </div>
+                ))}
+              </div>
+              <Link href="/features/video-ads">
+                <Button className="bg-lime-400 hover:bg-lime-500 text-black font-bold h-12 px-8 text-base" data-testid="button-try-video-ads">
+                  Try AI Video Ads →
+                </Button>
+              </Link>
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, x: 30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              className="relative"
+            >
+              <div className="relative bg-slate-900/80 border border-white/10 rounded-2xl p-6 backdrop-blur-sm">
+                <div className="flex items-center gap-3 mb-5">
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-lime-400 to-yellow-400 flex items-center justify-center">
+                    <User className="w-5 h-5 text-black" />
+                  </div>
+                  <div>
+                    <p className="text-white font-semibold text-sm">AI Presenter</p>
+                    <p className="text-slate-500 text-xs">Speaking your script</p>
+                  </div>
+                  <div className="ml-auto flex items-center gap-1.5 bg-lime-400/10 text-lime-400 px-2.5 py-1 rounded-full text-xs font-medium">
+                    <div className="w-1.5 h-1.5 rounded-full bg-lime-400 animate-pulse" />
+                    Live Preview
+                  </div>
+                </div>
+                <div className="bg-black rounded-xl aspect-video flex items-center justify-center border border-white/5 mb-5 overflow-hidden relative">
+                  <div className="absolute inset-0 bg-gradient-to-br from-lime-400/5 to-yellow-400/5" />
+                  <div className="text-center relative z-10">
+                    <div className="w-16 h-16 rounded-full bg-slate-800 border-2 border-lime-400/30 flex items-center justify-center mx-auto mb-3">
+                      <User className="w-8 h-8 text-slate-500" />
+                    </div>
+                    <p className="text-slate-500 text-xs">Your AI presenter appears here</p>
+                  </div>
+                </div>
+                <div className="grid grid-cols-3 gap-3">
+                  <div className="bg-black/60 rounded-lg p-3 border border-white/5 text-center">
+                    <div className="w-8 h-5 rounded bg-slate-800 border border-slate-700 mx-auto mb-1.5" />
+                    <p className="text-[10px] text-slate-500">Horizontal</p>
+                    <p className="text-[9px] text-slate-600">1920×1080</p>
+                  </div>
+                  <div className="bg-black/60 rounded-lg p-3 border border-white/5 text-center">
+                    <div className="w-3.5 h-6 rounded bg-slate-800 border border-slate-700 mx-auto mb-1.5" />
+                    <p className="text-[10px] text-slate-500">Vertical</p>
+                    <p className="text-[9px] text-slate-600">1080×1920</p>
+                  </div>
+                  <div className="bg-black/60 rounded-lg p-3 border border-white/5 text-center">
+                    <div className="w-5 h-5 rounded bg-slate-800 border border-slate-700 mx-auto mb-1.5" />
+                    <p className="text-[10px] text-slate-500">Square</p>
+                    <p className="text-[9px] text-slate-600">1080×1080</p>
+                  </div>
+                </div>
+              </div>
+              <div className="absolute -top-4 -right-4 w-24 h-24 bg-lime-400/10 rounded-full blur-3xl" />
+              <div className="absolute -bottom-4 -left-4 w-32 h-32 bg-yellow-400/10 rounded-full blur-3xl" />
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
       <section className="py-20 bg-black border-t border-white/5">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">How LinksShrink Works</h2>
             <p className="text-lg text-slate-400 max-w-2xl mx-auto">
-              More than just a URL shortener — LinksShrink.com is a complete link management platform with 19 premium tools including unlimited links, mobile deep linking, A/B testing, retargeting, geo-routing, and link-in-bio pages.
+              More than just a URL shortener — LinksShrink.com is a complete link management platform with 20 premium tools including AI Video Ads, unlimited links, mobile deep linking, A/B testing, retargeting, geo-routing, and link-in-bio pages.
             </p>
           </div>
           <div className="grid md:grid-cols-3 gap-8">
@@ -815,7 +909,7 @@ export default function Home() {
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">Everything you need to grow</h2>
             <p className="text-lg text-slate-400 max-w-2xl mx-auto">
-              Unlock 19 premium tools starting at $9.50/mo — or buy any feature individually.
+              Unlock 20 premium tools starting at $9.50/mo — or buy any feature individually.
             </p>
           </div>
 
@@ -890,7 +984,7 @@ export default function Home() {
               <div className="space-y-4">
                 {[
                   { title: "Unlimited Links", desc: "Create as many short links as you need with no monthly caps." },
-                  { title: "All 19 Premium Tools", desc: "Access every feature including deep links, A/B testing, retargeting, and bio pages." },
+                  { title: "All 20 Premium Tools", desc: "Access every feature including AI Video Ads, deep links, A/B testing, retargeting, and bio pages." },
                   { title: "Team Management", desc: "Granular RBAC controls for your entire marketing department." }
                 ].map((item, i) => (
                   <div key={i} className="flex gap-4">

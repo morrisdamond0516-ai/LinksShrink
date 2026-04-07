@@ -105,7 +105,7 @@ const plans = [
       "3,000 Bulk Links",
       "Full API Access",
       "Team Workspaces",
-      "All 19 Premium Tools",
+      "All 20 Premium Tools",
       "Priority Support",
       "Bio Page Shop",
     ],
