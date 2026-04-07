@@ -1,0 +1,52 @@
+Quick Start
+Get from zero to a working integration in minutes. All requests use the same auth.
+
+📘
+For agents:
+
+if you are an agent reading this doc, please visit: https://docs.heygen.com/llms.txt. This document is for humans, not for you.
+
+
+1. Auth
+HeyGen offers multiple integration paths—Direct API and MCP—each with its own authentication method. Understanding which flow applies to your use case will determine how you authenticate and how usage is billed.
+
+
+Integration Path	Auth Method	Billing Source
+MCP (Model Context Protocol)	OAuth	Web plan + premium credits
+Direct API	API Key	API balance (API dashboard)
+
+📘
+Note:
+
+For usage quotas, request limits, and pricing details, see Limits page.
+2. Pick your path
+Examples:
+
+Video Agent (prompt → video)
+Flow: One prompt → one video. No avatar or template needed.
+
+Use when: You want the fastest path from text to video.
+Endpoint: POST https://api.heygen.com/v1/video_agent/generate
+Body: { "prompt": "Describe your video..." }
+Docs: Create with Video Agent
+Bash
+
+curl -X POST "https://api.heygen.com/v1/video_agent/generate" \
+  -H "X-API-KEY: $HEYGEN_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"prompt": "A presenter explaining our product launch in 30 seconds"}'
+Video Translate (video → translated video)
+Flow: Upload or reference a video → get back the same video in another language.
+
+Use when: You have an existing video and need a translated version.
+Endpoint: POST https://api.heygen.com/v1/video_translate/translate
+You need: Source video + target language. See supported languages.
+Use Digital Twin or Photo Avatar
+Flow: You need an avatar first, then use its ID to generate videos.
+
+Create an avatar (once), either:
+Web: HeyGen App → create Photo Avatar or Digital Twin, or
+API: Create Photo Avatar / Create Digital Twin
+Get the avatar ID from the app or API response.
+Generate video using that ID (e.g. Create a Video with avatar_id and your script).
+Use when: You want a specific look/persona (photo avatar or digital twin) in every video.

@@ -226,3 +226,29 @@ export const funnelEvents = pgTable("funnel_events", {
 });
 
 export type FunnelEvent = typeof funnelEvents.$inferSelect;
+
+export const videoAds = pgTable("video_ads", {
+  id: serial("id").primaryKey(),
+  userId: text("user_id").notNull(),
+  heygenVideoId: text("heygen_video_id"),
+  status: text("status").default("pending"),
+  prompt: text("prompt").notNull(),
+  avatarId: text("avatar_id"),
+  voiceId: text("voice_id"),
+  targetUrl: text("target_url"),
+  videoUrl: text("video_url"),
+  thumbnailUrl: text("thumbnail_url"),
+  duration: integer("duration"),
+  errorMessage: text("error_message"),
+  createdAt: timestamp("created_at").defaultNow(),
+  completedAt: timestamp("completed_at"),
+});
+
+export const insertVideoAdSchema = createInsertSchema(videoAds).omit({
+  id: true,
+  createdAt: true,
+  completedAt: true,
+});
+
+export type VideoAd = typeof videoAds.$inferSelect;
+export type InsertVideoAd = z.infer<typeof insertVideoAdSchema>;

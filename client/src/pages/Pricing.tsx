@@ -114,6 +114,7 @@ const plans = [
     individualFeatures: [
       { name: "Bulk Links (100 links)", price: "10", featureKey: "bulk_100" },
       { name: "API Access (24hr pass)", price: "15", featureKey: "api_day_pass" },
+      { name: "AI Video Ad (1 video)", price: "5", featureKey: "video_ad_single" },
     ],
   },
 ];

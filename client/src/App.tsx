@@ -25,6 +25,7 @@ import ClickLimits from "./pages/features/ClickLimits";
 import ABTesting from "./pages/features/ABTesting";
 import GeoRouting from "./pages/features/GeoRouting";
 import DeepLinks from "./pages/features/DeepLinks";
+import VideoAds from "./pages/features/VideoAds";
 import AdminFunnel from "./pages/AdminFunnel";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
@@ -60,6 +61,7 @@ function Router() {
       <Route path="/features/ab-testing" component={ABTesting} />
       <Route path="/features/geo-routing" component={GeoRouting} />
       <Route path="/features/deep-links" component={DeepLinks} />
+      <Route path="/features/video-ads" component={VideoAds} />
       <Route path="/admin/funnel" component={AdminFunnel} />
       <Route component={NotFound} />
     </Switch>
