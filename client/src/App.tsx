@@ -9,6 +9,8 @@ import Pricing from "@/pages/Pricing";
 import Rules from "./pages/Rules";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
 import BulkShortener from "./pages/features/BulkShortener";
 import Analytics from "./pages/features/Analytics";
 import SmartQRCode from "./pages/features/SmartQRCode";
@@ -45,6 +47,8 @@ function Router() {
       <Route path="/refund" component={RequestRefund} />
       <Route path="/login" component={Login} />
       <Route path="/register" component={Register} />
+      <Route path="/forgot-password" component={ForgotPassword} />
+      <Route path="/reset-password" component={ResetPassword} />
       <Route path="/features/bulk" component={BulkShortener} />
       <Route path="/features/analytics" component={Analytics} />
       <Route path="/features/qr" component={SmartQRCode} />

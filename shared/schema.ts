@@ -252,3 +252,12 @@ export const insertVideoAdSchema = createInsertSchema(videoAds).omit({
 
 export type VideoAd = typeof videoAds.$inferSelect;
 export type InsertVideoAd = z.infer<typeof insertVideoAdSchema>;
+
+export const passwordResetTokens = pgTable("password_reset_tokens", {
+  id: serial("id").primaryKey(),
+  userId: text("user_id").notNull(),
+  token: text("token").notNull().unique(),
+  expiresAt: timestamp("expires_at").notNull(),
+  usedAt: timestamp("used_at"),
+  createdAt: timestamp("created_at").defaultNow(),
+});

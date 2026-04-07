@@ -160,7 +160,12 @@ export default function Login() {
                 </Button>
               </form>
             </Form>
-            <p className="mt-6 text-center text-sm text-slate-400">
+            <p className="mt-4 text-center text-sm">
+              <Link href="/forgot-password" className="text-lime-400 hover:underline" data-testid="link-forgot-password">
+                Forgot your password?
+              </Link>
+            </p>
+            <p className="mt-3 text-center text-sm text-slate-400">
               Don't have an account?{" "}
               <Link href="/register" className="text-lime-400 hover:underline" data-testid="link-register">
                 Register
