@@ -1,5 +1,5 @@
 import { db } from "./db";
-import { urls, urlAnalytics, usageCredits, processedLinkPacks, refundRequests, bioPages, bioPageProducts, teamWorkspaces, workspaceMembers, conversionEvents, featurePurchases, funnelEvents, type Url, type InsertUrl, type UrlAnalytics, type InsertAnalytics, type UsageCredits, type RefundRequest, type InsertRefundRequest, type BioPage, type InsertBioPage, type BioPageProduct, type InsertBioProduct, type TeamWorkspace, type InsertWorkspace, type WorkspaceMember, type ConversionEvent, type FeaturePurchase, type FunnelEvent } from "@shared/schema";
+import { urls, urlAnalytics, usageCredits, processedLinkPacks, refundRequests, bioPages, bioPageProducts, teamWorkspaces, workspaceMembers, conversionEvents, featurePurchases, funnelEvents, videoAds, type Url, type InsertUrl, type UrlAnalytics, type InsertAnalytics, type UsageCredits, type RefundRequest, type InsertRefundRequest, type BioPage, type InsertBioPage, type BioPageProduct, type InsertBioProduct, type TeamWorkspace, type InsertWorkspace, type WorkspaceMember, type ConversionEvent, type FeaturePurchase, type FunnelEvent, type VideoAd, type InsertVideoAd } from "@shared/schema";
 import { eq, desc, sql, and, gte, or } from "drizzle-orm";
 import crypto from "crypto";
 
@@ -46,6 +46,11 @@ export interface IStorage {
   consumeFeatureUse(featureKey: string, userId?: string, ipHash?: string): Promise<boolean>;
   recordFunnelEvent(event: { eventType: string; page?: string; metadata?: any; sessionId?: string; userId?: string; ipHash?: string; userAgent?: string; referrer?: string }): Promise<FunnelEvent>;
   getFunnelStats(days?: number): Promise<any>;
+  createVideoAd(data: InsertVideoAd): Promise<VideoAd>;
+  getVideoAd(id: number): Promise<VideoAd | undefined>;
+  getVideoAdByHeygenId(heygenVideoId: string): Promise<VideoAd | undefined>;
+  getUserVideoAds(userId: string): Promise<VideoAd[]>;
+  updateVideoAd(id: number, updates: Partial<VideoAd>): Promise<VideoAd | undefined>;
 }
 
 export interface CreditInfo {
@@ -679,6 +684,30 @@ export class DatabaseStorage implements IStorage {
     .limit(10);
 
     return { events, dailyEvents, recentEvents, topReferrers };
+  }
+
+  async createVideoAd(data: InsertVideoAd): Promise<VideoAd> {
+    const [ad] = await db.insert(videoAds).values(data).returning();
+    return ad;
+  }
+
+  async getVideoAd(id: number): Promise<VideoAd | undefined> {
+    const [ad] = await db.select().from(videoAds).where(eq(videoAds.id, id));
+    return ad;
+  }
+
+  async getVideoAdByHeygenId(heygenVideoId: string): Promise<VideoAd | undefined> {
+    const [ad] = await db.select().from(videoAds).where(eq(videoAds.heygenVideoId, heygenVideoId));
+    return ad;
+  }
+
+  async getUserVideoAds(userId: string): Promise<VideoAd[]> {
+    return db.select().from(videoAds).where(eq(videoAds.userId, userId)).orderBy(desc(videoAds.createdAt));
+  }
+
+  async updateVideoAd(id: number, updates: Partial<VideoAd>): Promise<VideoAd | undefined> {
+    const [ad] = await db.update(videoAds).set(updates).where(eq(videoAds.id, id)).returning();
+    return ad;
   }
 }
 
