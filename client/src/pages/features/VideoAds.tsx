@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowLeft, Loader2, Video, Download, RefreshCw, Play, User, Mic, Sparkles, Package, Globe } from "lucide-react";
+import { ArrowLeft, Loader2, Video, Download, RefreshCw, Play, User, Mic, Sparkles, Package, Globe, Image, Clock } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
@@ -39,6 +39,12 @@ interface VideoAd {
   errorMessage: string | null;
 }
 
+const DURATION_OPTIONS = [
+  { value: "15", label: "15 seconds", words: "~40 words", singlePrice: "$5", packagePrice: "$15", singleKey: "video_ad_15s", packageKey: "video_ad_package_15s" },
+  { value: "30", label: "30 seconds", words: "~80 words", singlePrice: "$8", packagePrice: "$20", singleKey: "video_ad_30s", packageKey: "video_ad_package_30s" },
+  { value: "60", label: "60 seconds", words: "~160 words", singlePrice: "$12", packagePrice: "$28", singleKey: "video_ad_60s", packageKey: "video_ad_package_60s" },
+];
+
 export default function VideoAds() {
   const [mode, setMode] = useState<"agent" | "avatar">("agent");
   const [prompt, setPrompt] = useState("");
@@ -47,8 +53,11 @@ export default function VideoAds() {
   const [selectedVoice, setSelectedVoice] = useState("");
   const [avatarSearch, setAvatarSearch] = useState("");
   const [voiceSearch, setVoiceSearch] = useState("");
+  const [selectedDuration, setSelectedDuration] = useState("30");
   const [pollingId, setPollingId] = useState<number | null>(null);
   const { toast } = useToast();
+  
+  const currentDuration = DURATION_OPTIONS.find(d => d.value === selectedDuration) || DURATION_OPTIONS[1];
 
   const { data: avatars = [], isLoading: avatarsLoading } = useQuery<Avatar[]>({
     queryKey: ["/api/heygen/avatars"],
@@ -76,18 +85,18 @@ export default function VideoAds() {
 
   const generateMutation = useMutation({
     mutationFn: async () => {
-      const body: any = { prompt, targetUrl, mode };
+      const body: any = { prompt, targetUrl, mode, duration: selectedDuration };
       if (mode === "avatar") {
         body.avatarId = selectedAvatar;
         body.voiceId = selectedVoice;
       }
       const res = await apiRequest("POST", "/api/video-ads/generate", body, {
-        "x-feature-key": "video_ad_single",
+        "x-feature-key": currentDuration.singleKey,
       });
       return res.json();
     },
     onSuccess: (data) => {
-      toast({ title: "Video generating!", description: "Your AI video ad is being created. This usually takes 5-10 minutes." });
+      toast({ title: "Video generating!", description: `Your ${currentDuration.label} AI video ad is being created. This usually takes 5-10 minutes.` });
       setPollingId(data.id);
       queryClient.invalidateQueries({ queryKey: ["/api/video-ads/my-videos"] });
     },
@@ -98,13 +107,13 @@ export default function VideoAds() {
 
   const packageMutation = useMutation({
     mutationFn: async () => {
-      const body: any = { prompt, targetUrl, mode };
+      const body: any = { prompt, targetUrl, mode, duration: selectedDuration };
       if (mode === "avatar") {
         body.avatarId = selectedAvatar;
         body.voiceId = selectedVoice;
       }
       const res = await apiRequest("POST", "/api/video-ads/generate-package", body, {
-        "x-feature-key": "video_ad_package",
+        "x-feature-key": currentDuration.packageKey,
       });
       return res.json();
     },
@@ -112,7 +121,7 @@ export default function VideoAds() {
       const successCount = data.videos?.filter((v: any) => v.status === "processing").length || 0;
       toast({
         title: "Ad Package generating!",
-        description: `${successCount} videos are being created (horizontal, vertical, square). This usually takes 5-10 minutes.`,
+        description: `${successCount} videos + 3 banner images being created (horizontal, vertical, square). This usually takes 5-10 minutes.`,
       });
       if (data.videos?.[0]?.id) {
         setPollingId(data.videos[0].id);
@@ -394,6 +403,33 @@ export default function VideoAds() {
                     <p className="text-xs text-slate-500 mt-1">Enter a URL and click "Fetch" to auto-generate an ad script from the website's content</p>
                   </div>
                   <div>
+                    <Label className="text-slate-300 mb-2 block">Video Duration</Label>
+                    <div className="grid grid-cols-3 gap-2">
+                      {DURATION_OPTIONS.map((opt) => (
+                        <button
+                          key={opt.value}
+                          type="button"
+                          onClick={() => setSelectedDuration(opt.value)}
+                          className={`p-3 rounded-lg border text-center transition-all ${
+                            selectedDuration === opt.value
+                              ? "border-lime-400 bg-lime-400/10 text-lime-400"
+                              : "border-white/10 bg-black/30 text-slate-400 hover:border-white/20"
+                          }`}
+                          data-testid={`button-duration-${opt.value}`}
+                        >
+                          <div className="flex items-center justify-center gap-1 mb-1">
+                            <Clock className="w-3 h-3" />
+                            <span className="text-sm font-bold">{opt.label}</span>
+                          </div>
+                          <p className="text-[10px] opacity-70">{opt.words}</p>
+                          <p className="text-[10px] mt-1 font-medium">
+                            {opt.singlePrice} single · {opt.packagePrice} pkg
+                          </p>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <div>
                     <Label className="text-slate-300 mb-2 block">
                       {mode === "agent" ? "Video Description" : "Script for the Presenter"}
                     </Label>
@@ -430,7 +466,7 @@ export default function VideoAds() {
                       ) : (
                         <>
                           <Video className="w-4 h-4 mr-2" />
-                          Single Video
+                          Single Video ({currentDuration.singlePrice})
                         </>
                       )}
                     </Button>
@@ -452,28 +488,24 @@ export default function VideoAds() {
                       ) : (
                         <>
                           <Package className="w-4 h-4 mr-2" />
-                          Full Ad Package
+                          Full Ad Package ({currentDuration.packagePrice})
                         </>
                       )}
                     </Button>
                   </div>
                   <div className="bg-black/40 rounded-lg p-3 border border-white/5">
                     <p className="text-xs text-slate-400 font-medium mb-2">Full Ad Package includes:</p>
-                    <div className="grid grid-cols-3 gap-2 text-[11px] text-slate-500">
+                    <div className="grid grid-cols-2 gap-2 text-[11px] text-slate-500">
                       <div className="flex items-center gap-1.5">
-                        <div className="w-5 h-3 rounded border border-slate-600 bg-slate-800" />
-                        Horizontal 16:9
+                        <Video className="w-3.5 h-3.5 text-lime-400/60" />
+                        3 Videos (16:9, 9:16, 1:1)
                       </div>
                       <div className="flex items-center gap-1.5">
-                        <div className="w-2 h-3.5 rounded border border-slate-600 bg-slate-800" />
-                        Vertical 9:16
-                      </div>
-                      <div className="flex items-center gap-1.5">
-                        <div className="w-3 h-3 rounded border border-slate-600 bg-slate-800" />
-                        Square 1:1
+                        <Image className="w-3.5 h-3.5 text-lime-400/60" />
+                        3 Banner Images (16:9, 9:16, 1:1)
                       </div>
                     </div>
-                    <p className="text-[10px] text-slate-600 mt-2">3 videos optimized for Google Ads, Microsoft Ads, YouTube, Instagram & TikTok</p>
+                    <p className="text-[10px] text-slate-600 mt-2">6 total assets optimized for Google Ads, Microsoft Ads, YouTube, Instagram & TikTok</p>
                   </div>
                 </CardContent>
               </Card>
@@ -508,16 +540,30 @@ export default function VideoAds() {
                                 poster={video.thumbnailUrl || undefined}
                               />
                               <p className="text-xs text-slate-400 truncate">{video.prompt.substring(0, 60)}...</p>
-                              <a
-                                href={video.videoUrl}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="flex items-center gap-1.5 text-lime-400 text-xs hover:text-lime-300"
-                                data-testid={`button-download-${video.id}`}
-                              >
-                                <Download className="w-3.5 h-3.5" />
-                                Download Video
-                              </a>
+                              <div className="flex items-center gap-3">
+                                <a
+                                  href={video.videoUrl}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="flex items-center gap-1.5 text-lime-400 text-xs hover:text-lime-300"
+                                  data-testid={`button-download-video-${video.id}`}
+                                >
+                                  <Download className="w-3.5 h-3.5" />
+                                  Download Video
+                                </a>
+                                {video.thumbnailUrl && (
+                                  <a
+                                    href={video.thumbnailUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="flex items-center gap-1.5 text-yellow-400 text-xs hover:text-yellow-300"
+                                    data-testid={`button-download-image-${video.id}`}
+                                  >
+                                    <Image className="w-3.5 h-3.5" />
+                                    Banner Image
+                                  </a>
+                                )}
+                              </div>
                             </div>
                           ) : video.status === "processing" ? (
                             <div className="flex items-center gap-3 py-4">

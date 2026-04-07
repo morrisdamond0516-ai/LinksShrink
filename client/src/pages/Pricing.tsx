@@ -114,8 +114,12 @@ const plans = [
     individualFeatures: [
       { name: "Bulk Links (100 links)", price: "10", featureKey: "bulk_100" },
       { name: "API Access (24hr pass)", price: "15", featureKey: "api_day_pass" },
-      { name: "AI Video Ad (1 video)", price: "5", featureKey: "video_ad_single" },
-      { name: "AI Ad Package (3 videos)", price: "12", featureKey: "video_ad_package" },
+      { name: "AI Video Ad 15s", price: "5", featureKey: "video_ad_15s" },
+      { name: "AI Video Ad 30s", price: "8", featureKey: "video_ad_30s" },
+      { name: "AI Video Ad 60s", price: "12", featureKey: "video_ad_60s" },
+      { name: "AI Ad Package 15s (3 videos + 3 images)", price: "15", featureKey: "video_ad_package_15s" },
+      { name: "AI Ad Package 30s (3 videos + 3 images)", price: "20", featureKey: "video_ad_package_30s" },
+      { name: "AI Ad Package 60s (3 videos + 3 images)", price: "28", featureKey: "video_ad_package_60s" },
     ],
   },
 ];
