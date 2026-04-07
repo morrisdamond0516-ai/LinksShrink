@@ -120,6 +120,10 @@ const plans = [
       { name: "AI Ad Package 15s (3 videos + 3 images)", price: "15", featureKey: "video_ad_package_15s" },
       { name: "AI Ad Package 30s (3 videos + 3 images)", price: "20", featureKey: "video_ad_package_30s" },
       { name: "AI Ad Package 60s (3 videos + 3 images)", price: "28", featureKey: "video_ad_package_60s" },
+      { name: "AI Video Ad 2 min", price: "20", featureKey: "video_ad_120s" },
+      { name: "AI Video Ad 3 min", price: "28", featureKey: "video_ad_180s" },
+      { name: "AI Ad Package 2 min (3 videos + 3 images)", price: "48", featureKey: "video_ad_package_120s" },
+      { name: "AI Ad Package 3 min (3 videos + 3 images)", price: "65", featureKey: "video_ad_package_180s" },
     ],
   },
 ];

@@ -43,6 +43,8 @@ const DURATION_OPTIONS = [
   { value: "15", label: "15 seconds", words: "~40 words", singlePrice: "$5", packagePrice: "$15", singleKey: "video_ad_15s", packageKey: "video_ad_package_15s" },
   { value: "30", label: "30 seconds", words: "~80 words", singlePrice: "$8", packagePrice: "$20", singleKey: "video_ad_30s", packageKey: "video_ad_package_30s" },
   { value: "60", label: "60 seconds", words: "~160 words", singlePrice: "$12", packagePrice: "$28", singleKey: "video_ad_60s", packageKey: "video_ad_package_60s" },
+  { value: "120", label: "2 minutes", words: "~320 words", singlePrice: "$20", packagePrice: "$48", singleKey: "video_ad_120s", packageKey: "video_ad_package_120s" },
+  { value: "180", label: "3 minutes", words: "~480 words", singlePrice: "$28", packagePrice: "$65", singleKey: "video_ad_180s", packageKey: "video_ad_package_180s" },
 ];
 
 export default function VideoAds() {
@@ -404,7 +406,7 @@ export default function VideoAds() {
                   </div>
                   <div>
                     <Label className="text-slate-300 mb-2 block">Video Duration</Label>
-                    <div className="grid grid-cols-3 gap-2">
+                    <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
                       {DURATION_OPTIONS.map((opt) => (
                         <button
                           key={opt.value}
