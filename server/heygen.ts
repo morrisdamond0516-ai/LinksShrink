@@ -57,7 +57,8 @@ export async function generateAvatarVideo(
   avatarId: string,
   voiceId: string,
   script: string,
-  callbackId?: string
+  callbackId?: string,
+  dimension?: { width: number; height: number }
 ) {
   const body: any = {
     video_inputs: [
@@ -74,7 +75,7 @@ export async function generateAvatarVideo(
         },
       },
     ],
-    dimension: { width: 1920, height: 1080 },
+    dimension: dimension || { width: 1920, height: 1080 },
   };
   if (callbackId) body.callback_id = callbackId;
 
@@ -85,6 +86,14 @@ export async function generateAvatarVideo(
   });
   return data;
 }
+
+export const AD_PACKAGE_SPECS = {
+  videos: [
+    { label: "Horizontal Video (16:9)", dimension: { width: 1920, height: 1080 }, suffix: "landscape" },
+    { label: "Vertical Video (9:16)", dimension: { width: 1080, height: 1920 }, suffix: "portrait" },
+    { label: "Square Video (1:1)", dimension: { width: 1080, height: 1080 }, suffix: "square" },
+  ],
+};
 
 export async function getVideoStatus(videoId: string) {
   const data = await heygenFetch(`/v1/video_status.get?video_id=${videoId}`);

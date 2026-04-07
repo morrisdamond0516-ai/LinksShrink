@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowLeft, Loader2, Video, Download, RefreshCw, Play, User, Mic, Sparkles } from "lucide-react";
+import { ArrowLeft, Loader2, Video, Download, RefreshCw, Play, User, Mic, Sparkles, Package } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
@@ -96,33 +96,63 @@ export default function VideoAds() {
     },
   });
 
-  useEffect(() => {
-    if (!pollingId) return;
-    const interval = setInterval(async () => {
-      try {
-        const res = await fetch(`/api/video-ads/${pollingId}/status`, { credentials: "include" });
-        const data = await res.json();
-        if (data.status === "completed") {
-          setPollingId(null);
-          toast({ title: "Video ready!", description: "Your AI video ad has been generated successfully." });
-          queryClient.invalidateQueries({ queryKey: ["/api/video-ads/my-videos"] });
-        } else if (data.status === "failed") {
-          setPollingId(null);
-          toast({ title: "Generation failed", description: data.errorMessage || "Something went wrong", variant: "destructive" });
-          queryClient.invalidateQueries({ queryKey: ["/api/video-ads/my-videos"] });
-        }
-      } catch {}
-    }, 10000);
-    return () => clearInterval(interval);
-  }, [pollingId]);
+  const packageMutation = useMutation({
+    mutationFn: async () => {
+      const body: any = { prompt, targetUrl, mode };
+      if (mode === "avatar") {
+        body.avatarId = selectedAvatar;
+        body.voiceId = selectedVoice;
+      }
+      const res = await apiRequest("POST", "/api/video-ads/generate-package", body, {
+        "x-feature-key": "video_ad_package",
+      });
+      return res.json();
+    },
+    onSuccess: (data) => {
+      const successCount = data.videos?.filter((v: any) => v.status === "processing").length || 0;
+      toast({
+        title: "Ad Package generating!",
+        description: `${successCount} videos are being created (horizontal, vertical, square). This takes 2-5 minutes.`,
+      });
+      if (data.videos?.[0]?.id) {
+        setPollingId(data.videos[0].id);
+      }
+      queryClient.invalidateQueries({ queryKey: ["/api/video-ads/my-videos"] });
+    },
+    onError: (err: any) => {
+      toast({ title: "Package generation failed", description: err.message, variant: "destructive" });
+    },
+  });
 
   const processingVideos = myVideos.filter((v) => v.status === "processing");
+  const hasProcessing = processingVideos.length > 0 || pollingId !== null;
 
   useEffect(() => {
     if (processingVideos.length > 0 && !pollingId) {
       setPollingId(processingVideos[0].id);
     }
   }, [processingVideos.length]);
+
+  useEffect(() => {
+    if (!hasProcessing) return;
+    const interval = setInterval(async () => {
+      try {
+        for (const pv of processingVideos) {
+          const res = await fetch(`/api/video-ads/${pv.id}/status`, { credentials: "include" });
+          const data = await res.json();
+          if (data.status === "completed") {
+            toast({ title: "Video ready!", description: "An AI video ad has been generated." });
+          } else if (data.status === "failed") {
+            toast({ title: "Video failed", description: data.errorMessage || "Something went wrong", variant: "destructive" });
+          }
+        }
+        queryClient.invalidateQueries({ queryKey: ["/api/video-ads/my-videos"] });
+        const remaining = processingVideos.filter(v => v.status === "processing");
+        if (remaining.length === 0) setPollingId(null);
+      } catch {}
+    }, 10000);
+    return () => clearInterval(interval);
+  }, [hasProcessing, processingVideos.length]);
 
   return (
     <div className="min-h-screen bg-black text-white">
@@ -340,28 +370,70 @@ export default function VideoAds() {
                     />
                     <p className="text-xs text-slate-500 mt-1">{prompt.length} characters</p>
                   </div>
-                  <Button
-                    onClick={() => generateMutation.mutate()}
-                    disabled={
-                      generateMutation.isPending ||
-                      !prompt ||
-                      (mode === "avatar" && (!selectedAvatar || !selectedVoice))
-                    }
-                    className="w-full bg-lime-400 hover:bg-lime-500 text-black font-bold h-12"
-                    data-testid="button-generate-video"
-                  >
-                    {generateMutation.isPending ? (
-                      <>
-                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                        Starting generation...
-                      </>
-                    ) : (
-                      <>
-                        <Video className="w-4 h-4 mr-2" />
-                        Generate Video Ad
-                      </>
-                    )}
-                  </Button>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <Button
+                      onClick={() => generateMutation.mutate()}
+                      disabled={
+                        generateMutation.isPending || packageMutation.isPending ||
+                        !prompt ||
+                        (mode === "avatar" && (!selectedAvatar || !selectedVoice))
+                      }
+                      className="bg-lime-400 hover:bg-lime-500 text-black font-bold h-12"
+                      data-testid="button-generate-video"
+                    >
+                      {generateMutation.isPending ? (
+                        <>
+                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                          Generating...
+                        </>
+                      ) : (
+                        <>
+                          <Video className="w-4 h-4 mr-2" />
+                          Single Video
+                        </>
+                      )}
+                    </Button>
+                    <Button
+                      onClick={() => packageMutation.mutate()}
+                      disabled={
+                        generateMutation.isPending || packageMutation.isPending ||
+                        !prompt ||
+                        (mode === "avatar" && (!selectedAvatar || !selectedVoice))
+                      }
+                      className="bg-gradient-to-r from-lime-400 to-yellow-400 hover:from-lime-500 hover:to-yellow-500 text-black font-bold h-12"
+                      data-testid="button-generate-package"
+                    >
+                      {packageMutation.isPending ? (
+                        <>
+                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                          Generating package...
+                        </>
+                      ) : (
+                        <>
+                          <Package className="w-4 h-4 mr-2" />
+                          Full Ad Package
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                  <div className="bg-black/40 rounded-lg p-3 border border-white/5">
+                    <p className="text-xs text-slate-400 font-medium mb-2">Full Ad Package includes:</p>
+                    <div className="grid grid-cols-3 gap-2 text-[11px] text-slate-500">
+                      <div className="flex items-center gap-1.5">
+                        <div className="w-5 h-3 rounded border border-slate-600 bg-slate-800" />
+                        Horizontal 16:9
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <div className="w-2 h-3.5 rounded border border-slate-600 bg-slate-800" />
+                        Vertical 9:16
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <div className="w-3 h-3 rounded border border-slate-600 bg-slate-800" />
+                        Square 1:1
+                      </div>
+                    </div>
+                    <p className="text-[10px] text-slate-600 mt-2">3 videos optimized for Google Ads, Microsoft Ads, YouTube, Instagram & TikTok</p>
+                  </div>
                 </CardContent>
               </Card>
             </div>
