@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowLeft, Loader2, Video, Download, RefreshCw, Play, User, Mic, Sparkles, Package } from "lucide-react";
+import { ArrowLeft, Loader2, Video, Download, RefreshCw, Play, User, Mic, Sparkles, Package, Globe } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
@@ -121,6 +121,27 @@ export default function VideoAds() {
     },
     onError: (err: any) => {
       toast({ title: "Package generation failed", description: err.message, variant: "destructive" });
+    },
+  });
+
+  const scrapeMutation = useMutation({
+    mutationFn: async () => {
+      if (!targetUrl) throw new Error("Enter a website URL first");
+      let urlToScrape = targetUrl;
+      if (!urlToScrape.startsWith("http")) urlToScrape = "https://" + urlToScrape;
+      const res = await apiRequest("POST", "/api/video-ads/scrape-website", { url: urlToScrape });
+      return res.json();
+    },
+    onSuccess: (data) => {
+      if (data.scriptSuggestion) {
+        setPrompt(data.scriptSuggestion);
+        toast({ title: "Script generated!", description: `Pulled content from ${data.title || targetUrl}. Feel free to edit it.` });
+      } else {
+        toast({ title: "Limited content found", description: "We couldn't extract much from that site. Try writing your script manually.", variant: "destructive" });
+      }
+    },
+    onError: (err: any) => {
+      toast({ title: "Could not fetch website", description: err.message, variant: "destructive" });
     },
   });
 
@@ -343,14 +364,34 @@ export default function VideoAds() {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div>
-                    <Label className="text-slate-300 mb-2 block">Target URL (optional)</Label>
-                    <Input
-                      placeholder="https://yourproduct.com"
-                      value={targetUrl}
-                      onChange={(e) => setTargetUrl(e.target.value)}
-                      className="bg-black/50 border-white/10 text-white"
-                      data-testid="input-target-url"
-                    />
+                    <Label className="text-slate-300 mb-2 block">Target URL</Label>
+                    <div className="flex gap-2">
+                      <Input
+                        placeholder="https://yourproduct.com"
+                        value={targetUrl}
+                        onChange={(e) => setTargetUrl(e.target.value)}
+                        className="bg-black/50 border-white/10 text-white flex-1"
+                        data-testid="input-target-url"
+                      />
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => scrapeMutation.mutate()}
+                        disabled={!targetUrl || scrapeMutation.isPending}
+                        className="border-lime-400/30 text-lime-400 hover:bg-lime-400/10 shrink-0"
+                        data-testid="button-fetch-website"
+                      >
+                        {scrapeMutation.isPending ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                          <>
+                            <Globe className="h-4 w-4 mr-1" />
+                            Fetch & Write Script
+                          </>
+                        )}
+                      </Button>
+                    </div>
+                    <p className="text-xs text-slate-500 mt-1">Enter a URL and click "Fetch" to auto-generate an ad script from the website's content</p>
                   </div>
                   <div>
                     <Label className="text-slate-300 mb-2 block">
