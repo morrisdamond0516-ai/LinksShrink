@@ -35,6 +35,46 @@ export interface RefundCheckResult {
   creditsUsed?: boolean;
 }
 
+export async function sendPasswordResetEmail(email: string, resetUrl: string): Promise<boolean> {
+  const transport = getTransporter();
+  if (!transport) {
+    console.log(`[Email] Cannot send password reset - YAHOO_APP_PASSWORD not configured`);
+    console.log(`[Email] Reset URL for ${email}: ${resetUrl}`);
+    return false;
+  }
+
+  try {
+    await transport.sendMail({
+      from: OWNER_EMAIL,
+      to: email,
+      subject: `Reset Your Password - LinksShrink.com`,
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+          <div style="background: #0f0f0f; color: white; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+            <h1 style="color: #a3e635; margin: 0;">LinksShrink.com</h1>
+            <p style="color: #94a3b8; margin: 5px 0 0 0;">Password Reset Request</p>
+          </div>
+          <p>Hi there,</p>
+          <p>We received a request to reset your password. Click the button below to create a new password:</p>
+          <div style="text-align: center; margin: 30px 0;">
+            <a href="${resetUrl}" style="background: #a3e635; color: #000; padding: 14px 32px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 16px; display: inline-block;">Reset Password</a>
+          </div>
+          <p style="color: #666; font-size: 14px;">This link expires in 1 hour. If you didn't request this, you can safely ignore this email.</p>
+          <p style="color: #666; font-size: 14px;">If the button doesn't work, copy and paste this link into your browser:</p>
+          <p style="color: #a3e635; font-size: 12px; word-break: break-all;">${resetUrl}</p>
+          <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;" />
+          <p style="color: #999; font-size: 12px;">LinksShrink.com — Shorten, Track, Grow</p>
+        </div>
+      `,
+    });
+    console.log(`[Email] Password reset email sent to ${email}`);
+    return true;
+  } catch (error: any) {
+    console.error("[Email] Failed to send password reset email:", error?.message || error);
+    return false;
+  }
+}
+
 export async function sendRefundQualifiedEmail(refundRequest: {
   id: number;
   email: string;

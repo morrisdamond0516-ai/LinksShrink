@@ -3,9 +3,14 @@ import { Strategy as LocalStrategy } from "passport-local";
 import session from "express-session";
 import type { Express, RequestHandler } from "express";
 import connectPg from "connect-pg-simple";
-import { registerUser, loginUser, getUserById } from "../../auth";
+import crypto from "crypto";
+import { registerUser, loginUser, getUserById, getUserByEmail, hashPassword } from "../../auth";
 import { authStorage } from "./storage";
 import type { User } from "@shared/schema";
+import { passwordResetTokens } from "@shared/schema";
+import { db } from "../../db";
+import { eq, and, isNull, gt } from "drizzle-orm";
+import { sendPasswordResetEmail } from "../../emailService";
 
 export function getSession() {
   const sessionTtl = 7 * 24 * 60 * 60 * 1000; // 1 week
@@ -129,6 +134,79 @@ export async function setupAuth(app: Express) {
         });
       });
     })(req, res, next);
+  });
+
+  app.post("/api/auth/forgot-password", async (req, res) => {
+    try {
+      const { email } = req.body;
+      if (!email) {
+        return res.status(400).json({ message: "Email is required" });
+      }
+
+      const user = await getUserByEmail(email);
+      res.json({ success: true, message: "If an account with that email exists, we've sent a password reset link." });
+
+      if (!user || !user.passwordHash) return;
+
+      const token = crypto.randomBytes(32).toString("hex");
+      const expiresAt = new Date(Date.now() + 60 * 60 * 1000);
+
+      await db.insert(passwordResetTokens).values({
+        userId: user.id,
+        token,
+        expiresAt,
+      });
+
+      const baseUrl = process.env.NODE_ENV === "production"
+        ? "https://linksshrink.com"
+        : `${req.protocol}://${req.get("host")}`;
+      const resetUrl = `${baseUrl}/reset-password?token=${token}`;
+
+      await sendPasswordResetEmail(email, resetUrl);
+    } catch (err: any) {
+      console.error("Forgot password error:", err);
+      res.status(500).json({ message: "Something went wrong" });
+    }
+  });
+
+  app.post("/api/auth/reset-password", async (req, res) => {
+    try {
+      const { token, password } = req.body;
+      if (!token || !password) {
+        return res.status(400).json({ message: "Token and new password are required" });
+      }
+
+      if (password.length < 8) {
+        return res.status(400).json({ message: "Password must be at least 8 characters" });
+      }
+
+      const [resetToken] = await db
+        .select()
+        .from(passwordResetTokens)
+        .where(
+          and(
+            eq(passwordResetTokens.token, token),
+            isNull(passwordResetTokens.usedAt),
+            gt(passwordResetTokens.expiresAt, new Date())
+          )
+        )
+        .limit(1);
+
+      if (!resetToken) {
+        return res.status(400).json({ message: "This reset link is invalid or has expired. Please request a new one." });
+      }
+
+      const newHash = await hashPassword(password);
+      const { users } = await import("@shared/schema");
+      await db.update(users).set({ passwordHash: newHash }).where(eq(users.id, resetToken.userId));
+
+      await db.update(passwordResetTokens).set({ usedAt: new Date() }).where(eq(passwordResetTokens.id, resetToken.id));
+
+      res.json({ success: true, message: "Your password has been reset. You can now log in." });
+    } catch (err: any) {
+      console.error("Reset password error:", err);
+      res.status(500).json({ message: "Something went wrong" });
+    }
   });
 
   app.get("/api/logout", (req, res) => {
