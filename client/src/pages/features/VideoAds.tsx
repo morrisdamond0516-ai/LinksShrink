@@ -87,7 +87,7 @@ export default function VideoAds() {
       return res.json();
     },
     onSuccess: (data) => {
-      toast({ title: "Video generating!", description: "Your AI video ad is being created. This usually takes 1-2 minutes." });
+      toast({ title: "Video generating!", description: "Your AI video ad is being created. This usually takes 5-10 minutes." });
       setPollingId(data.id);
       queryClient.invalidateQueries({ queryKey: ["/api/video-ads/my-videos"] });
     },
@@ -112,7 +112,7 @@ export default function VideoAds() {
       const successCount = data.videos?.filter((v: any) => v.status === "processing").length || 0;
       toast({
         title: "Ad Package generating!",
-        description: `${successCount} videos are being created (horizontal, vertical, square). This takes 2-5 minutes.`,
+        description: `${successCount} videos are being created (horizontal, vertical, square). This usually takes 5-10 minutes.`,
       });
       if (data.videos?.[0]?.id) {
         setPollingId(data.videos[0].id);
@@ -483,7 +483,7 @@ export default function VideoAds() {
                               <Loader2 className="w-5 h-5 animate-spin text-lime-400" />
                               <div>
                                 <p className="text-sm text-white">Generating...</p>
-                                <p className="text-xs text-slate-500">Usually takes 1-2 minutes</p>
+                                <p className="text-xs text-slate-500">Usually takes 5-10 minutes</p>
                               </div>
                             </div>
                           ) : (
