@@ -105,6 +105,37 @@ export default function VideoAds() {
     v.language?.toLowerCase().includes("english")
   ).slice(0, 20);
 
+  const buildScenes = () => {
+    if (storyboard.length > 0) {
+      const allImages = [
+        ...uploadedImages.map(img => img.url),
+        ...richImages.map(img => img.url),
+        ...scrapedImages,
+      ];
+      return storyboard.map((section, idx) => {
+        const bgUrl = section.suggestedImages?.[0] || allImages[idx % allImages.length] || undefined;
+        return { text: section.text, backgroundUrl: bgUrl };
+      }).filter(s => s.text.trim());
+    }
+    const allImages = [
+      ...uploadedImages.map(img => img.url),
+      ...richImages.map(img => img.url),
+      ...scrapedImages,
+    ];
+    if (allImages.length > 1 && prompt) {
+      const sentences = prompt.match(/[^.!?]+[.!?]+/g) || [prompt];
+      const chunkSize = Math.max(1, Math.ceil(sentences.length / Math.min(allImages.length, 6)));
+      const scenes: { text: string; backgroundUrl?: string }[] = [];
+      for (let i = 0; i < sentences.length; i += chunkSize) {
+        const text = sentences.slice(i, i + chunkSize).join(" ").trim();
+        const imgIdx = Math.floor(i / chunkSize);
+        if (text) scenes.push({ text, backgroundUrl: allImages[imgIdx % allImages.length] });
+      }
+      return scenes;
+    }
+    return null;
+  };
+
   const generateMutation = useMutation({
     mutationFn: async () => {
       const body: any = { prompt, targetUrl, mode, duration: selectedDuration };
@@ -112,7 +143,10 @@ export default function VideoAds() {
         body.avatarId = selectedAvatar;
         body.voiceId = selectedVoice;
       }
-      if (selectedBackgroundImage) {
+      const scenes = buildScenes();
+      if (scenes && scenes.length > 0) {
+        body.scenes = scenes;
+      } else if (selectedBackgroundImage) {
         body.backgroundImageUrl = selectedBackgroundImage;
       }
       const res = await apiRequest("POST", "/api/video-ads/generate", body, {
@@ -137,7 +171,10 @@ export default function VideoAds() {
         body.avatarId = selectedAvatar;
         body.voiceId = selectedVoice;
       }
-      if (selectedBackgroundImage) {
+      const scenes = buildScenes();
+      if (scenes && scenes.length > 0) {
+        body.scenes = scenes;
+      } else if (selectedBackgroundImage) {
         body.backgroundImageUrl = selectedBackgroundImage;
       }
       const res = await apiRequest("POST", "/api/video-ads/generate-package", body, {
@@ -746,6 +783,34 @@ export default function VideoAds() {
                       </p>
                     </div>
                   </div>
+                  {mode === "avatar" && (() => {
+                    const scenes = buildScenes();
+                    if (scenes && scenes.length > 1) {
+                      const withBg = scenes.filter(s => s.backgroundUrl).length;
+                      return (
+                        <div className="mb-3 p-2.5 rounded-lg bg-lime-400/10 border border-lime-400/20">
+                          <p className="text-[11px] text-lime-400 font-medium mb-1.5">
+                            Multi-Scene Video: {scenes.length} scenes with {withBg} background images
+                          </p>
+                          <div className="flex gap-1.5 overflow-x-auto pb-1">
+                            {scenes.map((scene, i) => (
+                              <div key={i} className="flex-shrink-0 w-20">
+                                {scene.backgroundUrl ? (
+                                  <img src={scene.backgroundUrl} alt={`Scene ${i + 1}`} className="w-20 h-12 object-cover rounded border border-lime-400/30" />
+                                ) : (
+                                  <div className="w-20 h-12 rounded border border-white/10 bg-black/40 flex items-center justify-center">
+                                    <span className="text-[8px] text-slate-500">No image</span>
+                                  </div>
+                                )}
+                                <p className="text-[7px] text-slate-400 mt-0.5 truncate">Scene {i + 1}: {scene.text.slice(0, 30)}...</p>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      );
+                    }
+                    return null;
+                  })()}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <Button
                       onClick={() => generateMutation.mutate()}
