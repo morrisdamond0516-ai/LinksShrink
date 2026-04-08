@@ -59,6 +59,7 @@ export default function VideoAds() {
   const [selectedDuration, setSelectedDuration] = useState("30");
   const [scrapedImages, setScrapedImages] = useState<string[]>([]);
   const [pagesScraped, setPagesScraped] = useState(0);
+  const [selectedVideos, setSelectedVideos] = useState<Set<number>>(new Set());
   const [pollingId, setPollingId] = useState<number | null>(null);
   const { toast } = useToast();
   
@@ -549,9 +550,101 @@ export default function VideoAds() {
             <div className="space-y-6">
               <Card className="bg-slate-900/80 border-white/10">
                 <CardHeader>
-                  <CardTitle className="text-white text-lg">Your Videos</CardTitle>
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="text-white text-lg">Your Videos</CardTitle>
+                    {myVideos.filter(v => v.status === "completed").length > 0 && (
+                      <button
+                        onClick={() => {
+                          const completedIds = myVideos.filter(v => v.status === "completed" && v.videoUrl).map(v => v.id);
+                          if (selectedVideos.size === completedIds.length) {
+                            setSelectedVideos(new Set());
+                          } else {
+                            setSelectedVideos(new Set(completedIds));
+                          }
+                        }}
+                        className="text-xs text-lime-400 hover:text-lime-300 transition-colors"
+                        data-testid="button-select-all-videos"
+                      >
+                        {selectedVideos.size === myVideos.filter(v => v.status === "completed" && v.videoUrl).length && selectedVideos.size > 0 ? "Deselect All" : "Select All"}
+                      </button>
+                    )}
+                  </div>
                 </CardHeader>
                 <CardContent>
+                  {selectedVideos.size > 0 && (
+                    <div className="mb-4 p-3 rounded-lg border border-lime-400/30 bg-lime-400/5">
+                      <p className="text-xs text-lime-400 mb-2 font-medium">{selectedVideos.size} video{selectedVideos.size > 1 ? "s" : ""} selected</p>
+                      <div className="flex flex-wrap gap-2 mb-2">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="h-7 text-[11px] border-lime-400/30 text-lime-400 hover:bg-lime-400/10"
+                          onClick={() => {
+                            const selected = myVideos.filter(v => selectedVideos.has(v.id) && v.videoUrl);
+                            selected.forEach(v => { window.open(v.videoUrl!, "_blank"); });
+                            toast({ title: `Downloading ${selected.length} video${selected.length > 1 ? "s" : ""}` });
+                          }}
+                          data-testid="button-bulk-download-videos"
+                        >
+                          <Download className="w-3 h-3 mr-1" />
+                          Download Videos ({selectedVideos.size})
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="h-7 text-[11px] border-yellow-400/30 text-yellow-400 hover:bg-yellow-400/10"
+                          onClick={() => {
+                            const selected = myVideos.filter(v => selectedVideos.has(v.id) && v.thumbnailUrl);
+                            selected.forEach(v => { window.open(v.thumbnailUrl!, "_blank"); });
+                            toast({ title: `Downloading ${selected.length} banner${selected.length > 1 ? "s" : ""}` });
+                          }}
+                          data-testid="button-bulk-download-banners"
+                        >
+                          <Image className="w-3 h-3 mr-1" />
+                          Download Banners ({selectedVideos.size})
+                        </Button>
+                      </div>
+                      <p className="text-[10px] text-slate-500 mb-1.5">Then upload to:</p>
+                      <div className="flex flex-wrap gap-1.5">
+                        <a href="https://ads.google.com/aw/assets" target="_blank" rel="noopener noreferrer"
+                          className="flex items-center gap-1 px-2.5 py-1.5 rounded bg-blue-500/10 border border-blue-500/20 text-blue-400 text-[11px] hover:bg-blue-500/20 transition-colors"
+                          data-testid="bulk-upload-google"
+                        >
+                          <SiGoogleads className="w-3.5 h-3.5" />
+                          Google Ads
+                        </a>
+                        <a href="https://adsmanager.facebook.com/adsmanager/manage/ads" target="_blank" rel="noopener noreferrer"
+                          className="flex items-center gap-1 px-2.5 py-1.5 rounded bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-[11px] hover:bg-indigo-500/20 transition-colors"
+                          data-testid="bulk-upload-facebook"
+                        >
+                          <SiFacebook className="w-3.5 h-3.5" />
+                          Facebook / Instagram
+                        </a>
+                        <a href="https://ads.tiktok.com/i18n/creation" target="_blank" rel="noopener noreferrer"
+                          className="flex items-center gap-1 px-2.5 py-1.5 rounded bg-pink-500/10 border border-pink-500/20 text-pink-400 text-[11px] hover:bg-pink-500/20 transition-colors"
+                          data-testid="bulk-upload-tiktok"
+                        >
+                          <SiTiktok className="w-3.5 h-3.5" />
+                          TikTok Ads
+                        </a>
+                        <a href="https://studio.youtube.com" target="_blank" rel="noopener noreferrer"
+                          className="flex items-center gap-1 px-2.5 py-1.5 rounded bg-red-500/10 border border-red-500/20 text-red-400 text-[11px] hover:bg-red-500/20 transition-colors"
+                          data-testid="bulk-upload-youtube"
+                        >
+                          <SiYoutube className="w-3.5 h-3.5" />
+                          YouTube
+                        </a>
+                        <a href="https://ads.microsoft.com/campaigns" target="_blank" rel="noopener noreferrer"
+                          className="flex items-center gap-1 px-2.5 py-1.5 rounded bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-[11px] hover:bg-cyan-500/20 transition-colors"
+                          data-testid="bulk-upload-microsoft"
+                        >
+                          <Globe className="w-3.5 h-3.5" />
+                          Microsoft Ads
+                        </a>
+                      </div>
+                      <p className="text-[9px] text-slate-600 mt-1.5">Download all videos/banners first, then click a platform to open their ad manager.</p>
+                    </div>
+                  )}
                   {videosLoading ? (
                     <div className="flex items-center justify-center py-8">
                       <Loader2 className="w-6 h-6 animate-spin text-lime-400" />
@@ -563,19 +656,34 @@ export default function VideoAds() {
                       {myVideos.map((video) => (
                         <div
                           key={video.id}
-                          className="p-3 rounded-lg border border-white/10 bg-black/30"
+                          className={`p-3 rounded-lg border bg-black/30 transition-colors ${selectedVideos.has(video.id) ? "border-lime-400/50 bg-lime-400/5" : "border-white/10"}`}
                           data-testid={`video-card-${video.id}`}
                         >
                           {video.status === "completed" && video.videoUrl ? (
                             <div className="space-y-2">
-                              <video
-                                src={video.videoUrl}
-                                controls
-                                className="w-full rounded-lg"
-                                poster={video.thumbnailUrl || undefined}
-                              />
-                              <p className="text-xs text-slate-400 truncate">{video.prompt.substring(0, 60)}...</p>
-                              <div className="flex items-center gap-3 flex-wrap">
+                              <div className="flex items-start gap-3">
+                                <input
+                                  type="checkbox"
+                                  checked={selectedVideos.has(video.id)}
+                                  onChange={(e) => {
+                                    const next = new Set(selectedVideos);
+                                    if (e.target.checked) { next.add(video.id); } else { next.delete(video.id); }
+                                    setSelectedVideos(next);
+                                  }}
+                                  className="mt-1 w-4 h-4 rounded border-white/20 bg-black/50 text-lime-400 focus:ring-lime-400 accent-lime-400 shrink-0 cursor-pointer"
+                                  data-testid={`checkbox-video-${video.id}`}
+                                />
+                                <div className="flex-1 min-w-0">
+                                  <video
+                                    src={video.videoUrl}
+                                    controls
+                                    className="w-full rounded-lg"
+                                    poster={video.thumbnailUrl || undefined}
+                                  />
+                                </div>
+                              </div>
+                              <p className="text-xs text-slate-400 truncate pl-7">{video.prompt.substring(0, 60)}...</p>
+                              <div className="flex items-center gap-3 flex-wrap pl-7">
                                 <a
                                   href={video.videoUrl}
                                   target="_blank"
@@ -598,65 +706,6 @@ export default function VideoAds() {
                                     Banner Image
                                   </a>
                                 )}
-                              </div>
-                              <div className="mt-3 pt-3 border-t border-white/5">
-                                <p className="text-[10px] text-slate-500 mb-2 flex items-center gap-1">
-                                  <Upload className="w-3 h-3" />
-                                  Upload to ad platform:
-                                </p>
-                                <div className="flex flex-wrap gap-1.5">
-                                  <a
-                                    href="https://ads.google.com/aw/assets"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="flex items-center gap-1 px-2 py-1 rounded bg-blue-500/10 border border-blue-500/20 text-blue-400 text-[10px] hover:bg-blue-500/20 transition-colors"
-                                    data-testid={`upload-google-${video.id}`}
-                                  >
-                                    <SiGoogleads className="w-3 h-3" />
-                                    Google Ads
-                                  </a>
-                                  <a
-                                    href="https://adsmanager.facebook.com/adsmanager/manage/ads"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="flex items-center gap-1 px-2 py-1 rounded bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-[10px] hover:bg-indigo-500/20 transition-colors"
-                                    data-testid={`upload-facebook-${video.id}`}
-                                  >
-                                    <SiFacebook className="w-3 h-3" />
-                                    Facebook / Instagram
-                                  </a>
-                                  <a
-                                    href="https://ads.tiktok.com/i18n/creation"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="flex items-center gap-1 px-2 py-1 rounded bg-pink-500/10 border border-pink-500/20 text-pink-400 text-[10px] hover:bg-pink-500/20 transition-colors"
-                                    data-testid={`upload-tiktok-${video.id}`}
-                                  >
-                                    <SiTiktok className="w-3 h-3" />
-                                    TikTok Ads
-                                  </a>
-                                  <a
-                                    href="https://studio.youtube.com"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="flex items-center gap-1 px-2 py-1 rounded bg-red-500/10 border border-red-500/20 text-red-400 text-[10px] hover:bg-red-500/20 transition-colors"
-                                    data-testid={`upload-youtube-${video.id}`}
-                                  >
-                                    <SiYoutube className="w-3 h-3" />
-                                    YouTube
-                                  </a>
-                                  <a
-                                    href="https://ads.microsoft.com/campaigns"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="flex items-center gap-1 px-2 py-1 rounded bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-[10px] hover:bg-cyan-500/20 transition-colors"
-                                    data-testid={`upload-microsoft-${video.id}`}
-                                  >
-                                    <Globe className="w-3 h-3" />
-                                    Microsoft Ads
-                                  </a>
-                                </div>
-                                <p className="text-[9px] text-slate-600 mt-1.5">Download the video first, then click a platform to open their ad manager and upload it.</p>
                               </div>
                             </div>
                           ) : video.status === "processing" ? (
