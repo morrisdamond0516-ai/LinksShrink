@@ -604,45 +604,59 @@ export default function VideoAds() {
                           Download Banners ({selectedVideos.size})
                         </Button>
                       </div>
-                      <p className="text-[10px] text-slate-500 mb-1.5">Then upload to:</p>
-                      <div className="flex flex-wrap gap-1.5">
+                      <p className="text-[10px] text-slate-500 mb-1.5">Step 1: Download above. Step 2: Upload to your platform:</p>
+                      <div className="space-y-1.5">
                         <a href="https://ads.google.com/intl/en/home/" target="_blank" rel="noopener noreferrer"
-                          className="flex items-center gap-1 px-2.5 py-1.5 rounded bg-blue-500/10 border border-blue-500/20 text-blue-400 text-[11px] hover:bg-blue-500/20 transition-colors"
+                          className="flex items-start gap-2 p-2 rounded bg-blue-500/5 border border-blue-500/15 hover:bg-blue-500/10 transition-colors group"
                           data-testid="bulk-upload-google"
                         >
-                          <SiGoogleads className="w-3.5 h-3.5" />
-                          Google Ads
+                          <span className="text-blue-400 mt-0.5 shrink-0"><SiGoogleads className="w-3.5 h-3.5" /></span>
+                          <div className="min-w-0">
+                            <span className="text-blue-400 text-[11px] font-medium group-hover:underline">Google Ads →</span>
+                            <p className="text-[9px] text-slate-500 mt-0.5 leading-relaxed">Sign in → Campaigns → + New Campaign → choose goal → Add video/image assets</p>
+                          </div>
                         </a>
                         <a href="https://www.facebook.com/business/ads" target="_blank" rel="noopener noreferrer"
-                          className="flex items-center gap-1 px-2.5 py-1.5 rounded bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-[11px] hover:bg-indigo-500/20 transition-colors"
+                          className="flex items-start gap-2 p-2 rounded bg-indigo-500/5 border border-indigo-500/15 hover:bg-indigo-500/10 transition-colors group"
                           data-testid="bulk-upload-facebook"
                         >
-                          <SiFacebook className="w-3.5 h-3.5" />
-                          Facebook / Instagram
+                          <span className="text-indigo-400 mt-0.5 shrink-0"><SiFacebook className="w-3.5 h-3.5" /></span>
+                          <div className="min-w-0">
+                            <span className="text-indigo-400 text-[11px] font-medium group-hover:underline">Facebook / Instagram →</span>
+                            <p className="text-[9px] text-slate-500 mt-0.5 leading-relaxed">Sign in → Ads Manager → Create → choose objective → Add Media → Upload video/images</p>
+                          </div>
                         </a>
                         <a href="https://ads.tiktok.com/i18n/home" target="_blank" rel="noopener noreferrer"
-                          className="flex items-center gap-1 px-2.5 py-1.5 rounded bg-pink-500/10 border border-pink-500/20 text-pink-400 text-[11px] hover:bg-pink-500/20 transition-colors"
+                          className="flex items-start gap-2 p-2 rounded bg-pink-500/5 border border-pink-500/15 hover:bg-pink-500/10 transition-colors group"
                           data-testid="bulk-upload-tiktok"
                         >
-                          <SiTiktok className="w-3.5 h-3.5" />
-                          TikTok Ads
+                          <span className="text-pink-400 mt-0.5 shrink-0"><SiTiktok className="w-3.5 h-3.5" /></span>
+                          <div className="min-w-0">
+                            <span className="text-pink-400 text-[11px] font-medium group-hover:underline">TikTok Ads →</span>
+                            <p className="text-[9px] text-slate-500 mt-0.5 leading-relaxed">Sign in → Campaign → Create → Ad Group → Upload video from your device</p>
+                          </div>
                         </a>
                         <a href="https://studio.youtube.com" target="_blank" rel="noopener noreferrer"
-                          className="flex items-center gap-1 px-2.5 py-1.5 rounded bg-red-500/10 border border-red-500/20 text-red-400 text-[11px] hover:bg-red-500/20 transition-colors"
+                          className="flex items-start gap-2 p-2 rounded bg-red-500/5 border border-red-500/15 hover:bg-red-500/10 transition-colors group"
                           data-testid="bulk-upload-youtube"
                         >
-                          <SiYoutube className="w-3.5 h-3.5" />
-                          YouTube
+                          <span className="text-red-400 mt-0.5 shrink-0"><SiYoutube className="w-3.5 h-3.5" /></span>
+                          <div className="min-w-0">
+                            <span className="text-red-400 text-[11px] font-medium group-hover:underline">YouTube →</span>
+                            <p className="text-[9px] text-slate-500 mt-0.5 leading-relaxed">Sign in → Create (top right) → Upload Video → then link it in Google Ads</p>
+                          </div>
                         </a>
                         <a href="https://about.ads.microsoft.com/en-us" target="_blank" rel="noopener noreferrer"
-                          className="flex items-center gap-1 px-2.5 py-1.5 rounded bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-[11px] hover:bg-cyan-500/20 transition-colors"
+                          className="flex items-start gap-2 p-2 rounded bg-cyan-500/5 border border-cyan-500/15 hover:bg-cyan-500/10 transition-colors group"
                           data-testid="bulk-upload-microsoft"
                         >
-                          <Globe className="w-3.5 h-3.5" />
-                          Microsoft Ads
+                          <span className="text-cyan-400 mt-0.5 shrink-0"><Globe className="w-3.5 h-3.5" /></span>
+                          <div className="min-w-0">
+                            <span className="text-cyan-400 text-[11px] font-medium group-hover:underline">Microsoft Ads →</span>
+                            <p className="text-[9px] text-slate-500 mt-0.5 leading-relaxed">Sign in → Create Campaign → Video ads → Upload your video assets</p>
+                          </div>
                         </a>
                       </div>
-                      <p className="text-[9px] text-slate-600 mt-1.5">Download all videos/banners first, then click a platform to open their ad manager.</p>
                     </div>
                   )}
                   {videosLoading ? (
