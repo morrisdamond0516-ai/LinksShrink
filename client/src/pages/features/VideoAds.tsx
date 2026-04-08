@@ -5,7 +5,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowLeft, Loader2, Video, Download, RefreshCw, Play, User, Mic, Sparkles, Package, Globe, Image, Clock } from "lucide-react";
+import { ArrowLeft, Loader2, Video, Download, RefreshCw, Play, User, Mic, Sparkles, Package, Globe, Image, Clock, ExternalLink, Upload } from "lucide-react";
+import { SiGoogleads, SiFacebook, SiTiktok, SiYoutube } from "react-icons/si";
 import { useToast } from "@/hooks/use-toast";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
@@ -574,7 +575,7 @@ export default function VideoAds() {
                                 poster={video.thumbnailUrl || undefined}
                               />
                               <p className="text-xs text-slate-400 truncate">{video.prompt.substring(0, 60)}...</p>
-                              <div className="flex items-center gap-3">
+                              <div className="flex items-center gap-3 flex-wrap">
                                 <a
                                   href={video.videoUrl}
                                   target="_blank"
@@ -597,6 +598,65 @@ export default function VideoAds() {
                                     Banner Image
                                   </a>
                                 )}
+                              </div>
+                              <div className="mt-3 pt-3 border-t border-white/5">
+                                <p className="text-[10px] text-slate-500 mb-2 flex items-center gap-1">
+                                  <Upload className="w-3 h-3" />
+                                  Upload to ad platform:
+                                </p>
+                                <div className="flex flex-wrap gap-1.5">
+                                  <a
+                                    href="https://ads.google.com/aw/assets"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="flex items-center gap-1 px-2 py-1 rounded bg-blue-500/10 border border-blue-500/20 text-blue-400 text-[10px] hover:bg-blue-500/20 transition-colors"
+                                    data-testid={`upload-google-${video.id}`}
+                                  >
+                                    <SiGoogleads className="w-3 h-3" />
+                                    Google Ads
+                                  </a>
+                                  <a
+                                    href="https://adsmanager.facebook.com/adsmanager/manage/ads"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="flex items-center gap-1 px-2 py-1 rounded bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-[10px] hover:bg-indigo-500/20 transition-colors"
+                                    data-testid={`upload-facebook-${video.id}`}
+                                  >
+                                    <SiFacebook className="w-3 h-3" />
+                                    Facebook / Instagram
+                                  </a>
+                                  <a
+                                    href="https://ads.tiktok.com/i18n/creation"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="flex items-center gap-1 px-2 py-1 rounded bg-pink-500/10 border border-pink-500/20 text-pink-400 text-[10px] hover:bg-pink-500/20 transition-colors"
+                                    data-testid={`upload-tiktok-${video.id}`}
+                                  >
+                                    <SiTiktok className="w-3 h-3" />
+                                    TikTok Ads
+                                  </a>
+                                  <a
+                                    href="https://studio.youtube.com"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="flex items-center gap-1 px-2 py-1 rounded bg-red-500/10 border border-red-500/20 text-red-400 text-[10px] hover:bg-red-500/20 transition-colors"
+                                    data-testid={`upload-youtube-${video.id}`}
+                                  >
+                                    <SiYoutube className="w-3 h-3" />
+                                    YouTube
+                                  </a>
+                                  <a
+                                    href="https://ads.microsoft.com/campaigns"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="flex items-center gap-1 px-2 py-1 rounded bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-[10px] hover:bg-cyan-500/20 transition-colors"
+                                    data-testid={`upload-microsoft-${video.id}`}
+                                  >
+                                    <Globe className="w-3 h-3" />
+                                    Microsoft Ads
+                                  </a>
+                                </div>
+                                <p className="text-[9px] text-slate-600 mt-1.5">Download the video first, then click a platform to open their ad manager and upload it.</p>
                               </div>
                             </div>
                           ) : video.status === "processing" ? (
