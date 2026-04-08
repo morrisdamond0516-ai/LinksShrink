@@ -74,6 +74,7 @@ export default function VideoAds() {
   const [pagesScraped, setPagesScraped] = useState(0);
   const [showStoryboard, setShowStoryboard] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [selectedBackgroundImage, setSelectedBackgroundImage] = useState<string | null>(null);
   const [selectedVideos, setSelectedVideos] = useState<Set<number>>(new Set());
   const [pollingId, setPollingId] = useState<number | null>(null);
   const { toast } = useToast();
@@ -111,6 +112,9 @@ export default function VideoAds() {
         body.avatarId = selectedAvatar;
         body.voiceId = selectedVoice;
       }
+      if (selectedBackgroundImage) {
+        body.backgroundImageUrl = selectedBackgroundImage;
+      }
       const res = await apiRequest("POST", "/api/video-ads/generate", body, {
         "x-feature-key": currentDuration.singleKey,
       });
@@ -132,6 +136,9 @@ export default function VideoAds() {
       if (mode === "avatar") {
         body.avatarId = selectedAvatar;
         body.voiceId = selectedVoice;
+      }
+      if (selectedBackgroundImage) {
+        body.backgroundImageUrl = selectedBackgroundImage;
       }
       const res = await apiRequest("POST", "/api/video-ads/generate-package", body, {
         "x-feature-key": currentDuration.packageKey,
@@ -502,15 +509,23 @@ export default function VideoAds() {
                                 <p className="text-[10px] text-slate-500 mb-1">From: <span className="text-slate-400">{page}</span></p>
                                 <div className="grid grid-cols-4 sm:grid-cols-6 gap-2">
                                   {imgs.map((img, i) => (
-                                    <div key={i} className="group relative">
+                                    <div key={i} className="group relative cursor-pointer" onClick={() => setSelectedBackgroundImage(img.url)}>
                                       <img
                                         src={img.url}
                                         alt={img.alt}
-                                        className="w-full h-16 object-cover rounded border border-white/10 hover:border-lime-400/50 transition-colors"
+                                        className={`w-full h-16 object-cover rounded border-2 transition-colors ${
+                                          selectedBackgroundImage === img.url
+                                            ? "border-lime-400 ring-1 ring-lime-400/50"
+                                            : "border-white/10 hover:border-lime-400/50"
+                                        }`}
                                         onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
                                         data-testid={`scraped-image-${page}-${i}`}
                                       />
-                                      <div className="absolute inset-0 bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity rounded flex items-center justify-center p-1">
+                                      {selectedBackgroundImage === img.url && (
+                                        <div className="absolute top-0.5 left-0.5 bg-lime-400 text-black text-[6px] font-bold px-1 rounded">BG</div>
+                                      )}
+                                      <div className="absolute inset-0 bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity rounded flex flex-col items-center justify-center p-1">
+                                        <p className="text-[7px] text-lime-400 font-medium mb-0.5">Click to set as background</p>
                                         <p className="text-[8px] text-white text-center leading-tight">{img.context || img.alt}</p>
                                       </div>
                                     </div>
@@ -522,18 +537,29 @@ export default function VideoAds() {
                         ) : (
                           <div className="grid grid-cols-4 sm:grid-cols-6 gap-2 max-h-40 overflow-y-auto rounded-lg bg-black/30 p-2">
                             {scrapedImages.map((img, i) => (
-                              <img
-                                key={i}
-                                src={img}
-                                alt={`Website image ${i + 1}`}
-                                className="w-full h-16 object-cover rounded border border-white/10 hover:border-lime-400/50 transition-colors"
-                                onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
-                                data-testid={`scraped-image-${i}`}
-                              />
+                              <div key={i} className="group relative cursor-pointer" onClick={() => setSelectedBackgroundImage(img)}>
+                                <img
+                                  src={img}
+                                  alt={`Website image ${i + 1}`}
+                                  className={`w-full h-16 object-cover rounded border-2 transition-colors ${
+                                    selectedBackgroundImage === img
+                                      ? "border-lime-400 ring-1 ring-lime-400/50"
+                                      : "border-white/10 hover:border-lime-400/50"
+                                  }`}
+                                  onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
+                                  data-testid={`scraped-image-${i}`}
+                                />
+                                {selectedBackgroundImage === img && (
+                                  <div className="absolute top-0.5 left-0.5 bg-lime-400 text-black text-[6px] font-bold px-1 rounded">BG</div>
+                                )}
+                                <div className="absolute inset-0 bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity rounded flex items-center justify-center p-1">
+                                  <p className="text-[7px] text-lime-400 font-medium">Click to set as background</p>
+                                </div>
+                              </div>
                             ))}
                           </div>
                         )}
-                        <p className="text-xs text-slate-500">Hover over images to see where they came from and what content they relate to. Edit the script above to customize — the storyboard shows which images match each section.</p>
+                        <p className="text-xs text-slate-500">Click any image to set it as the video background (avatar mode). Hover to see details. The storyboard shows which images match each script section.</p>
                       </div>
                     )}
                   </div>
@@ -598,18 +624,42 @@ export default function VideoAds() {
                         <span className="text-[10px] text-slate-500">{uploadedImages.length} uploaded</span>
                       )}
                     </div>
+                    {selectedBackgroundImage && (
+                      <div className="flex items-center gap-2 mb-2 p-2 rounded-lg bg-lime-400/10 border border-lime-400/30">
+                        <img src={selectedBackgroundImage} alt="Selected background" className="w-12 h-8 object-cover rounded" />
+                        <div className="flex-1 min-w-0">
+                          <p className="text-[10px] text-lime-400 font-medium">Video Background Selected</p>
+                          <p className="text-[9px] text-slate-400 truncate">This image will appear behind the avatar in your video</p>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => setSelectedBackgroundImage(null)}
+                          className="text-[10px] text-red-400 hover:text-red-300 underline shrink-0"
+                          data-testid="button-clear-background"
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    )}
                     {uploadedImages.length > 0 && (
                       <div className="grid grid-cols-4 sm:grid-cols-6 gap-2 mb-2">
                         {uploadedImages.map((img, i) => (
-                          <div key={i} className="group relative">
+                          <div key={i} className="group relative cursor-pointer" onClick={() => setSelectedBackgroundImage(img.url)}>
                             <img
                               src={img.url}
                               alt={img.originalName}
-                              className="w-full h-16 object-cover rounded border border-yellow-400/30 hover:border-yellow-400/60 transition-colors"
+                              className={`w-full h-16 object-cover rounded border-2 transition-colors ${
+                                selectedBackgroundImage === img.url
+                                  ? "border-lime-400 ring-1 ring-lime-400/50"
+                                  : "border-yellow-400/30 hover:border-yellow-400/60"
+                              }`}
                               data-testid={`uploaded-image-${i}`}
                             />
+                            {selectedBackgroundImage === img.url && (
+                              <div className="absolute top-0.5 left-0.5 bg-lime-400 text-black text-[6px] font-bold px-1 rounded">BG</div>
+                            )}
                             <div className="absolute inset-0 bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity rounded flex flex-col items-center justify-center p-1">
-                              <p className="text-[7px] text-yellow-400 font-medium">YOUR IMAGE</p>
+                              <p className="text-[7px] text-lime-400 font-medium">Click to set as background</p>
                               <p className="text-[7px] text-white text-center leading-tight mt-0.5">{img.originalName}</p>
                               {img.keywords.length > 0 && (
                                 <p className="text-[6px] text-slate-400 mt-0.5">Keywords: {img.keywords.join(", ")}</p>
@@ -617,7 +667,7 @@ export default function VideoAds() {
                             </div>
                             <button
                               className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full text-white text-[8px] opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
-                              onClick={() => setUploadedImages(prev => prev.filter((_, j) => j !== i))}
+                              onClick={(e) => { e.stopPropagation(); setUploadedImages(prev => prev.filter((_, j) => j !== i)); if (selectedBackgroundImage === img.url) setSelectedBackgroundImage(null); }}
                               data-testid={`remove-uploaded-image-${i}`}
                             >
                               ×
