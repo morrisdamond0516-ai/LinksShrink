@@ -721,7 +721,7 @@ export default function Home() {
               <div className="space-y-3 mb-8">
                 {[
                   "Choose from 1,000+ realistic AI avatars & voices",
-                  "One-click Full Ad Package: horizontal, vertical & square videos",
+                  "One-click Full Ad Package: 3 videos + 3 banner images (horizontal, vertical & square)",
                   "Perfect for Google Ads, Performance Max & social media",
                   "Download and upload directly to your ad campaigns",
                 ].map((item, i) => (
