@@ -59,33 +59,62 @@ export async function generateAvatarVideo(
   script: string,
   callbackId?: string,
   dimension?: { width: number; height: number },
-  backgroundImageUrl?: string
+  backgroundImageUrl?: string,
+  scenes?: { text: string; backgroundUrl?: string }[]
 ) {
-  const sceneInput: any = {
-    character: {
-      type: "avatar",
-      avatar_id: avatarId,
-      avatar_style: "normal",
-    },
-    voice: {
-      type: "text",
-      input_text: script,
-      voice_id: voiceId,
-    },
-  };
+  let videoInputs: any[];
 
-  if (backgroundImageUrl) {
-    sceneInput.background = {
-      type: "image",
-      url: backgroundImageUrl,
+  if (scenes && scenes.length > 0) {
+    videoInputs = scenes.map((scene) => {
+      const input: any = {
+        character: {
+          type: "avatar",
+          avatar_id: avatarId,
+          avatar_style: "normal",
+        },
+        voice: {
+          type: "text",
+          input_text: scene.text,
+          voice_id: voiceId,
+        },
+      };
+      if (scene.backgroundUrl) {
+        input.background = {
+          type: "image",
+          url: scene.backgroundUrl,
+        };
+      }
+      return input;
+    });
+  } else {
+    const input: any = {
+      character: {
+        type: "avatar",
+        avatar_id: avatarId,
+        avatar_style: "normal",
+      },
+      voice: {
+        type: "text",
+        input_text: script,
+        voice_id: voiceId,
+      },
     };
+    if (backgroundImageUrl) {
+      input.background = {
+        type: "image",
+        url: backgroundImageUrl,
+      };
+    }
+    videoInputs = [input];
   }
 
   const body: any = {
-    video_inputs: [sceneInput],
+    video_inputs: videoInputs,
     dimension: dimension || { width: 1920, height: 1080 },
   };
   if (callbackId) body.callback_id = callbackId;
+
+  console.log(`[HeyGen] Generating video with ${videoInputs.length} scene(s), callback=${callbackId}`);
 
   const data = await heygenFetch("/v2/video/generate", {
     method: "POST",
