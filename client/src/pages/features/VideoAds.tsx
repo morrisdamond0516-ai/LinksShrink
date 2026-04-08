@@ -14,6 +14,16 @@ import { motion } from "framer-motion";
 import { Link } from "wouter";
 import Footer from "@/components/Footer";
 
+function triggerDownload(url: string, filename: string) {
+  const proxyUrl = `/api/video-ads/download?url=${encodeURIComponent(url)}&filename=${encodeURIComponent(filename)}`;
+  const a = document.createElement("a");
+  a.href = proxyUrl;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+}
+
 interface Avatar {
   avatar_id: string;
   avatar_name: string;
@@ -581,7 +591,9 @@ export default function VideoAds() {
                           className="h-7 text-[11px] border-lime-400/30 text-lime-400 hover:bg-lime-400/10"
                           onClick={() => {
                             const selected = myVideos.filter(v => selectedVideos.has(v.id) && v.videoUrl);
-                            selected.forEach(v => { window.open(v.videoUrl!, "_blank"); });
+                            selected.forEach((v, i) => {
+                              setTimeout(() => triggerDownload(v.videoUrl!, `video-ad-${v.id}.mp4`), i * 500);
+                            });
                             toast({ title: `Downloading ${selected.length} video${selected.length > 1 ? "s" : ""}` });
                           }}
                           data-testid="button-bulk-download-videos"
@@ -595,7 +607,9 @@ export default function VideoAds() {
                           className="h-7 text-[11px] border-yellow-400/30 text-yellow-400 hover:bg-yellow-400/10"
                           onClick={() => {
                             const selected = myVideos.filter(v => selectedVideos.has(v.id) && v.thumbnailUrl);
-                            selected.forEach(v => { window.open(v.thumbnailUrl!, "_blank"); });
+                            selected.forEach((v, i) => {
+                              setTimeout(() => triggerDownload(v.thumbnailUrl!, `banner-${v.id}.png`), i * 500);
+                            });
                             toast({ title: `Downloading ${selected.length} banner${selected.length > 1 ? "s" : ""}` });
                           }}
                           data-testid="button-bulk-download-banners"
@@ -698,27 +712,23 @@ export default function VideoAds() {
                               </div>
                               <p className="text-xs text-slate-400 truncate pl-7">{video.prompt.substring(0, 60)}...</p>
                               <div className="flex items-center gap-3 flex-wrap pl-7">
-                                <a
-                                  href={video.videoUrl}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="flex items-center gap-1.5 text-lime-400 text-xs hover:text-lime-300"
+                                <button
+                                  onClick={() => triggerDownload(video.videoUrl!, `video-ad-${video.id}.mp4`)}
+                                  className="flex items-center gap-1.5 text-lime-400 text-xs hover:text-lime-300 cursor-pointer"
                                   data-testid={`button-download-video-${video.id}`}
                                 >
                                   <Download className="w-3.5 h-3.5" />
                                   Download Video
-                                </a>
+                                </button>
                                 {video.thumbnailUrl && (
-                                  <a
-                                    href={video.thumbnailUrl}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="flex items-center gap-1.5 text-yellow-400 text-xs hover:text-yellow-300"
+                                  <button
+                                    onClick={() => triggerDownload(video.thumbnailUrl!, `banner-${video.id}.png`)}
+                                    className="flex items-center gap-1.5 text-yellow-400 text-xs hover:text-yellow-300 cursor-pointer"
                                     data-testid={`button-download-image-${video.id}`}
                                   >
                                     <Image className="w-3.5 h-3.5" />
                                     Banner Image
-                                  </a>
+                                  </button>
                                 )}
                               </div>
                             </div>
