@@ -70,8 +70,10 @@ export default function VideoAds() {
   const [scrapedImages, setScrapedImages] = useState<string[]>([]);
   const [richImages, setRichImages] = useState<{ url: string; sourcePage: string; alt: string; context: string; type: string }[]>([]);
   const [storyboard, setStoryboard] = useState<{ section: string; text: string; suggestedImages: string[] }[]>([]);
+  const [uploadedImages, setUploadedImages] = useState<{ url: string; originalName: string; keywords: string[]; description: string }[]>([]);
   const [pagesScraped, setPagesScraped] = useState(0);
   const [showStoryboard, setShowStoryboard] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [selectedVideos, setSelectedVideos] = useState<Set<number>>(new Set());
   const [pollingId, setPollingId] = useState<number | null>(null);
   const { toast } = useToast();
@@ -463,15 +465,22 @@ export default function VideoAds() {
                                 </div>
                                 {scene.suggestedImages.length > 0 && (
                                   <div className="flex gap-1 shrink-0">
-                                    {scene.suggestedImages.map((img, j) => (
-                                      <img
-                                        key={j}
-                                        src={img}
-                                        alt={`Scene ${i + 1} image ${j + 1}`}
-                                        className="w-14 h-14 object-cover rounded border border-white/10"
-                                        onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
-                                      />
-                                    ))}
+                                    {scene.suggestedImages.map((img, j) => {
+                                      const isUploaded = img.startsWith("/api/video-ads/uploaded/");
+                                      return (
+                                        <div key={j} className="relative">
+                                          <img
+                                            src={img}
+                                            alt={`Scene ${i + 1} image ${j + 1}`}
+                                            className={`w-14 h-14 object-cover rounded border ${isUploaded ? "border-yellow-400/50" : "border-white/10"}`}
+                                            onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
+                                          />
+                                          {isUploaded && (
+                                            <span className="absolute -top-1 -right-1 bg-yellow-400 text-black text-[6px] font-bold px-1 rounded">YOU</span>
+                                          )}
+                                        </div>
+                                      );
+                                    })}
                                   </div>
                                 )}
                               </div>
@@ -525,6 +534,96 @@ export default function VideoAds() {
                           </div>
                         )}
                         <p className="text-xs text-slate-500">Hover over images to see where they came from and what content they relate to. Edit the script above to customize — the storyboard shows which images match each section.</p>
+                      </div>
+                    )}
+                  </div>
+                  <div>
+                    <Label className="text-slate-300 mb-2 block">Your Own Images (Optional)</Label>
+                    <p className="text-[10px] text-slate-500 mb-2">Upload your own images — the app will read their filenames and match them to your script sections in the storyboard.</p>
+                    <div className="flex items-center gap-2 mb-2">
+                      <label
+                        className="flex items-center gap-2 px-3 py-2 rounded-lg border border-dashed border-white/20 bg-black/30 hover:border-lime-400/40 transition-colors cursor-pointer text-xs text-slate-400 hover:text-lime-400"
+                        data-testid="button-upload-images"
+                      >
+                        <Upload className="w-4 h-4" />
+                        {uploading ? "Uploading..." : "Choose Images"}
+                        <input
+                          type="file"
+                          accept="image/*"
+                          multiple
+                          className="hidden"
+                          disabled={uploading}
+                          onChange={async (e) => {
+                            const files = e.target.files;
+                            if (!files || files.length === 0) return;
+                            setUploading(true);
+                            try {
+                              const formData = new FormData();
+                              for (let i = 0; i < files.length; i++) {
+                                formData.append("images", files[i]);
+                              }
+                              const res = await fetch("/api/video-ads/upload-images", {
+                                method: "POST",
+                                body: formData,
+                                credentials: "include",
+                              });
+                              if (!res.ok) throw new Error("Upload failed");
+                              const data = await res.json();
+                              setUploadedImages(prev => [...prev, ...data.images]);
+
+                              if (storyboard.length > 0) {
+                                setStoryboard(prev => prev.map(scene => {
+                                  const sceneWords = scene.text.toLowerCase().split(/\s+/);
+                                  const matched = data.images.filter((img: any) =>
+                                    img.keywords.some((kw: string) => sceneWords.some((w: string) => w.length > 3 && w.includes(kw)))
+                                  );
+                                  return {
+                                    ...scene,
+                                    suggestedImages: [...scene.suggestedImages, ...matched.map((m: any) => m.url)].slice(0, 5),
+                                  };
+                                }));
+                              }
+
+                              toast({ title: `Uploaded ${data.images.length} image${data.images.length > 1 ? "s" : ""}` });
+                            } catch (err: any) {
+                              toast({ title: "Upload failed", description: err.message, variant: "destructive" });
+                            } finally {
+                              setUploading(false);
+                              e.target.value = "";
+                            }
+                          }}
+                        />
+                      </label>
+                      {uploadedImages.length > 0 && (
+                        <span className="text-[10px] text-slate-500">{uploadedImages.length} uploaded</span>
+                      )}
+                    </div>
+                    {uploadedImages.length > 0 && (
+                      <div className="grid grid-cols-4 sm:grid-cols-6 gap-2 mb-2">
+                        {uploadedImages.map((img, i) => (
+                          <div key={i} className="group relative">
+                            <img
+                              src={img.url}
+                              alt={img.originalName}
+                              className="w-full h-16 object-cover rounded border border-yellow-400/30 hover:border-yellow-400/60 transition-colors"
+                              data-testid={`uploaded-image-${i}`}
+                            />
+                            <div className="absolute inset-0 bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity rounded flex flex-col items-center justify-center p-1">
+                              <p className="text-[7px] text-yellow-400 font-medium">YOUR IMAGE</p>
+                              <p className="text-[7px] text-white text-center leading-tight mt-0.5">{img.originalName}</p>
+                              {img.keywords.length > 0 && (
+                                <p className="text-[6px] text-slate-400 mt-0.5">Keywords: {img.keywords.join(", ")}</p>
+                              )}
+                            </div>
+                            <button
+                              className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full text-white text-[8px] opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
+                              onClick={() => setUploadedImages(prev => prev.filter((_, j) => j !== i))}
+                              data-testid={`remove-uploaded-image-${i}`}
+                            >
+                              ×
+                            </button>
+                          </div>
+                        ))}
                       </div>
                     )}
                   </div>
