@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowLeft, Loader2, Video, Download, RefreshCw, Play, User, Mic, Sparkles, Package, Globe, Image, Clock, ExternalLink, Upload } from "lucide-react";
+import { ArrowLeft, Loader2, Video, Download, RefreshCw, Play, User, Mic, Sparkles, Package, Globe, Image, Clock, ExternalLink, Upload, Check } from "lucide-react";
 import { SiGoogleads, SiFacebook, SiTiktok, SiYoutube } from "react-icons/si";
 import { useToast } from "@/hooks/use-toast";
 import { useQuery, useMutation } from "@tanstack/react-query";
@@ -65,6 +65,8 @@ export default function VideoAds() {
   const [selectedAvatar, setSelectedAvatar] = useState("");
   const [selectedVoice, setSelectedVoice] = useState("");
   const [avatarSearch, setAvatarSearch] = useState("");
+  const [avatarGender, setAvatarGender] = useState<"all" | "male" | "female">("all");
+  const [avatarPage, setAvatarPage] = useState(1);
   const [voiceSearch, setVoiceSearch] = useState("");
   const [selectedDuration, setSelectedDuration] = useState("30");
   const [scrapedImages, setScrapedImages] = useState<string[]>([]);
@@ -95,9 +97,14 @@ export default function VideoAds() {
     queryKey: ["/api/video-ads/my-videos"],
   });
 
-  const filteredAvatars = avatars.filter((a) =>
-    a.avatar_name?.toLowerCase().includes(avatarSearch.toLowerCase())
-  ).slice(0, 20);
+  const AVATARS_PER_PAGE = 24;
+  const filteredAvatars = avatars.filter((a) => {
+    if (avatarGender !== "all" && a.gender?.toLowerCase() !== avatarGender) return false;
+    if (avatarSearch && !a.avatar_name?.toLowerCase().includes(avatarSearch.toLowerCase())) return false;
+    return true;
+  });
+  const visibleAvatars = filteredAvatars.slice(0, avatarPage * AVATARS_PER_PAGE);
+  const hasMoreAvatars = visibleAvatars.length < filteredAvatars.length;
 
   const filteredVoices = voices.filter((v) =>
     (v.name?.toLowerCase().includes(voiceSearch.toLowerCase()) ||
@@ -336,51 +343,101 @@ export default function VideoAds() {
                   <CardHeader>
                     <CardTitle className="text-white flex items-center gap-2">
                       <User className="w-5 h-5 text-lime-400" />
-                      Select Avatar
+                      Choose Your Presenter
+                      <span className="text-xs text-slate-500 font-normal ml-auto">{filteredAvatars.length} available</span>
                     </CardTitle>
                   </CardHeader>
-                  <CardContent className="space-y-4">
-                    <Input
-                      placeholder="Search avatars..."
-                      value={avatarSearch}
-                      onChange={(e) => setAvatarSearch(e.target.value)}
-                      className="bg-black/50 border-white/10 text-white"
-                      data-testid="input-avatar-search"
-                    />
+                  <CardContent className="space-y-3">
+                    <div className="flex items-center gap-2">
+                      <div className="flex rounded-lg border border-white/10 overflow-hidden">
+                        {(["all", "male", "female"] as const).map((g) => (
+                          <button
+                            key={g}
+                            onClick={() => { setAvatarGender(g); setAvatarPage(1); }}
+                            className={`px-3 py-1.5 text-xs font-medium transition-colors ${
+                              avatarGender === g
+                                ? "bg-lime-400 text-black"
+                                : "bg-black/30 text-slate-400 hover:text-white"
+                            }`}
+                            data-testid={`button-avatar-filter-${g}`}
+                          >
+                            {g === "all" ? "All" : g === "male" ? "Male" : "Female"}
+                          </button>
+                        ))}
+                      </div>
+                      <Input
+                        placeholder="Filter by name..."
+                        value={avatarSearch}
+                        onChange={(e) => { setAvatarSearch(e.target.value); setAvatarPage(1); }}
+                        className="bg-black/50 border-white/10 text-white h-8 text-xs flex-1"
+                        data-testid="input-avatar-search"
+                      />
+                    </div>
+                    {selectedAvatar && (() => {
+                      const sel = avatars.find(a => a.avatar_id === selectedAvatar);
+                      if (!sel) return null;
+                      return (
+                        <div className="flex items-center gap-3 p-2 rounded-lg bg-lime-400/10 border border-lime-400/30">
+                          <img src={sel.preview_image_url} alt={sel.avatar_name} className="w-10 h-10 rounded-lg object-cover" />
+                          <div className="flex-1 min-w-0">
+                            <p className="text-xs text-lime-400 font-medium">Selected: {sel.avatar_name}</p>
+                            <p className="text-[10px] text-slate-400 capitalize">{sel.gender}</p>
+                          </div>
+                          <button onClick={() => setSelectedAvatar("")} className="text-[10px] text-red-400 hover:text-red-300 underline" data-testid="button-clear-avatar">Change</button>
+                        </div>
+                      );
+                    })()}
                     {avatarsLoading ? (
                       <div className="flex items-center justify-center py-8">
                         <Loader2 className="w-6 h-6 animate-spin text-lime-400" />
                       </div>
                     ) : (
-                      <div className="grid grid-cols-4 sm:grid-cols-5 gap-3 max-h-[300px] overflow-y-auto pr-1">
-                        {filteredAvatars.map((avatar) => (
-                          <button
-                            key={avatar.avatar_id}
-                            onClick={() => setSelectedAvatar(avatar.avatar_id)}
-                            className={`relative rounded-xl overflow-hidden border-2 transition-all aspect-square ${
-                              selectedAvatar === avatar.avatar_id
-                                ? "border-lime-400 ring-2 ring-lime-400/30"
-                                : "border-white/10 hover:border-white/30"
-                            }`}
-                            data-testid={`button-avatar-${avatar.avatar_id}`}
-                          >
-                            {avatar.preview_image_url ? (
-                              <img
-                                src={avatar.preview_image_url}
-                                alt={avatar.avatar_name}
-                                className="w-full h-full object-cover"
-                              />
-                            ) : (
-                              <div className="w-full h-full bg-slate-800 flex items-center justify-center">
-                                <User className="w-8 h-8 text-slate-600" />
+                      <>
+                        <div className="grid grid-cols-4 sm:grid-cols-6 gap-2 max-h-[400px] overflow-y-auto pr-1">
+                          {visibleAvatars.map((avatar) => (
+                            <button
+                              key={avatar.avatar_id}
+                              onClick={() => setSelectedAvatar(avatar.avatar_id)}
+                              className={`group relative rounded-xl overflow-hidden border-2 transition-all aspect-[3/4] ${
+                                selectedAvatar === avatar.avatar_id
+                                  ? "border-lime-400 ring-2 ring-lime-400/30 scale-[1.02]"
+                                  : "border-white/10 hover:border-white/30 hover:scale-[1.02]"
+                              }`}
+                              data-testid={`button-avatar-${avatar.avatar_id}`}
+                            >
+                              {avatar.preview_image_url ? (
+                                <img
+                                  src={avatar.preview_image_url}
+                                  alt={avatar.avatar_name}
+                                  className="w-full h-full object-cover"
+                                />
+                              ) : (
+                                <div className="w-full h-full bg-slate-800 flex items-center justify-center">
+                                  <User className="w-8 h-8 text-slate-600" />
+                                </div>
+                              )}
+                              {selectedAvatar === avatar.avatar_id && (
+                                <div className="absolute top-1 right-1 w-5 h-5 bg-lime-400 rounded-full flex items-center justify-center">
+                                  <Check className="w-3 h-3 text-black" />
+                                </div>
+                              )}
+                              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 to-transparent px-1.5 pb-1 pt-4">
+                                <p className="text-[10px] text-white truncate font-medium">{avatar.avatar_name}</p>
+                                <p className="text-[8px] text-slate-400 capitalize">{avatar.gender}</p>
                               </div>
-                            )}
-                            <div className="absolute bottom-0 left-0 right-0 bg-black/70 px-1 py-0.5">
-                              <p className="text-[10px] text-white truncate">{avatar.avatar_name}</p>
-                            </div>
+                            </button>
+                          ))}
+                        </div>
+                        {hasMoreAvatars && (
+                          <button
+                            onClick={() => setAvatarPage(p => p + 1)}
+                            className="w-full py-2 text-xs text-lime-400 hover:text-lime-300 border border-white/10 rounded-lg hover:border-lime-400/30 transition-colors"
+                            data-testid="button-load-more-avatars"
+                          >
+                            Show More ({filteredAvatars.length - visibleAvatars.length} remaining)
                           </button>
-                        ))}
-                      </div>
+                        )}
+                      </>
                     )}
                   </CardContent>
                 </Card>
