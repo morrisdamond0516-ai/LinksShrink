@@ -58,23 +58,31 @@ export async function generateAvatarVideo(
   voiceId: string,
   script: string,
   callbackId?: string,
-  dimension?: { width: number; height: number }
+  dimension?: { width: number; height: number },
+  backgroundImageUrl?: string
 ) {
+  const sceneInput: any = {
+    character: {
+      type: "avatar",
+      avatar_id: avatarId,
+      avatar_style: "normal",
+    },
+    voice: {
+      type: "text",
+      input_text: script,
+      voice_id: voiceId,
+    },
+  };
+
+  if (backgroundImageUrl) {
+    sceneInput.background = {
+      type: "image",
+      url: backgroundImageUrl,
+    };
+  }
+
   const body: any = {
-    video_inputs: [
-      {
-        character: {
-          type: "avatar",
-          avatar_id: avatarId,
-          avatar_style: "normal",
-        },
-        voice: {
-          type: "text",
-          input_text: script,
-          voice_id: voiceId,
-        },
-      },
-    ],
+    video_inputs: [sceneInput],
     dimension: dimension || { width: 1920, height: 1080 },
   };
   if (callbackId) body.callback_id = callbackId;
