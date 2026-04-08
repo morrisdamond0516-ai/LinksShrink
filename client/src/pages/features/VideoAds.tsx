@@ -68,7 +68,10 @@ export default function VideoAds() {
   const [voiceSearch, setVoiceSearch] = useState("");
   const [selectedDuration, setSelectedDuration] = useState("30");
   const [scrapedImages, setScrapedImages] = useState<string[]>([]);
+  const [richImages, setRichImages] = useState<{ url: string; sourcePage: string; alt: string; context: string; type: string }[]>([]);
+  const [storyboard, setStoryboard] = useState<{ section: string; text: string; suggestedImages: string[] }[]>([]);
   const [pagesScraped, setPagesScraped] = useState(0);
+  const [showStoryboard, setShowStoryboard] = useState(false);
   const [selectedVideos, setSelectedVideos] = useState<Set<number>>(new Set());
   const [pollingId, setPollingId] = useState<number | null>(null);
   const { toast } = useToast();
@@ -161,10 +164,17 @@ export default function VideoAds() {
       if (data.scriptSuggestion) {
         setPrompt(data.scriptSuggestion);
       }
+      if (data.richImages && data.richImages.length > 0) {
+        setRichImages(data.richImages);
+      }
+      if (data.storyboard && data.storyboard.length > 0) {
+        setStoryboard(data.storyboard);
+        setShowStoryboard(true);
+      }
       if (data.images && data.images.length > 0) {
         setScrapedImages(data.images);
         setPagesScraped(data.pagesScraped || 1);
-        toast({ title: "Website scraped!", description: `Found ${data.images.length} images across ${data.pagesScraped || 1} pages. Script auto-generated.` });
+        toast({ title: "Website scraped!", description: `Found ${data.images.length} images across ${data.pagesScraped || 1} pages. Script & storyboard auto-generated.` });
       } else if (data.scriptSuggestion) {
         setPagesScraped(data.pagesScraped || 1);
         toast({ title: "Script generated!", description: `Pulled content from ${data.title || targetUrl}. No images found.` });
@@ -429,22 +439,92 @@ export default function VideoAds() {
                         : "Enter a URL and click \"Fetch\" to auto-generate an ad script and pull images from the website"}
                     </p>
                     {scrapedImages.length > 0 && (
-                      <div className="mt-3">
-                        <p className="text-xs text-slate-400 mb-2">Website Images Found ({scrapedImages.length}):</p>
-                        <div className="grid grid-cols-4 sm:grid-cols-6 gap-2 max-h-40 overflow-y-auto rounded-lg bg-black/30 p-2">
-                          {scrapedImages.map((img, i) => (
-                            <a key={i} href={img} target="_blank" rel="noopener noreferrer" className="block">
+                      <div className="mt-3 space-y-3">
+                        <div className="flex items-center justify-between">
+                          <p className="text-xs text-slate-400">Website Images Found ({scrapedImages.length}):</p>
+                          {storyboard.length > 0 && (
+                            <button
+                              onClick={() => setShowStoryboard(!showStoryboard)}
+                              className="text-[10px] text-lime-400 hover:text-lime-300 underline"
+                              data-testid="toggle-storyboard"
+                            >
+                              {showStoryboard ? "Hide Storyboard" : "Show Storyboard"}
+                            </button>
+                          )}
+                        </div>
+                        {showStoryboard && storyboard.length > 0 && (
+                          <div className="rounded-lg border border-lime-400/20 bg-lime-400/5 p-3 space-y-3">
+                            <p className="text-xs text-lime-400 font-medium">Visual Storyboard — Script sections matched with website images</p>
+                            {storyboard.map((scene, i) => (
+                              <div key={i} className="flex gap-3 p-2 rounded bg-black/30 border border-white/5" data-testid={`storyboard-section-${i}`}>
+                                <div className="flex-1 min-w-0">
+                                  <p className="text-[10px] text-lime-400 font-medium mb-1">{scene.section}</p>
+                                  <p className="text-xs text-slate-300 leading-relaxed">{scene.text}</p>
+                                </div>
+                                {scene.suggestedImages.length > 0 && (
+                                  <div className="flex gap-1 shrink-0">
+                                    {scene.suggestedImages.map((img, j) => (
+                                      <img
+                                        key={j}
+                                        src={img}
+                                        alt={`Scene ${i + 1} image ${j + 1}`}
+                                        className="w-14 h-14 object-cover rounded border border-white/10"
+                                        onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
+                                      />
+                                    ))}
+                                  </div>
+                                )}
+                              </div>
+                            ))}
+                            <p className="text-[9px] text-slate-500">Images are auto-matched to script sections based on content. Edit the script freely — images are for reference.</p>
+                          </div>
+                        )}
+                        {richImages.length > 0 ? (
+                          <div>
+                            {Object.entries(
+                              richImages.reduce((acc, img) => {
+                                const page = img.sourcePage;
+                                if (!acc[page]) acc[page] = [];
+                                acc[page].push(img);
+                                return acc;
+                              }, {} as Record<string, typeof richImages>)
+                            ).map(([page, imgs]) => (
+                              <div key={page} className="mb-2">
+                                <p className="text-[10px] text-slate-500 mb-1">From: <span className="text-slate-400">{page}</span></p>
+                                <div className="grid grid-cols-4 sm:grid-cols-6 gap-2">
+                                  {imgs.map((img, i) => (
+                                    <div key={i} className="group relative">
+                                      <img
+                                        src={img.url}
+                                        alt={img.alt}
+                                        className="w-full h-16 object-cover rounded border border-white/10 hover:border-lime-400/50 transition-colors"
+                                        onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
+                                        data-testid={`scraped-image-${page}-${i}`}
+                                      />
+                                      <div className="absolute inset-0 bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity rounded flex items-center justify-center p-1">
+                                        <p className="text-[8px] text-white text-center leading-tight">{img.context || img.alt}</p>
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        ) : (
+                          <div className="grid grid-cols-4 sm:grid-cols-6 gap-2 max-h-40 overflow-y-auto rounded-lg bg-black/30 p-2">
+                            {scrapedImages.map((img, i) => (
                               <img
+                                key={i}
                                 src={img}
                                 alt={`Website image ${i + 1}`}
                                 className="w-full h-16 object-cover rounded border border-white/10 hover:border-lime-400/50 transition-colors"
                                 onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
                                 data-testid={`scraped-image-${i}`}
                               />
-                            </a>
-                          ))}
-                        </div>
-                        <p className="text-xs text-slate-500 mt-1">These images are from your website. Banner images in the ad package will use your video thumbnails.</p>
+                            ))}
+                          </div>
+                        )}
+                        <p className="text-xs text-slate-500">Hover over images to see where they came from and what content they relate to. Edit the script above to customize — the storyboard shows which images match each section.</p>
                       </div>
                     )}
                   </div>
