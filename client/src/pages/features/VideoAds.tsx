@@ -655,22 +655,46 @@ export default function VideoAds() {
                     </div>
                   </div>
                   <div>
-                    <Label className="text-slate-300 mb-2 block">
-                      {mode === "agent" ? "Video Description" : "Script for the Presenter"}
-                    </Label>
+                    <div className="flex items-center justify-between mb-2">
+                      <Label className="text-slate-300">
+                        {mode === "agent" ? "Video Description" : "Script for the Presenter"}
+                      </Label>
+                      <div className="flex items-center gap-2">
+                        {prompt && (
+                          <button
+                            type="button"
+                            onClick={() => setPrompt("")}
+                            className="text-[10px] text-red-400 hover:text-red-300 underline"
+                            data-testid="button-clear-script"
+                          >
+                            Clear Script
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                    <p className="text-[10px] text-slate-500 mb-1.5">
+                      {prompt
+                        ? "Edit freely below — modify, add to, or delete this script and write your own."
+                        : "Fetch a URL above to auto-generate a script, or write your own from scratch."}
+                    </p>
                     <Textarea
                       placeholder={
                         mode === "agent"
-                          ? "e.g., A professional presenter in business attire explaining our new project management tool in 30 seconds. Upbeat tone, modern office background..."
-                          : "e.g., Hi! Are you tired of messy links? LinksShrink.com helps you shorten, track, and manage all your URLs in one place..."
+                          ? "Write your own script here, or use Fetch above to auto-generate one from your website. You can always edit, add to, or completely replace the generated text."
+                          : "Write your script for the presenter here, or use Fetch above to auto-generate one. You can edit, add to, or replace it anytime."
                       }
                       value={prompt}
                       onChange={(e) => setPrompt(e.target.value)}
-                      rows={5}
-                      className="bg-black/50 border-white/10 text-white resize-none"
+                      rows={8}
+                      className="bg-black/50 border-white/10 text-white"
                       data-testid="input-prompt"
                     />
-                    <p className="text-xs text-slate-500 mt-1">{prompt.length} characters</p>
+                    <div className="flex items-center justify-between mt-1">
+                      <p className="text-xs text-slate-500">{prompt.length} characters · ~{Math.round(prompt.split(/\s+/).filter(w => w).length)} words</p>
+                      <p className="text-[10px] text-slate-600">
+                        Target: {DURATION_OPTIONS.find(d => d.value === selectedDuration)?.words || "~80 words"}
+                      </p>
+                    </div>
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <Button
