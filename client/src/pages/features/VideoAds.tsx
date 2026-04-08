@@ -606,21 +606,21 @@ export default function VideoAds() {
                       </div>
                       <p className="text-[10px] text-slate-500 mb-1.5">Then upload to:</p>
                       <div className="flex flex-wrap gap-1.5">
-                        <a href="https://ads.google.com/aw/assets" target="_blank" rel="noopener noreferrer"
+                        <a href="https://ads.google.com/intl/en/home/" target="_blank" rel="noopener noreferrer"
                           className="flex items-center gap-1 px-2.5 py-1.5 rounded bg-blue-500/10 border border-blue-500/20 text-blue-400 text-[11px] hover:bg-blue-500/20 transition-colors"
                           data-testid="bulk-upload-google"
                         >
                           <SiGoogleads className="w-3.5 h-3.5" />
                           Google Ads
                         </a>
-                        <a href="https://adsmanager.facebook.com/adsmanager/manage/ads" target="_blank" rel="noopener noreferrer"
+                        <a href="https://www.facebook.com/business/ads" target="_blank" rel="noopener noreferrer"
                           className="flex items-center gap-1 px-2.5 py-1.5 rounded bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-[11px] hover:bg-indigo-500/20 transition-colors"
                           data-testid="bulk-upload-facebook"
                         >
                           <SiFacebook className="w-3.5 h-3.5" />
                           Facebook / Instagram
                         </a>
-                        <a href="https://ads.tiktok.com/i18n/creation" target="_blank" rel="noopener noreferrer"
+                        <a href="https://ads.tiktok.com/i18n/home" target="_blank" rel="noopener noreferrer"
                           className="flex items-center gap-1 px-2.5 py-1.5 rounded bg-pink-500/10 border border-pink-500/20 text-pink-400 text-[11px] hover:bg-pink-500/20 transition-colors"
                           data-testid="bulk-upload-tiktok"
                         >
@@ -634,7 +634,7 @@ export default function VideoAds() {
                           <SiYoutube className="w-3.5 h-3.5" />
                           YouTube
                         </a>
-                        <a href="https://ads.microsoft.com/campaigns" target="_blank" rel="noopener noreferrer"
+                        <a href="https://about.ads.microsoft.com/en-us" target="_blank" rel="noopener noreferrer"
                           className="flex items-center gap-1 px-2.5 py-1.5 rounded bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-[11px] hover:bg-cyan-500/20 transition-colors"
                           data-testid="bulk-upload-microsoft"
                         >
