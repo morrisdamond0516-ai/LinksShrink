@@ -613,7 +613,7 @@ export default function VideoAds() {
                           <span className="text-blue-400 mt-0.5 shrink-0"><SiGoogleads className="w-3.5 h-3.5" /></span>
                           <div className="min-w-0">
                             <span className="text-blue-400 text-[11px] font-medium group-hover:underline">Google Ads →</span>
-                            <p className="text-[9px] text-slate-500 mt-0.5 leading-relaxed">Sign in → Campaigns → + New Campaign → choose goal → Add video/image assets</p>
+                            <p className="text-[9px] text-slate-500 mt-0.5 leading-relaxed">New: Campaigns → + New Campaign → choose goal → Add video/image assets. Existing: Campaigns → select campaign → Ads → Edit → replace or add media</p>
                           </div>
                         </a>
                         <a href="https://www.facebook.com/business/ads" target="_blank" rel="noopener noreferrer"
@@ -623,7 +623,7 @@ export default function VideoAds() {
                           <span className="text-indigo-400 mt-0.5 shrink-0"><SiFacebook className="w-3.5 h-3.5" /></span>
                           <div className="min-w-0">
                             <span className="text-indigo-400 text-[11px] font-medium group-hover:underline">Facebook / Instagram →</span>
-                            <p className="text-[9px] text-slate-500 mt-0.5 leading-relaxed">Sign in → Ads Manager → Create → choose objective → Add Media → Upload video/images</p>
+                            <p className="text-[9px] text-slate-500 mt-0.5 leading-relaxed">New: Ads Manager → Create → choose objective → Add Media → Upload. Existing: Ads Manager → select campaign → Edit → Ad Creative → Change Media</p>
                           </div>
                         </a>
                         <a href="https://ads.tiktok.com/i18n/home" target="_blank" rel="noopener noreferrer"
@@ -633,7 +633,7 @@ export default function VideoAds() {
                           <span className="text-pink-400 mt-0.5 shrink-0"><SiTiktok className="w-3.5 h-3.5" /></span>
                           <div className="min-w-0">
                             <span className="text-pink-400 text-[11px] font-medium group-hover:underline">TikTok Ads →</span>
-                            <p className="text-[9px] text-slate-500 mt-0.5 leading-relaxed">Sign in → Campaign → Create → Ad Group → Upload video from your device</p>
+                            <p className="text-[9px] text-slate-500 mt-0.5 leading-relaxed">New: Campaign → Create → Ad Group → Upload video. Existing: Campaign → select it → Ad Group → Edit → replace creative</p>
                           </div>
                         </a>
                         <a href="https://studio.youtube.com" target="_blank" rel="noopener noreferrer"
@@ -643,7 +643,7 @@ export default function VideoAds() {
                           <span className="text-red-400 mt-0.5 shrink-0"><SiYoutube className="w-3.5 h-3.5" /></span>
                           <div className="min-w-0">
                             <span className="text-red-400 text-[11px] font-medium group-hover:underline">YouTube →</span>
-                            <p className="text-[9px] text-slate-500 mt-0.5 leading-relaxed">Sign in → Create (top right) → Upload Video → then link it in Google Ads</p>
+                            <p className="text-[9px] text-slate-500 mt-0.5 leading-relaxed">New: Create (top right) → Upload Video → use in Google Ads campaign. Existing: Content → select video → use in linked Google Ads</p>
                           </div>
                         </a>
                         <a href="https://about.ads.microsoft.com/en-us" target="_blank" rel="noopener noreferrer"
@@ -653,7 +653,7 @@ export default function VideoAds() {
                           <span className="text-cyan-400 mt-0.5 shrink-0"><Globe className="w-3.5 h-3.5" /></span>
                           <div className="min-w-0">
                             <span className="text-cyan-400 text-[11px] font-medium group-hover:underline">Microsoft Ads →</span>
-                            <p className="text-[9px] text-slate-500 mt-0.5 leading-relaxed">Sign in → Create Campaign → Video ads → Upload your video assets</p>
+                            <p className="text-[9px] text-slate-500 mt-0.5 leading-relaxed">New: Create Campaign → Video ads → Upload assets. Existing: Campaigns → select campaign → Ads & extensions → Edit ad → replace media</p>
                           </div>
                         </a>
                       </div>
