@@ -56,6 +56,8 @@ export default function VideoAds() {
   const [avatarSearch, setAvatarSearch] = useState("");
   const [voiceSearch, setVoiceSearch] = useState("");
   const [selectedDuration, setSelectedDuration] = useState("30");
+  const [scrapedImages, setScrapedImages] = useState<string[]>([]);
+  const [pagesScraped, setPagesScraped] = useState(0);
   const [pollingId, setPollingId] = useState<number | null>(null);
   const { toast } = useToast();
   
@@ -146,7 +148,14 @@ export default function VideoAds() {
     onSuccess: (data) => {
       if (data.scriptSuggestion) {
         setPrompt(data.scriptSuggestion);
-        toast({ title: "Script generated!", description: `Pulled content from ${data.title || targetUrl}. Feel free to edit it.` });
+      }
+      if (data.images && data.images.length > 0) {
+        setScrapedImages(data.images);
+        setPagesScraped(data.pagesScraped || 1);
+        toast({ title: "Website scraped!", description: `Found ${data.images.length} images across ${data.pagesScraped || 1} pages. Script auto-generated.` });
+      } else if (data.scriptSuggestion) {
+        setPagesScraped(data.pagesScraped || 1);
+        toast({ title: "Script generated!", description: `Pulled content from ${data.title || targetUrl}. No images found.` });
       } else {
         toast({ title: "Limited content found", description: "We couldn't extract much from that site. Try writing your script manually.", variant: "destructive" });
       }
@@ -402,7 +411,30 @@ export default function VideoAds() {
                         )}
                       </Button>
                     </div>
-                    <p className="text-xs text-slate-500 mt-1">Enter a URL and click "Fetch" to auto-generate an ad script from the website's content</p>
+                    <p className="text-xs text-slate-500 mt-1">
+                      {pagesScraped > 0
+                        ? `Scraped ${pagesScraped} pages — found ${scrapedImages.length} images`
+                        : "Enter a URL and click \"Fetch\" to auto-generate an ad script and pull images from the website"}
+                    </p>
+                    {scrapedImages.length > 0 && (
+                      <div className="mt-3">
+                        <p className="text-xs text-slate-400 mb-2">Website Images Found ({scrapedImages.length}):</p>
+                        <div className="grid grid-cols-4 sm:grid-cols-6 gap-2 max-h-40 overflow-y-auto rounded-lg bg-black/30 p-2">
+                          {scrapedImages.map((img, i) => (
+                            <a key={i} href={img} target="_blank" rel="noopener noreferrer" className="block">
+                              <img
+                                src={img}
+                                alt={`Website image ${i + 1}`}
+                                className="w-full h-16 object-cover rounded border border-white/10 hover:border-lime-400/50 transition-colors"
+                                onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
+                                data-testid={`scraped-image-${i}`}
+                              />
+                            </a>
+                          ))}
+                        </div>
+                        <p className="text-xs text-slate-500 mt-1">These images are from your website. Banner images in the ad package will use your video thumbnails.</p>
+                      </div>
+                    )}
                   </div>
                   <div>
                     <Label className="text-slate-300 mb-2 block">Video Duration</Label>
