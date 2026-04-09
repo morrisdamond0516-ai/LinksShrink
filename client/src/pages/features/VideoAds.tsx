@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowLeft, Loader2, Video, Download, RefreshCw, Play, User, Mic, Sparkles, Package, Globe, Image, Clock, ExternalLink, Upload, Check } from "lucide-react";
+import { ArrowLeft, Loader2, Video, Download, RefreshCw, Play, User, Mic, Sparkles, Package, Globe, Image, Clock, ExternalLink, Upload, Check, X } from "lucide-react";
 import { SiGoogleads, SiFacebook, SiTiktok, SiYoutube } from "react-icons/si";
 import { useToast } from "@/hooks/use-toast";
 import { useQuery, useMutation } from "@tanstack/react-query";
@@ -237,6 +237,19 @@ export default function VideoAds() {
     },
     onError: (err: any) => {
       toast({ title: "Could not fetch website", description: err.message, variant: "destructive" });
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: async (id: number) => {
+      await apiRequest("DELETE", `/api/video-ads/${id}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/video-ads/my-videos"] });
+      toast({ title: "Video removed" });
+    },
+    onError: (err: any) => {
+      toast({ title: "Could not remove video", description: err.message, variant: "destructive" });
     },
   });
 
@@ -1116,9 +1129,20 @@ export default function VideoAds() {
                               </div>
                             </div>
                           ) : (
-                            <div className="py-2">
-                              <p className="text-sm text-red-400">Failed</p>
-                              <p className="text-xs text-slate-500">{video.errorMessage || "Something went wrong"}</p>
+                            <div className="py-2 flex items-start justify-between">
+                              <div>
+                                <p className="text-sm text-red-400">Failed</p>
+                                <p className="text-xs text-slate-500">{video.errorMessage || "Something went wrong"}</p>
+                              </div>
+                              <button
+                                onClick={() => deleteMutation.mutate(video.id)}
+                                disabled={deleteMutation.isPending}
+                                className="text-slate-500 hover:text-red-400 p-1 rounded transition-colors cursor-pointer"
+                                title="Remove"
+                                data-testid={`button-dismiss-video-${video.id}`}
+                              >
+                                <X className="w-4 h-4" />
+                              </button>
                             </div>
                           )}
                         </div>
