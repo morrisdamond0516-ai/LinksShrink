@@ -709,6 +709,13 @@ export class DatabaseStorage implements IStorage {
     const [ad] = await db.update(videoAds).set(updates).where(eq(videoAds.id, id)).returning();
     return ad;
   }
+
+  async deleteVideoAd(id: number, userId: string): Promise<boolean> {
+    const [ad] = await db.select().from(videoAds).where(eq(videoAds.id, id));
+    if (!ad || ad.userId !== userId) return false;
+    await db.delete(videoAds).where(eq(videoAds.id, id));
+    return true;
+  }
 }
 
 export const storage = new DatabaseStorage();
