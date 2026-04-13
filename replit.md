@@ -64,7 +64,7 @@ Preferred communication style: Simple, everyday language.
 
 - **Database**: PostgreSQL
 - **Payment Gateway**: Stripe
-- **Email Service**: Yahoo SMTP (for ProductionLinks@yahoo.com)
+- **Email Service**: Resend (sends from no-reply@linksshrink.com via Replit integration)
 - **AI Video Generation**: HeyGen API
 - **UI Components**: shadcn/ui, Radix UI, Lucide React, react-icons
 - **Build Tools**: Vite, esbuild

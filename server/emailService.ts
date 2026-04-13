@@ -1,29 +1,43 @@
-import nodemailer from "nodemailer";
+import { Resend } from "resend";
 
 const OWNER_EMAIL = "ProductionLinks@yahoo.com";
+const FROM_EMAIL = "no-reply@linksshrink.com";
 
-let transporter: nodemailer.Transporter | null = null;
+let connectionSettings: any;
 
-function getTransporter() {
-  if (transporter) return transporter;
+async function getCredentials() {
+  const hostname = process.env.REPLIT_CONNECTORS_HOSTNAME;
+  const xReplitToken = process.env.REPL_IDENTITY
+    ? "repl " + process.env.REPL_IDENTITY
+    : process.env.WEB_REPL_RENEWAL
+      ? "depl " + process.env.WEB_REPL_RENEWAL
+      : null;
 
-  const appPassword = process.env.YAHOO_APP_PASSWORD;
-  if (!appPassword) {
-    console.log("[Email] YAHOO_APP_PASSWORD not configured - emails will not be sent");
-    return null;
+  if (!xReplitToken) {
+    throw new Error("X-Replit-Token not found");
   }
 
-  transporter = nodemailer.createTransport({
-    host: "smtp.mail.yahoo.com",
-    port: 465,
-    secure: true,
-    auth: {
-      user: OWNER_EMAIL,
-      pass: appPassword,
-    },
-  });
+  connectionSettings = await fetch(
+    "https://" + hostname + "/api/v2/connection?include_secrets=true&connector_names=resend",
+    {
+      headers: {
+        Accept: "application/json",
+        "X-Replit-Token": xReplitToken,
+      },
+    }
+  )
+    .then((res) => res.json())
+    .then((data) => data.items?.[0]);
 
-  return transporter;
+  if (!connectionSettings || !connectionSettings.settings.api_key) {
+    throw new Error("Resend not connected");
+  }
+  return { apiKey: connectionSettings.settings.api_key };
+}
+
+async function getResendClient() {
+  const { apiKey } = await getCredentials();
+  return new Resend(apiKey);
 }
 
 export interface RefundCheckResult {
@@ -36,18 +50,12 @@ export interface RefundCheckResult {
 }
 
 export async function sendPasswordResetEmail(email: string, resetUrl: string): Promise<boolean> {
-  const transport = getTransporter();
-  if (!transport) {
-    console.log(`[Email] Cannot send password reset - YAHOO_APP_PASSWORD not configured`);
-    console.log(`[Email] Reset URL for ${email}: ${resetUrl}`);
-    return false;
-  }
-
   try {
-    await transport.sendMail({
-      from: OWNER_EMAIL,
+    const resend = await getResendClient();
+    await resend.emails.send({
+      from: `LinksShrink.com <${FROM_EMAIL}>`,
       to: email,
-      subject: `Reset Your Password - LinksShrink.com`,
+      subject: "Reset Your Password - LinksShrink.com",
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
           <div style="background: #0f0f0f; color: white; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
@@ -67,7 +75,7 @@ export async function sendPasswordResetEmail(email: string, resetUrl: string): P
         </div>
       `,
     });
-    console.log(`[Email] Password reset email sent to ${email}`);
+    console.log(`[Email] Password reset email sent to ${email} via Resend`);
     return true;
   } catch (error: any) {
     console.error("[Email] Failed to send password reset email:", error?.message || error);
@@ -82,22 +90,16 @@ export async function sendRefundQualifiedEmail(refundRequest: {
   reason: string;
   transactionId?: string | null;
 }, checkResult: RefundCheckResult): Promise<boolean> {
-  const transport = getTransporter();
-  if (!transport) {
-    console.log(`[Email] Cannot send - YAHOO_APP_PASSWORD not configured`);
-    console.log(`[Email] Qualified refund request #${refundRequest.id} from ${refundRequest.email}`);
-    return false;
-  }
-
   try {
-    await transport.sendMail({
-      from: OWNER_EMAIL,
+    const resend = await getResendClient();
+    await resend.emails.send({
+      from: `LinksShrink.com <${FROM_EMAIL}>`,
       to: OWNER_EMAIL,
-      subject: `✅ QUALIFIED Refund Request #${refundRequest.id} - LinksShrink.com`,
+      subject: `QUALIFIED Refund Request #${refundRequest.id} - LinksShrink.com`,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
           <div style="background: #166534; color: white; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
-            <h1 style="margin: 0;">✅ Qualified Refund Request #${refundRequest.id}</h1>
+            <h1 style="margin: 0;">Qualified Refund Request #${refundRequest.id}</h1>
             <p style="margin: 5px 0 0 0; opacity: 0.9;">This customer meets the refund requirements</p>
           </div>
           <table style="width: 100%; border-collapse: collapse;">
@@ -128,21 +130,15 @@ export async function sendRefundDeniedEmails(refundRequest: {
   reason: string;
   transactionId?: string | null;
 }, checkResult: RefundCheckResult): Promise<boolean> {
-  const transport = getTransporter();
-  if (!transport) {
-    console.log(`[Email] Cannot send - YAHOO_APP_PASSWORD not configured`);
-    console.log(`[Email] Denied refund request #${refundRequest.id}: ${checkResult.reasons.join(", ")}`);
-    return false;
-  }
-
   const reasonsList = checkResult.reasons.map(r => `<li style="margin-bottom: 6px;">${r}</li>`).join("");
-  const reasonsText = checkResult.reasons.map(r => `• ${r}`).join("\n");
 
   try {
-    await transport.sendMail({
-      from: OWNER_EMAIL,
+    const resend = await getResendClient();
+
+    await resend.emails.send({
+      from: `LinksShrink.com <${FROM_EMAIL}>`,
       to: refundRequest.email,
-      subject: `Refund Request Update - LinksShrink.com`,
+      subject: "Refund Request Update - LinksShrink.com",
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
           <div style="background: #0f0f0f; color: white; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
@@ -165,14 +161,14 @@ export async function sendRefundDeniedEmails(refundRequest: {
       `,
     });
 
-    await transport.sendMail({
-      from: OWNER_EMAIL,
+    await resend.emails.send({
+      from: `LinksShrink.com <${FROM_EMAIL}>`,
       to: OWNER_EMAIL,
-      subject: `❌ DENIED Refund Request #${refundRequest.id} - LinksShrink.com`,
+      subject: `DENIED Refund Request #${refundRequest.id} - LinksShrink.com`,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
           <div style="background: #991b1b; color: white; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
-            <h1 style="margin: 0;">❌ Denied Refund Request #${refundRequest.id}</h1>
+            <h1 style="margin: 0;">Denied Refund Request #${refundRequest.id}</h1>
             <p style="margin: 5px 0 0 0; opacity: 0.9;">Auto-denied - customer was notified</p>
           </div>
           <p><strong>Denial reasons:</strong></p>
