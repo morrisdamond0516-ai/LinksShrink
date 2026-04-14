@@ -113,25 +113,28 @@ export default function VideoAds() {
   ).slice(0, 20);
 
   const buildScenes = () => {
-    if (storyboard.length > 0) {
-      const allImages = [
-        ...uploadedImages.map(img => img.url),
-        ...richImages.map(img => img.url),
-        ...scrapedImages,
-      ];
-      return storyboard.map((section, idx) => {
-        const bgUrl = section.suggestedImages?.[0] || allImages[idx % allImages.length] || undefined;
-        return { text: section.text, backgroundUrl: bgUrl };
-      }).filter(s => s.text.trim());
-    }
+    const uploadedUrls = uploadedImages.map(img => img.url);
     const allImages = [
-      ...uploadedImages.map(img => img.url),
+      ...uploadedUrls,
       ...richImages.map(img => img.url),
       ...scrapedImages,
     ];
-    if (allImages.length > 1 && prompt) {
+
+    if (storyboard.length > 0) {
+      return storyboard.map((section, idx) => {
+        // Prefer uploaded images first, then storyboard suggestions, then any available image
+        const bgUrl = uploadedUrls[idx % uploadedUrls.length]
+          || section.suggestedImages?.[0]
+          || allImages[idx % allImages.length]
+          || undefined;
+        return { text: section.text, backgroundUrl: bgUrl };
+      }).filter(s => s.text.trim());
+    }
+
+    if (allImages.length > 0 && prompt) {
       const sentences = prompt.match(/[^.!?]+[.!?]+/g) || [prompt];
-      const chunkSize = Math.max(1, Math.ceil(sentences.length / Math.min(allImages.length, 6)));
+      const numImages = Math.min(allImages.length, 6);
+      const chunkSize = Math.max(1, Math.ceil(sentences.length / numImages));
       const scenes: { text: string; backgroundUrl?: string }[] = [];
       for (let i = 0; i < sentences.length; i += chunkSize) {
         const text = sentences.slice(i, i + chunkSize).join(" ").trim();
@@ -236,7 +239,11 @@ export default function VideoAds() {
       }
     },
     onError: (err: any) => {
-      toast({ title: "Could not fetch website", description: err.message, variant: "destructive" });
+      const msg = err.message || "";
+      const friendly = msg.includes("too long") ? "That website took too long to respond. Try again or write your script manually."
+        : msg.includes("400") ? "Couldn't reach that website. Check the URL and try again."
+        : "Couldn't fetch that website. Try writing your script manually instead.";
+      toast({ title: "Could not fetch website", description: friendly, variant: "destructive" });
     },
   });
 
@@ -1097,6 +1104,15 @@ export default function VideoAds() {
                                     poster={video.thumbnailUrl || undefined}
                                   />
                                 </div>
+                                <button
+                                  onClick={() => deleteMutation.mutate(video.id)}
+                                  disabled={deleteMutation.isPending}
+                                  className="text-slate-600 hover:text-red-400 p-1 rounded transition-colors cursor-pointer shrink-0"
+                                  title="Remove"
+                                  data-testid={`button-delete-video-${video.id}`}
+                                >
+                                  <X className="w-4 h-4" />
+                                </button>
                               </div>
                               <p className="text-xs text-slate-400 truncate pl-7">{video.prompt.substring(0, 60)}...</p>
                               <div className="flex items-center gap-3 flex-wrap pl-7">
@@ -1123,10 +1139,19 @@ export default function VideoAds() {
                           ) : video.status === "processing" ? (
                             <div className="flex items-center gap-3 py-4">
                               <Loader2 className="w-5 h-5 animate-spin text-lime-400" />
-                              <div>
+                              <div className="flex-1">
                                 <p className="text-sm text-white">Generating...</p>
                                 <p className="text-xs text-slate-500">Usually takes 5-10 minutes</p>
                               </div>
+                              <button
+                                onClick={() => deleteMutation.mutate(video.id)}
+                                disabled={deleteMutation.isPending}
+                                className="text-slate-600 hover:text-red-400 p-1 rounded transition-colors cursor-pointer shrink-0"
+                                title="Remove"
+                                data-testid={`button-delete-video-${video.id}`}
+                              >
+                                <X className="w-4 h-4" />
+                              </button>
                             </div>
                           ) : (
                             <div className="py-2 flex items-start justify-between">
