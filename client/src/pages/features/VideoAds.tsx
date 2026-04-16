@@ -131,21 +131,40 @@ export default function VideoAds() {
     v.language?.toLowerCase().includes("english")
   ).slice(0, 20);
 
+  const matchImageToText = (text: string, candidates: typeof uploadedImages, usedUrls?: Set<string>) => {
+    if (candidates.length === 0) return undefined;
+    const textWords = text.toLowerCase().replace(/[^a-z0-9\s]/g, "").split(/\s+/).filter(w => w.length > 3);
+    let best: { url: string; score: number } = { url: "", score: -1 };
+    for (const img of candidates) {
+      if (usedUrls?.has(img.url)) continue;
+      const score = img.keywords.reduce((acc, kw) => {
+        const kwLow = kw.toLowerCase();
+        return acc + textWords.filter(w => w.includes(kwLow) || kwLow.includes(w)).length;
+      }, 0);
+      if (score > best.score) best = { url: img.url, score };
+    }
+    return best.score > 0 ? best.url : undefined;
+  };
+
   const buildScenes = () => {
-    const uploadedUrls = uploadedImages.map(img => img.url);
     const allImages = [
-      ...uploadedUrls,
+      ...uploadedImages.map(img => img.url),
       ...richImages.map(img => img.url),
       ...scrapedImages,
     ];
 
     if (storyboard.length > 0) {
+      const usedUrls = new Set<string>();
       return storyboard.map((section, idx) => {
-        // Prefer uploaded images first, then storyboard suggestions, then any available image
-        const bgUrl = uploadedUrls[idx % uploadedUrls.length]
-          || section.suggestedImages?.[0]
-          || allImages[idx % allImages.length]
-          || undefined;
+        // Try smart keyword match first (prefer unused images)
+        let bgUrl = matchImageToText(section.text, uploadedImages, usedUrls);
+        // Fall back: any unused uploaded image → storyboard suggestion → any image by index
+        if (!bgUrl && uploadedImages.length > 0) {
+          const unused = uploadedImages.find(img => !usedUrls.has(img.url));
+          bgUrl = unused?.url || uploadedImages[idx % uploadedImages.length]?.url;
+        }
+        bgUrl = bgUrl || section.suggestedImages?.[0] || allImages[idx % allImages.length] || undefined;
+        if (bgUrl) usedUrls.add(bgUrl);
         return { text: section.text, backgroundUrl: bgUrl };
       }).filter(s => s.text.trim());
     }
@@ -155,10 +174,15 @@ export default function VideoAds() {
       const numImages = Math.min(allImages.length, 6);
       const chunkSize = Math.max(1, Math.ceil(sentences.length / numImages));
       const scenes: { text: string; backgroundUrl?: string }[] = [];
+      const usedUrls = new Set<string>();
       for (let i = 0; i < sentences.length; i += chunkSize) {
         const text = sentences.slice(i, i + chunkSize).join(" ").trim();
+        if (!text) continue;
         const imgIdx = Math.floor(i / chunkSize);
-        if (text) scenes.push({ text, backgroundUrl: allImages[imgIdx % allImages.length] });
+        const matched = matchImageToText(text, uploadedImages, usedUrls);
+        const bgUrl = matched || allImages[imgIdx % allImages.length];
+        if (bgUrl) usedUrls.add(bgUrl);
+        scenes.push({ text, backgroundUrl: bgUrl });
       }
       return scenes;
     }
@@ -243,7 +267,19 @@ export default function VideoAds() {
         setRichImages(data.richImages);
       }
       if (data.storyboard && data.storyboard.length > 0) {
-        setStoryboard(data.storyboard);
+        // Auto-match any already-loaded uploaded images to storyboard sections by keyword
+        const matchedStoryboard = data.storyboard.map((section: any) => {
+          if (uploadedImages.length === 0) return section;
+          const sceneWords = section.text.toLowerCase().replace(/[^a-z0-9\s]/g, "").split(/\s+/).filter((w: string) => w.length > 3);
+          const matched = uploadedImages.filter(img =>
+            img.keywords.some(kw => sceneWords.some((w: string) => w.includes(kw.toLowerCase()) || kw.toLowerCase().includes(w)))
+          );
+          return {
+            ...section,
+            suggestedImages: [...matched.map(m => m.url), ...(section.suggestedImages || [])].slice(0, 5),
+          };
+        });
+        setStoryboard(matchedStoryboard);
         setShowStoryboard(true);
       }
       if (data.images && data.images.length > 0) {
@@ -604,36 +640,53 @@ export default function VideoAds() {
                         </div>
                         {showStoryboard && storyboard.length > 0 && (
                           <div className="rounded-lg border border-lime-400/20 bg-lime-400/5 p-3 space-y-3">
-                            <p className="text-xs text-lime-400 font-medium">Visual Storyboard — Script sections matched with website images</p>
-                            {storyboard.map((scene, i) => (
-                              <div key={i} className="flex gap-3 p-2 rounded bg-black/30 border border-white/5" data-testid={`storyboard-section-${i}`}>
-                                <div className="flex-1 min-w-0">
-                                  <p className="text-[10px] text-lime-400 font-medium mb-1">{scene.section}</p>
-                                  <p className="text-xs text-slate-300 leading-relaxed">{scene.text}</p>
-                                </div>
-                                {scene.suggestedImages.length > 0 && (
-                                  <div className="flex gap-1 shrink-0">
-                                    {scene.suggestedImages.map((img, j) => {
-                                      const isUploaded = img.startsWith("/api/video-ads/uploaded/");
-                                      return (
-                                        <div key={j} className="relative">
-                                          <img
-                                            src={img}
-                                            alt={`Scene ${i + 1} image ${j + 1}`}
-                                            className={`w-14 h-14 object-cover rounded border ${isUploaded ? "border-yellow-400/50" : "border-white/10"}`}
-                                            onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
-                                          />
-                                          {isUploaded && (
-                                            <span className="absolute -top-1 -right-1 bg-yellow-400 text-black text-[6px] font-bold px-1 rounded">YOU</span>
-                                          )}
-                                        </div>
-                                      );
-                                    })}
+                            <div className="flex items-center justify-between">
+                              <p className="text-xs text-lime-400 font-medium">Visual Storyboard</p>
+                              {uploadedImages.length > 0 && (
+                                <span className="text-[9px] text-yellow-400 bg-yellow-400/10 border border-yellow-400/20 px-2 py-0.5 rounded-full">
+                                  Your {uploadedImages.length} image{uploadedImages.length > 1 ? "s" : ""} matched by filename keywords
+                                </span>
+                              )}
+                            </div>
+                            {storyboard.map((scene, i) => {
+                              const uploadedMatch = scene.suggestedImages.find(img => img.startsWith("/api/video-ads/uploaded/"));
+                              const matchedImgData = uploadedMatch ? uploadedImages.find(u => u.url === uploadedMatch) : undefined;
+                              return (
+                                <div key={i} className="flex gap-3 p-2 rounded bg-black/30 border border-white/5" data-testid={`storyboard-section-${i}`}>
+                                  <div className="flex-1 min-w-0">
+                                    <p className="text-[10px] text-lime-400 font-medium mb-1">{scene.section}</p>
+                                    <p className="text-xs text-slate-300 leading-relaxed">{scene.text}</p>
+                                    {matchedImgData && (
+                                      <p className="text-[9px] text-yellow-400 mt-1">
+                                        ↳ Using your image: <span className="text-yellow-300">{matchedImgData.originalName}</span>
+                                        {matchedImgData.keywords.length > 0 && <span className="text-slate-500"> (matched: {matchedImgData.keywords.slice(0, 3).join(", ")})</span>}
+                                      </p>
+                                    )}
                                   </div>
-                                )}
-                              </div>
-                            ))}
-                            <p className="text-[9px] text-slate-500">Images are auto-matched to script sections based on content. Edit the script freely — images are for reference.</p>
+                                  {scene.suggestedImages.length > 0 && (
+                                    <div className="flex gap-1 shrink-0">
+                                      {scene.suggestedImages.slice(0, 3).map((img, j) => {
+                                        const isUploaded = img.startsWith("/api/video-ads/uploaded/");
+                                        return (
+                                          <div key={j} className="relative">
+                                            <img
+                                              src={img}
+                                              alt={`Scene ${i + 1} image ${j + 1}`}
+                                              className={`w-14 h-14 object-cover rounded border-2 ${isUploaded ? "border-yellow-400/70" : "border-white/10"}`}
+                                              onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
+                                            />
+                                            {isUploaded && j === 0 && (
+                                              <span className="absolute -top-1 -right-1 bg-yellow-400 text-black text-[6px] font-bold px-1 rounded">YOURS</span>
+                                            )}
+                                          </div>
+                                        );
+                                      })}
+                                    </div>
+                                  )}
+                                </div>
+                              );
+                            })}
+                            <p className="text-[9px] text-slate-500">Images are matched to script sections based on your filename keywords. Rename your files descriptively (e.g. "happy-customer.jpg") for best results.</p>
                           </div>
                         )}
                         {richImages.length > 0 ? (
