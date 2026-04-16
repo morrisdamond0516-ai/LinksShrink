@@ -952,33 +952,54 @@ export default function VideoAds() {
                       </p>
                     </div>
                   </div>
-                  {mode === "avatar" && (() => {
+                  {mode === "avatar" && uploadedImages.length > 0 && prompt && (() => {
                     const scenes = buildScenes();
-                    if (scenes && scenes.length > 1) {
-                      const withBg = scenes.filter(s => s.backgroundUrl).length;
-                      return (
-                        <div className="mb-3 p-2.5 rounded-lg bg-lime-400/10 border border-lime-400/20">
-                          <p className="text-[11px] text-lime-400 font-medium mb-1.5">
-                            Multi-Scene Video: {scenes.length} scenes with {withBg} background images
-                          </p>
-                          <div className="flex gap-1.5 overflow-x-auto pb-1">
-                            {scenes.map((scene, i) => (
-                              <div key={i} className="flex-shrink-0 w-20">
+                    if (!scenes || scenes.length === 0) return null;
+                    return (
+                      <div className="rounded-lg border border-lime-400/20 bg-lime-400/5 p-3 space-y-2">
+                        <div className="flex items-center justify-between">
+                          <p className="text-xs text-lime-400 font-medium">Scene Preview — {scenes.length} scene{scenes.length > 1 ? "s" : ""}</p>
+                          <span className="text-[9px] text-slate-500">{scenes.filter(s => s.backgroundUrl && s.backgroundUrl.startsWith("/api/video-ads/uploaded/")).length} of your images matched</span>
+                        </div>
+                        {scenes.map((scene, i) => {
+                          const isYourImage = scene.backgroundUrl?.startsWith("/api/video-ads/uploaded/");
+                          const imgData = isYourImage ? uploadedImages.find(u => u.url === scene.backgroundUrl) : undefined;
+                          return (
+                            <div key={i} className="flex gap-2 items-start p-2 rounded bg-black/30 border border-white/5">
+                              <div className="shrink-0">
                                 {scene.backgroundUrl ? (
-                                  <img src={scene.backgroundUrl} alt={`Scene ${i + 1}`} className="w-20 h-12 object-cover rounded border border-lime-400/30" />
+                                  <div className="relative">
+                                    <img src={scene.backgroundUrl} alt={`Scene ${i + 1}`} className={`w-16 h-11 object-cover rounded border ${isYourImage ? "border-yellow-400/60" : "border-white/10"}`}
+                                      onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
+                                    />
+                                    {isYourImage && <span className="absolute -top-1 -right-1 bg-yellow-400 text-black text-[5px] font-bold px-1 rounded">YOURS</span>}
+                                  </div>
                                 ) : (
-                                  <div className="w-20 h-12 rounded border border-white/10 bg-black/40 flex items-center justify-center">
-                                    <span className="text-[8px] text-slate-500">No image</span>
+                                  <div className="w-16 h-11 rounded border border-white/10 bg-black/40 flex items-center justify-center">
+                                    <span className="text-[7px] text-slate-600">No image</span>
                                   </div>
                                 )}
-                                <p className="text-[7px] text-slate-400 mt-0.5 truncate">Scene {i + 1}: {scene.text.slice(0, 30)}...</p>
                               </div>
-                            ))}
-                          </div>
-                        </div>
-                      );
-                    }
-                    return null;
+                              <div className="flex-1 min-w-0">
+                                <p className="text-[9px] text-lime-400 font-medium mb-0.5">Scene {i + 1}</p>
+                                <p className="text-[10px] text-slate-300 leading-tight line-clamp-2">{scene.text}</p>
+                                {imgData ? (
+                                  <p className="text-[8px] text-yellow-400 mt-0.5">
+                                    ↳ <span className="text-yellow-300">{imgData.originalName}</span>
+                                    {imgData.keywords.length > 0 && <span className="text-slate-500"> · {imgData.keywords.slice(0, 3).join(", ")}</span>}
+                                  </p>
+                                ) : isYourImage ? (
+                                  <p className="text-[8px] text-yellow-400 mt-0.5">↳ Your image (sequential)</p>
+                                ) : scene.backgroundUrl ? (
+                                  <p className="text-[8px] text-slate-500 mt-0.5">↳ Website image</p>
+                                ) : null}
+                              </div>
+                            </div>
+                          );
+                        })}
+                        <p className="text-[9px] text-slate-600">Rename images descriptively (e.g. "checkout-page.jpg") to improve matching.</p>
+                      </div>
+                    );
                   })()}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <Button
