@@ -1,5 +1,5 @@
 import { db } from "./db";
-import { urls, urlAnalytics, usageCredits, processedLinkPacks, refundRequests, bioPages, bioPageProducts, teamWorkspaces, workspaceMembers, conversionEvents, featurePurchases, funnelEvents, videoAds, type Url, type InsertUrl, type UrlAnalytics, type InsertAnalytics, type UsageCredits, type RefundRequest, type InsertRefundRequest, type BioPage, type InsertBioPage, type BioPageProduct, type InsertBioProduct, type TeamWorkspace, type InsertWorkspace, type WorkspaceMember, type ConversionEvent, type FeaturePurchase, type FunnelEvent, type VideoAd, type InsertVideoAd } from "@shared/schema";
+import { urls, urlAnalytics, usageCredits, processedLinkPacks, refundRequests, bioPages, bioPageProducts, teamWorkspaces, workspaceMembers, conversionEvents, featurePurchases, funnelEvents, videoAds, videoAdImages, type Url, type InsertUrl, type UrlAnalytics, type InsertAnalytics, type UsageCredits, type RefundRequest, type InsertRefundRequest, type BioPage, type InsertBioPage, type BioPageProduct, type InsertBioProduct, type TeamWorkspace, type InsertWorkspace, type WorkspaceMember, type ConversionEvent, type FeaturePurchase, type FunnelEvent, type VideoAd, type InsertVideoAd, type VideoAdImage, type InsertVideoAdImage } from "@shared/schema";
 import { eq, desc, sql, and, gte, or } from "drizzle-orm";
 import crypto from "crypto";
 
@@ -51,6 +51,9 @@ export interface IStorage {
   getVideoAdByHeygenId(heygenVideoId: string): Promise<VideoAd | undefined>;
   getUserVideoAds(userId: string): Promise<VideoAd[]>;
   updateVideoAd(id: number, updates: Partial<VideoAd>): Promise<VideoAd | undefined>;
+  saveVideoAdImage(data: InsertVideoAdImage): Promise<VideoAdImage>;
+  getUserVideoAdImages(userId: string): Promise<VideoAdImage[]>;
+  deleteVideoAdImage(id: number, userId: string): Promise<boolean>;
 }
 
 export interface CreditInfo {
@@ -714,6 +717,22 @@ export class DatabaseStorage implements IStorage {
     const [ad] = await db.select().from(videoAds).where(eq(videoAds.id, id));
     if (!ad || ad.userId !== userId) return false;
     await db.delete(videoAds).where(eq(videoAds.id, id));
+    return true;
+  }
+
+  async saveVideoAdImage(data: InsertVideoAdImage): Promise<VideoAdImage> {
+    const [img] = await db.insert(videoAdImages).values(data).returning();
+    return img;
+  }
+
+  async getUserVideoAdImages(userId: string): Promise<VideoAdImage[]> {
+    return db.select().from(videoAdImages).where(eq(videoAdImages.userId, userId)).orderBy(desc(videoAdImages.createdAt));
+  }
+
+  async deleteVideoAdImage(id: number, userId: string): Promise<boolean> {
+    const [img] = await db.select().from(videoAdImages).where(eq(videoAdImages.id, id));
+    if (!img || img.userId !== userId) return false;
+    await db.delete(videoAdImages).where(eq(videoAdImages.id, id));
     return true;
   }
 }
