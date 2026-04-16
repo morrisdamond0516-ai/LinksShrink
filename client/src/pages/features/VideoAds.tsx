@@ -72,7 +72,7 @@ export default function VideoAds() {
   const [scrapedImages, setScrapedImages] = useState<string[]>([]);
   const [richImages, setRichImages] = useState<{ url: string; sourcePage: string; alt: string; context: string; type: string }[]>([]);
   const [storyboard, setStoryboard] = useState<{ section: string; text: string; suggestedImages: string[] }[]>([]);
-  const [uploadedImages, setUploadedImages] = useState<{ url: string; originalName: string; keywords: string[]; description: string }[]>([]);
+  const [uploadedImages, setUploadedImages] = useState<{ id?: number; url: string; originalName: string; keywords: string[]; description: string }[]>([]);
   const [pagesScraped, setPagesScraped] = useState(0);
   const [showStoryboard, setShowStoryboard] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -95,6 +95,25 @@ export default function VideoAds() {
 
   const { data: myVideos = [], isLoading: videosLoading } = useQuery<VideoAd[]>({
     queryKey: ["/api/video-ads/my-videos"],
+  });
+
+  const { data: persistedImages } = useQuery<{ images: { id: number; url: string; originalName: string; keywords: string[]; description: string }[] }>({
+    queryKey: ["/api/video-ads/my-uploaded-images"],
+  });
+
+  useEffect(() => {
+    if (persistedImages?.images && persistedImages.images.length > 0 && uploadedImages.length === 0) {
+      setUploadedImages(persistedImages.images);
+    }
+  }, [persistedImages]);
+
+  const deleteUploadedImageMutation = useMutation({
+    mutationFn: async (id: number) => {
+      await apiRequest("DELETE", `/api/video-ads/my-uploaded-images/${id}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/video-ads/my-uploaded-images"] });
+    },
   });
 
   const AVATARS_PER_PAGE = 24;
@@ -355,6 +374,14 @@ export default function VideoAds() {
                       <p className="text-xs text-slate-400 mt-1">Pick a realistic person and voice for your ad</p>
                     </button>
                   </div>
+                  {mode === "agent" && uploadedImages.length > 0 && (
+                    <div className="flex items-start gap-2 p-3 rounded-lg bg-yellow-500/10 border border-yellow-500/30">
+                      <span className="text-yellow-400 mt-0.5 shrink-0">⚠</span>
+                      <p className="text-xs text-yellow-300">
+                        <strong>AI Auto-Generate ignores custom images</strong> — the AI controls the visuals automatically. To use your {uploadedImages.length} uploaded image{uploadedImages.length > 1 ? "s" : ""} as backgrounds, switch to <button type="button" onClick={() => setMode("avatar")} className="underline hover:text-yellow-200 cursor-pointer">Avatar & Voice mode</button>.
+                      </p>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
 
@@ -679,7 +706,7 @@ export default function VideoAds() {
                   </div>
                   <div>
                     <Label className="text-slate-300 mb-2 block">Your Own Images (Optional)</Label>
-                    <p className="text-[10px] text-slate-500 mb-2">Upload your own images — the app will read their filenames and match them to your script sections in the storyboard.</p>
+                    <p className="text-[10px] text-slate-500 mb-2">Upload your own images to use as video backgrounds. They'll appear behind the avatar — one image per script section. Uploads are saved permanently to your account.</p>
                     <div className="flex items-center gap-2 mb-2">
                       <label
                         className="flex items-center gap-2 px-3 py-2 rounded-lg border border-dashed border-white/20 bg-black/30 hover:border-lime-400/40 transition-colors cursor-pointer text-xs text-slate-400 hover:text-lime-400"
@@ -709,7 +736,14 @@ export default function VideoAds() {
                               });
                               if (!res.ok) throw new Error("Upload failed");
                               const data = await res.json();
-                              setUploadedImages(prev => [...prev, ...data.images]);
+                              setUploadedImages(prev => [...prev, ...data.images.map((img: any) => ({
+                                id: img.id,
+                                url: img.url,
+                                originalName: img.originalName,
+                                keywords: img.keywords,
+                                description: img.description,
+                              }))]);
+                              queryClient.invalidateQueries({ queryKey: ["/api/video-ads/my-uploaded-images"] });
 
                               if (storyboard.length > 0) {
                                 setStoryboard(prev => prev.map(scene => {
@@ -781,7 +815,12 @@ export default function VideoAds() {
                             </div>
                             <button
                               className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full text-white text-[8px] opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
-                              onClick={(e) => { e.stopPropagation(); setUploadedImages(prev => prev.filter((_, j) => j !== i)); if (selectedBackgroundImage === img.url) setSelectedBackgroundImage(null); }}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setUploadedImages(prev => prev.filter((_, j) => j !== i));
+                                if (selectedBackgroundImage === img.url) setSelectedBackgroundImage(null);
+                                if (img.id) deleteUploadedImageMutation.mutate(img.id);
+                              }}
                               data-testid={`remove-uploaded-image-${i}`}
                             >
                               ×

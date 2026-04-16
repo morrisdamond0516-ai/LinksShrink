@@ -253,6 +253,21 @@ export const insertVideoAdSchema = createInsertSchema(videoAds).omit({
 export type VideoAd = typeof videoAds.$inferSelect;
 export type InsertVideoAd = z.infer<typeof insertVideoAdSchema>;
 
+export const videoAdImages = pgTable("video_ad_images", {
+  id: serial("id").primaryKey(),
+  userId: text("user_id").notNull(),
+  filename: text("filename").notNull(),
+  originalName: text("original_name").notNull(),
+  url: text("url").notNull(),
+  keywords: text("keywords").array().notNull().default([]),
+  description: text("description").notNull().default(""),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertVideoAdImageSchema = createInsertSchema(videoAdImages).omit({ id: true, createdAt: true });
+export type VideoAdImage = typeof videoAdImages.$inferSelect;
+export type InsertVideoAdImage = z.infer<typeof insertVideoAdImageSchema>;
+
 export const passwordResetTokens = pgTable("password_reset_tokens", {
   id: serial("id").primaryKey(),
   userId: text("user_id").notNull(),
