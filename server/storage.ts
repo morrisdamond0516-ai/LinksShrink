@@ -9,6 +9,7 @@ export interface IStorage {
   getUrlById(id: number): Promise<Url | undefined>;
   incrementVisit(shortCode: string): Promise<void>;
   getUserUrls(userId: string): Promise<Url[]>;
+  deleteUrl(id: number): Promise<void>;
   updateUrl(id: number, updates: Partial<Url>): Promise<Url | undefined>;
   recordAnalytics(analytics: InsertAnalytics): Promise<void>;
   getUrlAnalytics(urlId: number, days?: number): Promise<UrlAnalyticsSummary>;
@@ -199,6 +200,10 @@ export class DatabaseStorage implements IStorage {
 
   async getUserUrls(userId: string): Promise<Url[]> {
     return await db.select().from(urls).where(eq(urls.userId, userId)).orderBy(desc(urls.createdAt));
+  }
+
+  async deleteUrl(id: number): Promise<void> {
+    await db.delete(urls).where(eq(urls.id, id));
   }
 
   async updateUrl(id: number, updates: Partial<Url>): Promise<Url | undefined> {

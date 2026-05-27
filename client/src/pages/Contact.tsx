@@ -1,24 +1,59 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Link } from "wouter";
-import { Mail, ArrowLeft, Clock, MessageSquare, Building2 } from "lucide-react";
+import { Mail, ArrowLeft, Clock, MessageSquare, Building2, Send, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { useToast } from "@/hooks/use-toast";
 import Footer from "@/components/Footer";
 
 export default function Contact() {
+  const { toast } = useToast();
+  const [submitting, setSubmitting] = useState(false);
+  const [form, setForm] = useState({ name: "", email: "", subject: "", message: "" });
+
   useEffect(() => {
     document.title = "Contact Us | LinksShrink.com";
     const meta = document.querySelector('meta[name="description"]');
     if (meta) {
-      meta.setAttribute("content", "Get in touch with LinksShrink.com for support, billing questions, abuse reports, or privacy requests. Email us at ProductionLinks@yahoo.com.");
+      meta.setAttribute("content", "Get in touch with LinksShrink.com for support, billing questions, abuse reports, or privacy requests.");
     } else {
       const newMeta = document.createElement("meta");
       newMeta.name = "description";
-      newMeta.content = "Get in touch with LinksShrink.com for support, billing questions, abuse reports, or privacy requests. Email us at ProductionLinks@yahoo.com.";
+      newMeta.content = "Get in touch with LinksShrink.com for support, billing questions, abuse reports, or privacy requests.";
       document.head.appendChild(newMeta);
     }
   }, []);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!form.name || !form.email || !form.message) {
+      toast({ title: "Missing fields", description: "Please fill in your name, email, and message.", variant: "destructive" });
+      return;
+    }
+    setSubmitting(true);
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        toast({ title: "Message sent!", description: "We'll get back to you within 24-48 hours." });
+        setForm({ name: "", email: "", subject: "", message: "" });
+      } else {
+        toast({ title: "Failed to send", description: data.message || "Please email us directly.", variant: "destructive" });
+      }
+    } catch {
+      toast({ title: "Failed to send", description: "Please email us directly at ProductionLinks@yahoo.com", variant: "destructive" });
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-black text-white py-20 px-4">
@@ -39,16 +74,93 @@ export default function Contact() {
         >
           <h1 className="text-4xl md:text-6xl font-extrabold mb-6 text-lime-400" data-testid="text-contact-title">Contact Us</h1>
           <p className="text-xl text-slate-400 max-w-2xl mx-auto leading-relaxed">
-            We're here to help. Reach out to us with any questions, concerns, or feedback about LinksShrink.com.
+            We're here to help. Send us a message and we'll get back to you within 24-48 hours.
           </p>
         </motion.div>
 
-        <div className="grid md:grid-cols-2 gap-8 mb-16">
+        <div className="grid md:grid-cols-2 gap-8 mb-12">
+          {/* Contact Form */}
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.1 }}
+            className="md:col-span-2"
           >
+            <Card className="bg-slate-900 border-lime-400/20">
+              <CardHeader className="flex flex-row items-center gap-4">
+                <div className="p-3 bg-lime-400/10 rounded-lg">
+                  <Send className="w-6 h-6 text-lime-400" />
+                </div>
+                <CardTitle className="text-xl text-white">Send Us a Message</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  <div className="grid sm:grid-cols-2 gap-4">
+                    <div className="space-y-1">
+                      <Label htmlFor="contact-name" className="text-slate-300">Name *</Label>
+                      <Input
+                        id="contact-name"
+                        data-testid="input-contact-name"
+                        placeholder="Your name"
+                        value={form.name}
+                        onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
+                        className="bg-slate-800 border-slate-700 text-white placeholder:text-slate-500 focus:border-lime-400"
+                        required
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <Label htmlFor="contact-email" className="text-slate-300">Email *</Label>
+                      <Input
+                        id="contact-email"
+                        data-testid="input-contact-email"
+                        type="email"
+                        placeholder="your@email.com"
+                        value={form.email}
+                        onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
+                        className="bg-slate-800 border-slate-700 text-white placeholder:text-slate-500 focus:border-lime-400"
+                        required
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-1">
+                    <Label htmlFor="contact-subject" className="text-slate-300">Subject</Label>
+                    <Input
+                      id="contact-subject"
+                      data-testid="input-contact-subject"
+                      placeholder="What's this about?"
+                      value={form.subject}
+                      onChange={e => setForm(f => ({ ...f, subject: e.target.value }))}
+                      className="bg-slate-800 border-slate-700 text-white placeholder:text-slate-500 focus:border-lime-400"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <Label htmlFor="contact-message" className="text-slate-300">Message *</Label>
+                    <Textarea
+                      id="contact-message"
+                      data-testid="input-contact-message"
+                      placeholder="Describe your question or issue in detail..."
+                      value={form.message}
+                      onChange={e => setForm(f => ({ ...f, message: e.target.value }))}
+                      className="bg-slate-800 border-slate-700 text-white placeholder:text-slate-500 focus:border-lime-400 min-h-[140px] resize-none"
+                      required
+                    />
+                  </div>
+                  <Button
+                    type="submit"
+                    disabled={submitting}
+                    data-testid="button-contact-submit"
+                    className="w-full bg-lime-400 hover:bg-lime-500 text-black font-bold h-12"
+                  >
+                    {submitting ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Sending...</> : <><Send className="w-4 h-4 mr-2" /> Send Message</>}
+                  </Button>
+                </form>
+              </CardContent>
+            </Card>
+          </motion.div>
+        </div>
+
+        <div className="grid md:grid-cols-2 gap-8 mb-12">
+          <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }}>
             <Card className="bg-slate-900 border-lime-400/20 h-full">
               <CardHeader className="flex flex-row items-center gap-4">
                 <div className="p-3 bg-lime-400/10 rounded-lg">
@@ -71,11 +183,7 @@ export default function Contact() {
             </Card>
           </motion.div>
 
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.2 }}
-          >
+          <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.3 }}>
             <Card className="bg-slate-900 border-lime-400/20 h-full">
               <CardHeader className="flex flex-row items-center gap-4">
                 <div className="p-3 bg-lime-400/10 rounded-lg">
@@ -85,7 +193,7 @@ export default function Contact() {
               </CardHeader>
               <CardContent>
                 <p className="text-slate-400 mb-4 leading-relaxed">
-                  We aim to respond to all inquiries within 24-48 business hours. For urgent issues, please include "URGENT" in your email subject line.
+                  We aim to respond to all inquiries within 24-48 business hours. For urgent issues, include "URGENT" in your subject line.
                 </p>
                 <p className="text-slate-500 text-sm">
                   Business hours: Monday - Friday, 9:00 AM - 5:00 PM EST
@@ -95,11 +203,7 @@ export default function Contact() {
           </motion.div>
         </div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-        >
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
           <Card className="bg-slate-900 border-lime-400/20">
             <CardHeader className="flex flex-row items-center gap-4">
               <div className="p-3 bg-lime-400/10 rounded-lg">
@@ -112,7 +216,7 @@ export default function Contact() {
                 <div>
                   <h3 className="text-white font-semibold mb-2">Account & Billing</h3>
                   <p className="text-slate-400 text-sm leading-relaxed">
-                    For questions about your subscription, billing, or account management, email us with your registered email address and a description of your issue.
+                    For questions about your subscription, billing, or account management, include your registered email and a description of your issue.
                   </p>
                   <Link href="/refund" className="text-lime-400 text-sm font-semibold hover:underline mt-2 inline-block" data-testid="link-request-refund">
                     Request a Refund
@@ -121,19 +225,13 @@ export default function Contact() {
                 <div>
                   <h3 className="text-white font-semibold mb-2">Technical Support</h3>
                   <p className="text-slate-400 text-sm leading-relaxed">
-                    If you're experiencing issues with link shortening, redirects, analytics, or any premium features, please describe the problem in detail including the affected URL or short code.
+                    If you're experiencing issues with link shortening, redirects, analytics, or any premium features, describe the problem in detail including the affected URL or short code.
                   </p>
                 </div>
                 <div>
                   <h3 className="text-white font-semibold mb-2">Report Abuse</h3>
                   <p className="text-slate-400 text-sm leading-relaxed">
-                    To report a shortened link that contains malicious content, spam, or violates our Terms of Service, email us with the short link URL and a description of the issue. We take abuse reports seriously and will investigate promptly.
-                  </p>
-                </div>
-                <div>
-                  <h3 className="text-white font-semibold mb-2">Data & Privacy Requests</h3>
-                  <p className="text-slate-400 text-sm leading-relaxed">
-                    To request access to, correction of, or deletion of your personal data, please email us from the email address associated with your account. We will process your request within 30 days.
+                    To report a shortened link that contains malicious content, spam, or violates our Terms of Service, send us the short link URL and a description of the issue.
                   </p>
                 </div>
               </div>
@@ -141,12 +239,7 @@ export default function Contact() {
           </Card>
         </motion.div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-          className="mt-8"
-        >
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="mt-8">
           <Card className="bg-slate-900 border-lime-400/20" data-testid="card-business-info">
             <CardHeader className="flex flex-row items-center gap-4">
               <div className="p-3 bg-lime-400/10 rounded-lg">
@@ -163,11 +256,7 @@ export default function Contact() {
                 <div>
                   <span className="text-slate-500 text-sm">Email</span>
                   <p>
-                    <a
-                      href="mailto:ProductionLinks@yahoo.com"
-                      className="text-lime-400 font-semibold hover:underline"
-                      data-testid="link-business-email"
-                    >
+                    <a href="mailto:ProductionLinks@yahoo.com" className="text-lime-400 font-semibold hover:underline" data-testid="link-business-email">
                       ProductionLinks@yahoo.com
                     </a>
                   </p>

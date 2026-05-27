@@ -6,7 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
 import { Link } from "wouter";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { usePageView, trackFunnelEvent } from "@/hooks/use-funnel";
 import {
   Link2,
@@ -38,7 +38,9 @@ import {
   ShoppingBag,
   Pencil,
   Smartphone,
-  Infinity
+  Infinity,
+  Trash2,
+  ExternalLink
 } from "lucide-react";
 import { motion } from "framer-motion";
 import Footer from "@/components/Footer";
@@ -52,6 +54,14 @@ interface CreditInfo {
   monthKey: string;
 }
 
+interface UserUrl {
+  id: number;
+  shortCode: string;
+  originalUrl: string;
+  visitCount: number;
+  createdAt: string;
+}
+
 export default function Home() {
   const [url, setUrl] = useState("");
   const [result, setResult] = useState<{ shortUrl: string; shortCode: string } | null>(null);
@@ -59,6 +69,7 @@ export default function Home() {
   const [buyingLinks, setBuyingLinks] = useState(false);
   const { toast } = useToast();
   const { user, isAuthenticated, isLoading: authLoading } = useAuth();
+  const queryClient = useQueryClient();
   const pendingPlanProcessed = useRef(false);
   const linkPackProcessed = useRef(false);
   usePageView("/");
@@ -70,6 +81,27 @@ export default function Home() {
     queryKey: ['/api/credits'],
     staleTime: 0,
     refetchOnWindowFocus: true,
+  });
+
+  // Fetch user's saved links (authenticated users only)
+  const { data: myLinks = [], refetch: refetchLinks } = useQuery<UserUrl[]>({
+    queryKey: ['/api/my-links'],
+    enabled: isAuthenticated,
+    staleTime: 30000,
+  });
+
+  const deleteLinkMutation = useMutation({
+    mutationFn: async (id: number) => {
+      const res = await fetch(`/api/my-links/${id}`, { method: "DELETE", credentials: "include" });
+      if (!res.ok) throw new Error("Failed to delete link");
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/my-links'] });
+      toast({ title: "Link deleted", description: "Your link has been removed." });
+    },
+    onError: () => {
+      toast({ title: "Error", description: "Failed to delete link.", variant: "destructive" });
+    },
   });
 
   const handleBuyLinks = async () => {
@@ -127,6 +159,7 @@ export default function Home() {
         setResult(data);
         setCopied(false);
         refetchCredits();
+        if (isAuthenticated) refetchLinks();
         toast({
           title: "URL Shortened!",
           description: "Your link is ready to share.",
@@ -695,6 +728,60 @@ export default function Home() {
           <div className="absolute bottom-20 right-10 w-96 h-96 bg-yellow-400 rounded-full blur-[120px] opacity-20" />
         </div>
       </section>
+
+      {/* My Links Section (authenticated users) */}
+      {isAuthenticated && myLinks.length > 0 && (
+        <section className="py-12 bg-slate-950 border-t border-white/5">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
+              <Link2 className="w-5 h-5 text-lime-400" />
+              My Links
+              <span className="text-slate-500 text-sm font-normal ml-1">({myLinks.length})</span>
+            </h2>
+            <div className="space-y-3" data-testid="links-list">
+              {myLinks.map((link) => (
+                <div
+                  key={link.id}
+                  data-testid={`row-link-${link.id}`}
+                  className="flex items-center gap-3 bg-slate-900 border border-white/5 rounded-xl px-4 py-3 hover:border-lime-400/20 transition-colors"
+                >
+                  <div className="flex-1 min-w-0">
+                    <a
+                      href={`/${link.shortCode}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-lime-400 font-semibold text-sm hover:underline flex items-center gap-1"
+                      data-testid={`link-short-${link.id}`}
+                    >
+                      linksshrink.com/{link.shortCode}
+                      <ExternalLink className="w-3 h-3 opacity-60" />
+                    </a>
+                    <p className="text-slate-400 text-xs truncate mt-0.5" data-testid={`text-original-${link.id}`}>
+                      {link.originalUrl}
+                    </p>
+                  </div>
+                  <div className="shrink-0 flex items-center gap-3">
+                    <span className="text-slate-500 text-xs" data-testid={`text-clicks-${link.id}`}>
+                      {link.visitCount ?? 0} click{(link.visitCount ?? 0) !== 1 ? "s" : ""}
+                    </span>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 text-slate-500 hover:text-red-400 hover:bg-red-400/10"
+                      onClick={() => deleteLinkMutation.mutate(link.id)}
+                      disabled={deleteLinkMutation.isPending}
+                      data-testid={`button-delete-link-${link.id}`}
+                      aria-label="Delete link"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* How It Works Section */}
       <section className="py-20 bg-gradient-to-b from-black via-slate-900/50 to-black border-t border-white/5 overflow-hidden">

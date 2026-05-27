@@ -65,10 +65,15 @@ export default function Register() {
         }),
       });
       
-      const result = await response.json();
+      let result: any;
+      try {
+        result = await response.json();
+      } catch {
+        throw new Error("Registration failed. Please try again.");
+      }
       
       if (!response.ok) {
-        throw new Error(result.message || "Registration failed");
+        throw new Error(result?.message || "Registration failed");
       }
       
       return result;
