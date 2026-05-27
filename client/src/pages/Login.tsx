@@ -54,10 +54,15 @@ export default function Login() {
         body: JSON.stringify(data),
       });
       
-      const result = await response.json();
+      let result: any;
+      try {
+        result = await response.json();
+      } catch {
+        throw new Error("Invalid email or password");
+      }
       
       if (!response.ok) {
-        throw new Error(result.message || "Login failed");
+        throw new Error(result?.message || "Invalid email or password");
       }
       
       return result;

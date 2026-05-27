@@ -190,3 +190,42 @@ export async function sendRefundDeniedEmails(refundRequest: {
     return false;
   }
 }
+
+export async function sendContactEmail(data: {
+  name: string;
+  email: string;
+  subject: string;
+  message: string;
+}): Promise<boolean> {
+  try {
+    const resend = await getResendClient();
+    await resend.emails.send({
+      from: `LinksShrink.com <${FROM_EMAIL}>`,
+      to: OWNER_EMAIL,
+      replyTo: data.email,
+      subject: `[Contact Form] ${data.subject}`,
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+          <div style="background: #84cc16; color: black; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+            <h1 style="margin: 0;">New Contact Form Message</h1>
+            <p style="margin: 5px 0 0 0;">From: ${data.name} (${data.email})</p>
+          </div>
+          <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+            <tr><td style="padding: 8px; font-weight: bold; border-bottom: 1px solid #eee;">Name</td><td style="padding: 8px; border-bottom: 1px solid #eee;">${data.name}</td></tr>
+            <tr><td style="padding: 8px; font-weight: bold; border-bottom: 1px solid #eee;">Email</td><td style="padding: 8px; border-bottom: 1px solid #eee;">${data.email}</td></tr>
+            <tr><td style="padding: 8px; font-weight: bold; border-bottom: 1px solid #eee;">Subject</td><td style="padding: 8px; border-bottom: 1px solid #eee;">${data.subject}</td></tr>
+          </table>
+          <div style="background: #f9fafb; padding: 16px; border-radius: 8px; border-left: 4px solid #84cc16;">
+            <p style="margin: 0; white-space: pre-wrap;">${data.message}</p>
+          </div>
+          <p style="margin-top: 16px; color: #666; font-size: 14px;">Reply directly to this email to respond to ${data.name}.</p>
+        </div>
+      `,
+    });
+    console.log(`[Email] Contact form message sent from ${data.email}`);
+    return true;
+  } catch (error: any) {
+    console.error("[Email] Failed to send contact email:", error?.message || error);
+    return false;
+  }
+}
