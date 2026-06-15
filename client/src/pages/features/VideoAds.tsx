@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -148,6 +148,79 @@ export default function VideoAds() {
     }
     return best.score > 0 ? best.url : undefined;
   };
+
+  // Score how well an image matches a block of text
+  const scoreImageForText = useCallback((text: string, img: { url: string; sourcePage?: string; alt?: string; context?: string; type?: string }) => {
+    const textWords = text.toLowerCase().replace(/[^a-z0-9\s]/g, "").split(/\s+/).filter(w => w.length > 3);
+    const imgText = [img.sourcePage, img.alt, img.context].filter(Boolean).join(" ").toLowerCase();
+    const imgWords = imgText.replace(/[^a-z0-9\s]/g, "").split(/\s+/).filter(w => w.length > 3);
+    let score = 0;
+    for (const tw of textWords) {
+      for (const iw of imgWords) {
+        if (tw === iw) score += 3;
+        else if (tw.includes(iw) || iw.includes(tw)) score += 1;
+      }
+    }
+    // Screenshots of real pages are higher quality for ads
+    if (img.type === "screenshot") score += 2;
+    return score;
+  }, []);
+
+  // Rebuild the storyboard by re-matching ALL available images to the new script
+  const rebuildStoryboardFromScript = useCallback((script: string) => {
+    const allImgs: { url: string; sourcePage: string; alt: string; context: string; type: string }[] = [
+      ...richImages,
+      ...uploadedImages.map(u => ({
+        url: u.url,
+        sourcePage: u.originalName,
+        alt: u.description,
+        context: u.keywords.join(" "),
+        type: "uploaded",
+      })),
+    ];
+    if (!script.trim() || allImgs.length === 0) return;
+
+    // Split by blank lines first; fall back to grouping sentences 2–3 at a time
+    const rawSections = script.split(/\n\n+/).map(s => s.trim()).filter(Boolean);
+    const sections: string[] = rawSections.length > 1
+      ? rawSections
+      : (script.match(/[^.!?]+[.!?]+/g) || [script]).reduce((acc: string[], sent, i) => {
+          const groupSize = 2;
+          if (i % groupSize === 0) acc.push(sent.trim());
+          else acc[acc.length - 1] += " " + sent.trim();
+          return acc;
+        }, []);
+
+    const usedUrls = new Set<string>();
+    const newStoryboard = sections.map((sectionText, i) => {
+      const scored = allImgs
+        .map(img => ({ img, score: scoreImageForText(sectionText, img) }))
+        .filter(({ img }) => !usedUrls.has(img.url))
+        .sort((a, b) => b.score - a.score);
+
+      const topImages = scored.slice(0, 3).map(({ img }) => img.url);
+      if (scored[0]?.score > 0) usedUrls.add(scored[0].img.url);
+
+      return { section: `Scene ${i + 1}`, text: sectionText, suggestedImages: topImages };
+    }).filter(s => s.text.length > 5);
+
+    setStoryboard(newStoryboard);
+    setShowStoryboard(newStoryboard.length > 0);
+  }, [richImages, uploadedImages, scoreImageForText]);
+
+  // Live-update the storyboard 400ms after each script edit (only when images exist)
+  const storyboardDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => {
+    const hasImages = richImages.length > 0 || uploadedImages.length > 0;
+    if (!hasImages) return;
+    if (storyboardDebounceRef.current) clearTimeout(storyboardDebounceRef.current);
+    storyboardDebounceRef.current = setTimeout(() => {
+      rebuildStoryboardFromScript(prompt);
+    }, 400);
+    return () => {
+      if (storyboardDebounceRef.current) clearTimeout(storyboardDebounceRef.current);
+    };
+  }, [prompt, richImages, uploadedImages]);
 
   const buildScenes = () => {
     const allImages = [
@@ -682,16 +755,24 @@ export default function VideoAds() {
                         {showStoryboard && storyboard.length > 0 && (
                           <div className="rounded-lg border border-lime-400/20 bg-lime-400/5 p-3 space-y-3">
                             <div className="flex items-center justify-between">
-                              <p className="text-xs text-lime-400 font-medium">Visual Storyboard</p>
+                              <div className="flex items-center gap-2">
+                                <p className="text-xs text-lime-400 font-medium">Visual Storyboard</p>
+                                <span className="flex items-center gap-1 text-[9px] text-lime-500 bg-lime-400/10 border border-lime-400/20 px-1.5 py-0.5 rounded-full">
+                                  <span className="w-1.5 h-1.5 rounded-full bg-lime-400 animate-pulse inline-block" />
+                                  Live — updates as you edit the script
+                                </span>
+                              </div>
                               {uploadedImages.length > 0 && (
                                 <span className="text-[9px] text-yellow-400 bg-yellow-400/10 border border-yellow-400/20 px-2 py-0.5 rounded-full">
-                                  Your {uploadedImages.length} image{uploadedImages.length > 1 ? "s" : ""} matched by filename keywords
+                                  {uploadedImages.length} your image{uploadedImages.length > 1 ? "s" : ""} + {richImages.filter(i => i.type === "screenshot").length} screenshots
                                 </span>
                               )}
                             </div>
                             {storyboard.map((scene, i) => {
-                              const uploadedMatch = scene.suggestedImages.find(img => img.startsWith("/api/video-ads/uploaded/"));
+                              const uploadedMatch = scene.suggestedImages.find(img => img.startsWith("/api/video-ads/uploaded/") && !img.includes("screenshots/"));
+                              const screenshotMatch = scene.suggestedImages.find(img => img.includes("screenshots/"));
                               const matchedImgData = uploadedMatch ? uploadedImages.find(u => u.url === uploadedMatch) : undefined;
+                              const matchedRich = screenshotMatch ? richImages.find(r => r.url === screenshotMatch) : undefined;
                               return (
                                 <div key={i} className="flex gap-3 p-2 rounded bg-black/30 border border-white/5" data-testid={`storyboard-section-${i}`}>
                                   <div className="flex-1 min-w-0">
@@ -699,25 +780,42 @@ export default function VideoAds() {
                                     <p className="text-xs text-slate-300 leading-relaxed">{scene.text}</p>
                                     {matchedImgData && (
                                       <p className="text-[9px] text-yellow-400 mt-1">
-                                        ↳ Using your image: <span className="text-yellow-300">{matchedImgData.originalName}</span>
-                                        {matchedImgData.keywords.length > 0 && <span className="text-slate-500"> (matched: {matchedImgData.keywords.slice(0, 3).join(", ")})</span>}
+                                        ↳ Your image: <span className="text-yellow-300">{matchedImgData.originalName}</span>
+                                        {matchedImgData.keywords.length > 0 && <span className="text-slate-500"> · keywords: {matchedImgData.keywords.slice(0, 3).join(", ")}</span>}
+                                      </p>
+                                    )}
+                                    {!matchedImgData && matchedRich && (
+                                      <p className="text-[9px] text-lime-500 mt-1">
+                                        ↳ Screenshot: <span className="text-lime-300">{matchedRich.sourcePage}</span>
+                                        {matchedRich.context && <span className="text-slate-500"> · {matchedRich.context.substring(0, 60)}</span>}
                                       </p>
                                     )}
                                   </div>
                                   {scene.suggestedImages.length > 0 && (
                                     <div className="flex gap-1 shrink-0">
                                       {scene.suggestedImages.slice(0, 3).map((img, j) => {
-                                        const isUploaded = img.startsWith("/api/video-ads/uploaded/");
+                                        const isUploaded = img.startsWith("/api/video-ads/uploaded/") && !img.includes("screenshots/");
+                                        const isScreenshot = img.includes("screenshots/");
                                         return (
-                                          <div key={j} className="relative">
+                                          <div key={j} className="relative cursor-pointer" onClick={() => setSelectedBackgroundImage(img)}>
                                             <img
                                               src={img}
                                               alt={`Scene ${i + 1} image ${j + 1}`}
-                                              className={`w-14 h-14 object-cover rounded border-2 ${isUploaded ? "border-yellow-400/70" : "border-white/10"}`}
+                                              className={`w-16 object-cover rounded border-2 transition-colors ${
+                                                isScreenshot ? "h-10" : "h-16"
+                                              } ${
+                                                selectedBackgroundImage === img
+                                                  ? "border-lime-400"
+                                                  : isUploaded ? "border-yellow-400/70 hover:border-yellow-400"
+                                                  : "border-white/10 hover:border-lime-400/50"
+                                              }`}
                                               onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
                                             />
                                             {isUploaded && j === 0 && (
                                               <span className="absolute -top-1 -right-1 bg-yellow-400 text-black text-[6px] font-bold px-1 rounded">YOURS</span>
+                                            )}
+                                            {isScreenshot && j === 0 && (
+                                              <span className="absolute top-0 left-0 bg-lime-500/80 text-black text-[6px] font-bold px-1 rounded-br">📸</span>
                                             )}
                                           </div>
                                         );
@@ -727,7 +825,9 @@ export default function VideoAds() {
                                 </div>
                               );
                             })}
-                            <p className="text-[9px] text-slate-500">Images are matched to script sections based on your filename keywords. Rename your files descriptively (e.g. "happy-customer.jpg") for best results.</p>
+                            <p className="text-[9px] text-slate-500">
+                              Storyboard auto-updates as you edit the script above. Images are matched by keywords in your script — page screenshots get priority. Click any image thumbnail to set it as your video background.
+                            </p>
                           </div>
                         )}
                         {richImages.length > 0 ? (
