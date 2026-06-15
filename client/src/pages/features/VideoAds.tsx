@@ -61,7 +61,7 @@ const DURATION_OPTIONS = [
 export default function VideoAds() {
   const [mode, setMode] = useState<"agent" | "avatar">("agent");
   const [prompt, setPrompt] = useState("");
-  const [targetUrl, setTargetUrl] = useState("");
+  const [websiteUrls, setWebsiteUrls] = useState<string[]>([""]);
   const [selectedAvatar, setSelectedAvatar] = useState("");
   const [selectedVoice, setSelectedVoice] = useState("");
   const [avatarSearch, setAvatarSearch] = useState("");
@@ -81,6 +81,7 @@ export default function VideoAds() {
   const [pollingId, setPollingId] = useState<number | null>(null);
   const { toast } = useToast();
   
+  const targetUrl = websiteUrls[0] || "";
   const currentDuration = DURATION_OPTIONS.find(d => d.value === selectedDuration) || DURATION_OPTIONS[1];
 
   const { data: avatars = [], isLoading: avatarsLoading } = useQuery<Avatar[]>({
@@ -253,31 +254,24 @@ export default function VideoAds() {
 
   const scrapeMutation = useMutation({
     mutationFn: async () => {
-      if (!targetUrl) throw new Error("Enter a website URL first");
-      let urlToScrape = targetUrl;
-      if (!urlToScrape.startsWith("http")) urlToScrape = "https://" + urlToScrape;
-      const res = await apiRequest("POST", "/api/video-ads/scrape-website", { url: urlToScrape });
+      const filledUrls = websiteUrls.map(u => u.trim()).filter(Boolean).map(u => u.startsWith("http") ? u : "https://" + u);
+      if (filledUrls.length === 0) throw new Error("Enter at least one website URL");
+      const endpoint = filledUrls.length === 1 ? "/api/video-ads/scrape-website" : "/api/video-ads/scrape-websites";
+      const body = filledUrls.length === 1 ? { url: filledUrls[0] } : { urls: filledUrls };
+      const res = await apiRequest("POST", endpoint, body);
       return res.json();
     },
     onSuccess: (data) => {
-      if (data.scriptSuggestion) {
-        setPrompt(data.scriptSuggestion);
-      }
-      if (data.richImages && data.richImages.length > 0) {
-        setRichImages(data.richImages);
-      }
+      if (data.scriptSuggestion) setPrompt(data.scriptSuggestion);
+      if (data.richImages && data.richImages.length > 0) setRichImages(data.richImages);
       if (data.storyboard && data.storyboard.length > 0) {
-        // Auto-match any already-loaded uploaded images to storyboard sections by keyword
         const matchedStoryboard = data.storyboard.map((section: any) => {
           if (uploadedImages.length === 0) return section;
           const sceneWords = section.text.toLowerCase().replace(/[^a-z0-9\s]/g, "").split(/\s+/).filter((w: string) => w.length > 3);
           const matched = uploadedImages.filter(img =>
             img.keywords.some(kw => sceneWords.some((w: string) => w.includes(kw.toLowerCase()) || kw.toLowerCase().includes(w)))
           );
-          return {
-            ...section,
-            suggestedImages: [...matched.map(m => m.url), ...(section.suggestedImages || [])].slice(0, 5),
-          };
+          return { ...section, suggestedImages: [...matched.map(m => m.url), ...(section.suggestedImages || [])].slice(0, 5) };
         });
         setStoryboard(matchedStoryboard);
         setShowStoryboard(true);
@@ -285,20 +279,22 @@ export default function VideoAds() {
       if (data.images && data.images.length > 0) {
         setScrapedImages(data.images);
         setPagesScraped(data.pagesScraped || 1);
-        toast({ title: "Website scraped!", description: `Found ${data.images.length} images across ${data.pagesScraped || 1} pages. Script & storyboard auto-generated.` });
+        const siteCount = data.sitesScraped || 1;
+        const siteLabel = siteCount > 1 ? `${siteCount} websites` : (data.siteData?.[0]?.title || websiteUrls[0]);
+        toast({ title: "Websites scraped! ✅", description: `Found ${data.images.length} images across ${data.pagesScraped} pages from ${siteLabel}. AI script & storyboard ready.` });
       } else if (data.scriptSuggestion) {
         setPagesScraped(data.pagesScraped || 1);
-        toast({ title: "Script generated!", description: `Pulled content from ${data.title || targetUrl}. No images found.` });
+        toast({ title: "Script generated!", description: `Pulled content from ${data.siteData?.length || 1} site(s). No images found — you can add your own below.` });
       } else {
-        toast({ title: "Limited content found", description: "We couldn't extract much from that site. Try writing your script manually.", variant: "destructive" });
+        toast({ title: "Limited content found", description: "We couldn't extract much from those sites. Try writing your script manually.", variant: "destructive" });
       }
     },
     onError: (err: any) => {
       const msg = err.message || "";
-      const friendly = msg.includes("too long") ? "That website took too long to respond. Try again or write your script manually."
-        : msg.includes("400") ? "Couldn't reach that website. Check the URL and try again."
-        : "Couldn't fetch that website. Try writing your script manually instead.";
-      toast({ title: "Could not fetch website", description: friendly, variant: "destructive" });
+      const friendly = msg.includes("too long") ? "A website took too long to respond. Try again or write your script manually."
+        : msg.includes("400") ? "Couldn't reach one of the websites. Check the URLs and try again."
+        : "Couldn't fetch the websites. Try writing your script manually instead.";
+      toast({ title: "Could not fetch websites", description: friendly, variant: "destructive" });
     },
   });
 
@@ -592,20 +588,56 @@ export default function VideoAds() {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div>
-                    <Label className="text-slate-300 mb-2 block">Target URL</Label>
-                    <div className="flex gap-2">
-                      <Input
-                        placeholder="https://yourproduct.com"
-                        value={targetUrl}
-                        onChange={(e) => setTargetUrl(e.target.value)}
-                        className="bg-black/50 border-white/10 text-white flex-1"
-                        data-testid="input-target-url"
-                      />
+                    <div className="flex items-center justify-between mb-2">
+                      <Label className="text-slate-300">Websites to Advertise</Label>
+                      <span className="text-[10px] text-slate-500">up to 3 websites in one ad</span>
+                    </div>
+                    <div className="space-y-2">
+                      {websiteUrls.map((url, idx) => (
+                        <div key={idx} className="flex gap-2 items-center">
+                          <span className="text-xs text-slate-500 w-4 shrink-0">{idx + 1}.</span>
+                          <Input
+                            placeholder={idx === 0 ? "https://yourproduct.com" : `https://website${idx + 1}.com`}
+                            value={url}
+                            onChange={(e) => {
+                              const next = [...websiteUrls];
+                              next[idx] = e.target.value;
+                              setWebsiteUrls(next);
+                            }}
+                            className="bg-black/50 border-white/10 text-white flex-1"
+                            data-testid={`input-target-url-${idx}`}
+                          />
+                          {websiteUrls.length > 1 && (
+                            <button
+                              type="button"
+                              onClick={() => setWebsiteUrls(websiteUrls.filter((_, i) => i !== idx))}
+                              className="text-slate-500 hover:text-red-400 transition-colors shrink-0"
+                              data-testid={`button-remove-url-${idx}`}
+                            >
+                              <X className="h-4 w-4" />
+                            </button>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                    <div className="flex items-center justify-between mt-2">
+                      {websiteUrls.length < 3 ? (
+                        <button
+                          type="button"
+                          onClick={() => setWebsiteUrls([...websiteUrls, ""])}
+                          className="text-xs text-lime-400 hover:text-lime-300 transition-colors"
+                          data-testid="button-add-url"
+                        >
+                          + Add another website {websiteUrls.length === 1 ? "(advertise 2–3 sites in one ad)" : ""}
+                        </button>
+                      ) : (
+                        <span className="text-xs text-slate-500">Maximum 3 websites</span>
+                      )}
                       <Button
                         type="button"
                         variant="outline"
                         onClick={() => scrapeMutation.mutate()}
-                        disabled={!targetUrl || scrapeMutation.isPending}
+                        disabled={!websiteUrls.some(u => u.trim()) || scrapeMutation.isPending}
                         className="border-lime-400/30 text-lime-400 hover:bg-lime-400/10 shrink-0"
                         data-testid="button-fetch-website"
                       >
@@ -614,7 +646,7 @@ export default function VideoAds() {
                         ) : (
                           <>
                             <Globe className="h-4 w-4 mr-1" />
-                            Fetch & Write Script
+                            {websiteUrls.filter(u => u.trim()).length > 1 ? `Scrape ${websiteUrls.filter(u => u.trim()).length} Sites` : "Fetch & Write Script"}
                           </>
                         )}
                       </Button>
@@ -622,7 +654,9 @@ export default function VideoAds() {
                     <p className="text-xs text-slate-500 mt-1">
                       {pagesScraped > 0
                         ? `Scraped ${pagesScraped} pages — found ${scrapedImages.length} images`
-                        : "Enter a URL and click \"Fetch\" to auto-generate an ad script and pull images from the website"}
+                        : websiteUrls.length > 1
+                          ? "The AI will crawl each website, pull the best images & dialogue, and write a combined ad script"
+                          : "Enter a URL and click \"Fetch\" to auto-generate an ad script and pull images from the website"}
                     </p>
                     {scrapedImages.length > 0 && (
                       <div className="mt-3 space-y-3">
