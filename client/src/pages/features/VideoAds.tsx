@@ -79,6 +79,8 @@ export default function VideoAds() {
   const [selectedBackgroundImage, setSelectedBackgroundImage] = useState<string | null>(null);
   const [selectedVideos, setSelectedVideos] = useState<Set<number>>(new Set());
   const [pollingId, setPollingId] = useState<number | null>(null);
+  const [videoPage, setVideoPage] = useState(0);
+  const VIDEOS_PER_PAGE = 6;
   const { toast } = useToast();
   
   const targetUrl = websiteUrls[0] || "";
@@ -1222,34 +1224,74 @@ export default function VideoAds() {
                   ) : myVideos.length === 0 ? (
                     <p className="text-slate-500 text-sm text-center py-8">No videos yet. Generate your first one!</p>
                   ) : (
-                    <div className="space-y-3">
-                      {myVideos.map((video) => (
-                        <div
-                          key={video.id}
-                          className={`p-3 rounded-lg border bg-black/30 transition-colors ${selectedVideos.has(video.id) ? "border-lime-400/50 bg-lime-400/5" : "border-white/10"}`}
-                          data-testid={`video-card-${video.id}`}
-                        >
-                          {video.status === "completed" && video.videoUrl ? (
-                            <div className="space-y-2">
-                              <div className="flex items-start gap-3">
-                                <input
-                                  type="checkbox"
-                                  checked={selectedVideos.has(video.id)}
-                                  onChange={(e) => {
-                                    const next = new Set(selectedVideos);
-                                    if (e.target.checked) { next.add(video.id); } else { next.delete(video.id); }
-                                    setSelectedVideos(next);
-                                  }}
-                                  className="mt-1 w-4 h-4 rounded border-white/20 bg-black/50 text-lime-400 focus:ring-lime-400 accent-lime-400 shrink-0 cursor-pointer"
-                                  data-testid={`checkbox-video-${video.id}`}
-                                />
-                                <div className="flex-1 min-w-0">
-                                  <video
-                                    src={video.videoUrl}
-                                    controls
-                                    className="w-full rounded-lg"
-                                    poster={video.thumbnailUrl || undefined}
+                    <>
+                      <div className="space-y-3">
+                        {myVideos.slice(videoPage * VIDEOS_PER_PAGE, (videoPage + 1) * VIDEOS_PER_PAGE).map((video) => (
+                          <div
+                            key={video.id}
+                            className={`p-3 rounded-lg border bg-black/30 transition-colors ${selectedVideos.has(video.id) ? "border-lime-400/50 bg-lime-400/5" : "border-white/10"}`}
+                            data-testid={`video-card-${video.id}`}
+                          >
+                            {video.status === "completed" && video.videoUrl ? (
+                              <div className="space-y-2">
+                                <div className="flex items-start gap-3">
+                                  <input
+                                    type="checkbox"
+                                    checked={selectedVideos.has(video.id)}
+                                    onChange={(e) => {
+                                      const next = new Set(selectedVideos);
+                                      if (e.target.checked) { next.add(video.id); } else { next.delete(video.id); }
+                                      setSelectedVideos(next);
+                                    }}
+                                    className="mt-1 w-4 h-4 rounded border-white/20 bg-black/50 text-lime-400 focus:ring-lime-400 accent-lime-400 shrink-0 cursor-pointer"
+                                    data-testid={`checkbox-video-${video.id}`}
                                   />
+                                  <div className="flex-1 min-w-0">
+                                    <video
+                                      src={video.videoUrl}
+                                      controls
+                                      className="w-full rounded-lg"
+                                      poster={video.thumbnailUrl || undefined}
+                                    />
+                                  </div>
+                                  <button
+                                    onClick={() => deleteMutation.mutate(video.id)}
+                                    disabled={deleteMutation.isPending}
+                                    className="text-slate-600 hover:text-red-400 p-1 rounded transition-colors cursor-pointer shrink-0"
+                                    title="Remove"
+                                    data-testid={`button-delete-video-${video.id}`}
+                                  >
+                                    <X className="w-4 h-4" />
+                                  </button>
+                                </div>
+                                <p className="text-xs text-slate-400 truncate pl-7">{video.prompt.substring(0, 60)}...</p>
+                                <div className="flex items-center gap-3 flex-wrap pl-7">
+                                  <button
+                                    onClick={() => triggerDownload(video.videoUrl!, `video-ad-${video.id}.mp4`)}
+                                    className="flex items-center gap-1.5 text-lime-400 text-xs hover:text-lime-300 cursor-pointer"
+                                    data-testid={`button-download-video-${video.id}`}
+                                  >
+                                    <Download className="w-3.5 h-3.5" />
+                                    Download Video
+                                  </button>
+                                  {video.thumbnailUrl && (
+                                    <button
+                                      onClick={() => triggerDownload(video.thumbnailUrl!, `banner-${video.id}.png`)}
+                                      className="flex items-center gap-1.5 text-yellow-400 text-xs hover:text-yellow-300 cursor-pointer"
+                                      data-testid={`button-download-image-${video.id}`}
+                                    >
+                                      <Image className="w-3.5 h-3.5" />
+                                      Banner Image
+                                    </button>
+                                  )}
+                                </div>
+                              </div>
+                            ) : video.status === "processing" ? (
+                              <div className="flex items-center gap-3 py-4">
+                                <Loader2 className="w-5 h-5 animate-spin text-lime-400" />
+                                <div className="flex-1">
+                                  <p className="text-sm text-white">Generating...</p>
+                                  <p className="text-xs text-slate-500">Usually takes 5-10 minutes</p>
                                 </div>
                                 <button
                                   onClick={() => deleteMutation.mutate(video.id)}
@@ -1261,65 +1303,51 @@ export default function VideoAds() {
                                   <X className="w-4 h-4" />
                                 </button>
                               </div>
-                              <p className="text-xs text-slate-400 truncate pl-7">{video.prompt.substring(0, 60)}...</p>
-                              <div className="flex items-center gap-3 flex-wrap pl-7">
+                            ) : (
+                              <div className="py-2 flex items-start justify-between gap-3">
+                                <div className="min-w-0">
+                                  <p className="text-sm text-red-400 font-medium">Failed</p>
+                                  <p className="text-xs text-slate-500 mt-0.5">{video.errorMessage || "Something went wrong"}</p>
+                                  <p className="text-[10px] text-slate-600 mt-1">Created {new Date(video.createdAt).toLocaleDateString()}</p>
+                                </div>
                                 <button
-                                  onClick={() => triggerDownload(video.videoUrl!, `video-ad-${video.id}.mp4`)}
-                                  className="flex items-center gap-1.5 text-lime-400 text-xs hover:text-lime-300 cursor-pointer"
-                                  data-testid={`button-download-video-${video.id}`}
+                                  onClick={() => deleteMutation.mutate(video.id)}
+                                  disabled={deleteMutation.isPending}
+                                  className="flex items-center gap-1.5 text-red-400/70 hover:text-red-400 border border-red-400/30 hover:border-red-400/60 px-2.5 py-1.5 rounded text-xs font-medium transition-colors cursor-pointer shrink-0"
+                                  data-testid={`button-dismiss-video-${video.id}`}
                                 >
-                                  <Download className="w-3.5 h-3.5" />
-                                  Download Video
+                                  {deleteMutation.isPending ? <Loader2 className="w-3 h-3 animate-spin" /> : <X className="w-3 h-3" />}
+                                  Delete
                                 </button>
-                                {video.thumbnailUrl && (
-                                  <button
-                                    onClick={() => triggerDownload(video.thumbnailUrl!, `banner-${video.id}.png`)}
-                                    className="flex items-center gap-1.5 text-yellow-400 text-xs hover:text-yellow-300 cursor-pointer"
-                                    data-testid={`button-download-image-${video.id}`}
-                                  >
-                                    <Image className="w-3.5 h-3.5" />
-                                    Banner Image
-                                  </button>
-                                )}
                               </div>
-                            </div>
-                          ) : video.status === "processing" ? (
-                            <div className="flex items-center gap-3 py-4">
-                              <Loader2 className="w-5 h-5 animate-spin text-lime-400" />
-                              <div className="flex-1">
-                                <p className="text-sm text-white">Generating...</p>
-                                <p className="text-xs text-slate-500">Usually takes 5-10 minutes</p>
-                              </div>
-                              <button
-                                onClick={() => deleteMutation.mutate(video.id)}
-                                disabled={deleteMutation.isPending}
-                                className="text-slate-600 hover:text-red-400 p-1 rounded transition-colors cursor-pointer shrink-0"
-                                title="Remove"
-                                data-testid={`button-delete-video-${video.id}`}
-                              >
-                                <X className="w-4 h-4" />
-                              </button>
-                            </div>
-                          ) : (
-                            <div className="py-2 flex items-start justify-between">
-                              <div>
-                                <p className="text-sm text-red-400">Failed</p>
-                                <p className="text-xs text-slate-500">{video.errorMessage || "Something went wrong"}</p>
-                              </div>
-                              <button
-                                onClick={() => deleteMutation.mutate(video.id)}
-                                disabled={deleteMutation.isPending}
-                                className="text-slate-500 hover:text-red-400 p-1 rounded transition-colors cursor-pointer"
-                                title="Remove"
-                                data-testid={`button-dismiss-video-${video.id}`}
-                              >
-                                <X className="w-4 h-4" />
-                              </button>
-                            </div>
-                          )}
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                      {myVideos.length > VIDEOS_PER_PAGE && (
+                        <div className="flex items-center justify-between pt-3 border-t border-white/5 mt-3">
+                          <button
+                            onClick={() => setVideoPage(p => Math.max(0, p - 1))}
+                            disabled={videoPage === 0}
+                            className="text-xs text-slate-400 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-colors px-3 py-1.5 rounded border border-white/10 hover:border-white/20"
+                            data-testid="button-video-prev"
+                          >
+                            ← Previous
+                          </button>
+                          <span className="text-xs text-slate-500">
+                            {videoPage * VIDEOS_PER_PAGE + 1}–{Math.min((videoPage + 1) * VIDEOS_PER_PAGE, myVideos.length)} of {myVideos.length}
+                          </span>
+                          <button
+                            onClick={() => setVideoPage(p => p + 1)}
+                            disabled={(videoPage + 1) * VIDEOS_PER_PAGE >= myVideos.length}
+                            className="text-xs text-slate-400 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-colors px-3 py-1.5 rounded border border-white/10 hover:border-white/20"
+                            data-testid="button-video-next"
+                          >
+                            Next 6 →
+                          </button>
                         </div>
-                      ))}
-                    </div>
+                      )}
+                    </>
                   )}
                 </CardContent>
               </Card>
