@@ -40,7 +40,8 @@ import {
   Smartphone,
   Infinity,
   Trash2,
-  ExternalLink
+  ExternalLink,
+  Clapperboard
 } from "lucide-react";
 import { motion } from "framer-motion";
 import Footer from "@/components/Footer";
@@ -513,6 +514,13 @@ export default function Home() {
       title: "Unlimited Links",
       description: "All paid plans include unlimited link creation with no monthly caps or restrictions.",
       benefit: "No limits on growth",
+      premium: true
+    },
+    {
+      icon: <Clapperboard className="w-6 h-6 text-pink-500" />,
+      title: "AI Video Ads",
+      description: "Create professional AI video ads in minutes. Scrape up to 3 websites, auto-generate a script, and pick an AI avatar & voice. Perfect for Google Ads, social media, and YouTube campaigns.",
+      benefit: "From URL to video ad in minutes",
       premium: true
     }
   ];
