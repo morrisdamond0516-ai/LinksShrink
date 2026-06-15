@@ -583,10 +583,34 @@ export default function Home() {
             <Link href="/pricing">
               <Button variant="ghost" className="hidden sm:flex">Pricing</Button>
             </Link>
-            <Link href="/login">
-              <Button variant="ghost" className="hidden sm:flex" data-testid="button-login">Log In</Button>
-            </Link>
-            <Button onClick={() => window.location.href = "/pricing"}>Get Started</Button>
+            {isAuthenticated ? (
+              <>
+                <Link href="/features/video-ads">
+                  <Button variant="ghost" className="hidden sm:flex text-lime-400 hover:text-lime-300" data-testid="button-nav-video-ads">
+                    🎬 Video Ads
+                  </Button>
+                </Link>
+                <span className="hidden sm:block text-slate-400 text-sm" data-testid="text-nav-username">
+                  Hi, {user?.firstName || user?.email?.split("@")[0] || "there"}
+                </span>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="border-slate-600 text-slate-300 hover:bg-slate-800"
+                  onClick={() => { (window as any).__logout?.(); window.location.href = "/api/logout"; }}
+                  data-testid="button-logout"
+                >
+                  Log Out
+                </Button>
+              </>
+            ) : (
+              <>
+                <Link href="/login">
+                  <Button variant="ghost" className="hidden sm:flex" data-testid="button-login">Log In</Button>
+                </Link>
+                <Button onClick={() => window.location.href = "/pricing"} data-testid="button-get-started">Get Started</Button>
+              </>
+            )}
           </div>
         </div>
       </nav>
