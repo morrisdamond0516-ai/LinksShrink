@@ -644,21 +644,26 @@ export default function VideoAds() {
                         data-testid="button-fetch-website"
                       >
                         {scrapeMutation.isPending ? (
-                          <Loader2 className="h-4 w-4 animate-spin" />
+                          <>
+                            <Loader2 className="h-4 w-4 animate-spin mr-1" />
+                            Screenshotting…
+                          </>
                         ) : (
                           <>
                             <Globe className="h-4 w-4 mr-1" />
-                            {websiteUrls.filter(u => u.trim()).length > 1 ? `Scrape ${websiteUrls.filter(u => u.trim()).length} Sites` : "Fetch & Write Script"}
+                            {websiteUrls.filter(u => u.trim()).length > 1 ? `Screenshot ${websiteUrls.filter(u => u.trim()).length} Sites` : "Screenshot & Script"}
                           </>
                         )}
                       </Button>
                     </div>
                     <p className="text-xs text-slate-500 mt-1">
-                      {pagesScraped > 0
-                        ? `Scraped ${pagesScraped} pages — found ${scrapedImages.length} images`
-                        : websiteUrls.length > 1
-                          ? "The AI will crawl each website, pull the best images & dialogue, and write a combined ad script"
-                          : "Enter a URL and click \"Fetch\" to auto-generate an ad script and pull images from the website"}
+                      {scrapeMutation.isPending
+                        ? "Opening a real browser, visiting every page, and taking screenshots — this takes ~30–60 seconds…"
+                        : pagesScraped > 0
+                          ? `Screenshotted ${pagesScraped} pages — found ${richImages.length} images (${richImages.filter(i => i.type === "screenshot").length} page screenshots)`
+                          : websiteUrls.length > 1
+                            ? "Opens a real browser on each site, screenshots every page, and writes a combined ad script"
+                            : "Enter a URL — we'll open it in a real browser, screenshot every page, and write your ad script"}
                     </p>
                     {scrapedImages.length > 0 && (
                       <div className="mt-3 space-y-3">
@@ -737,13 +742,15 @@ export default function VideoAds() {
                             ).map(([page, imgs]) => (
                               <div key={page} className="mb-2">
                                 <p className="text-[10px] text-slate-500 mb-1">From: <span className="text-slate-400">{page}</span></p>
-                                <div className="grid grid-cols-4 sm:grid-cols-6 gap-2">
+                                <div className={`grid gap-2 ${imgs.some(i => i.type === "screenshot") ? "grid-cols-2 sm:grid-cols-3" : "grid-cols-4 sm:grid-cols-6"}`}>
                                   {imgs.map((img, i) => (
                                     <div key={i} className="group relative cursor-pointer" onClick={() => setSelectedBackgroundImage(img.url)}>
                                       <img
                                         src={img.url}
                                         alt={img.alt}
-                                        className={`w-full h-16 object-cover rounded border-2 transition-colors ${
+                                        className={`w-full rounded border-2 transition-colors object-cover ${
+                                          img.type === "screenshot" ? "h-28" : "h-16"
+                                        } ${
                                           selectedBackgroundImage === img.url
                                             ? "border-lime-400 ring-1 ring-lime-400/50"
                                             : "border-white/10 hover:border-lime-400/50"
@@ -751,6 +758,11 @@ export default function VideoAds() {
                                         onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
                                         data-testid={`scraped-image-${page}-${i}`}
                                       />
+                                      {img.type === "screenshot" && selectedBackgroundImage !== img.url && (
+                                        <div className="absolute top-0.5 right-0.5 bg-black/70 text-[8px] text-white px-1 py-0.5 rounded flex items-center gap-0.5">
+                                          📸 Page
+                                        </div>
+                                      )}
                                       {selectedBackgroundImage === img.url && (
                                         <div className="absolute top-0.5 left-0.5 bg-lime-400 text-black text-[6px] font-bold px-1 rounded">BG</div>
                                       )}
