@@ -41,7 +41,9 @@ import {
   Infinity,
   Trash2,
   ExternalLink,
-  Clapperboard
+  Clapperboard,
+  BookOpen,
+  GraduationCap
 } from "lucide-react";
 import { motion } from "framer-motion";
 import Footer from "@/components/Footer";
@@ -522,6 +524,17 @@ export default function Home() {
       description: "Create professional AI video ads in minutes. Scrape up to 3 websites, auto-generate a script, and pick an AI avatar & voice. Perfect for Google Ads, social media, and YouTube campaigns.",
       benefit: "From URL to video ad in minutes",
       premium: true
+    },
+    {
+      icon: <GraduationCap className="w-6 h-6 text-violet-400" />,
+      title: "Learn & Grow Resources",
+      description: "Level up your digital marketing game with our curated partner resources — ebooks, guides, and an AI-powered knowledge builder to sharpen your skills.",
+      benefit: "Knowledge is your best link",
+      premium: false,
+      links: [
+        { label: "EbookGamez.com", href: "https://ebookgamez.com", icon: "book" },
+        { label: "Knowledge Builder", href: "https://knowledge-builder.replit.app/", icon: "grad" },
+      ]
     }
   ];
 
@@ -1051,23 +1064,49 @@ export default function Home() {
                     <p className="text-slate-400 mb-4 leading-relaxed">
                       {feature.description}
                     </p>
-                    <div className="flex items-center justify-between mt-6 pt-6 border-t border-white/5">
-                      <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">
-                        {feature.benefit}
-                      </span>
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        className="gap-1 font-bold border-lime-400 text-lime-400 hover:bg-lime-400 hover:text-black"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleUnlockClick(feature.title);
-                        }}
-                        data-testid={`button-feature-${feature.title.toLowerCase().replace(/\s+/g, '-')}`}
-                      >
-                        Try It <ArrowRight className="w-4 h-4" />
-                      </Button>
-                    </div>
+                    {"links" in feature && feature.links ? (
+                      <div className="mt-6 pt-6 border-t border-white/5 space-y-2">
+                        <span className="text-xs font-semibold uppercase tracking-wider text-slate-500 block mb-3">
+                          {feature.benefit}
+                        </span>
+                        {feature.links.map((link: { label: string; href: string; icon: string }) => (
+                          <a
+                            key={link.href}
+                            href={link.href}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center justify-between w-full px-3 py-2 rounded-lg border border-violet-400/30 bg-violet-500/5 hover:bg-violet-500/15 hover:border-violet-400/60 transition-all group"
+                            data-testid={`link-resource-${link.label.toLowerCase().replace(/\s+/g, '-')}`}
+                          >
+                            <span className="flex items-center gap-2 text-sm font-semibold text-violet-300 group-hover:text-violet-200">
+                              {link.icon === "book"
+                                ? <BookOpen className="w-4 h-4" />
+                                : <GraduationCap className="w-4 h-4" />}
+                              {link.label}
+                            </span>
+                            <ExternalLink className="w-3.5 h-3.5 text-violet-400/60 group-hover:text-violet-300 transition-colors" />
+                          </a>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="flex items-center justify-between mt-6 pt-6 border-t border-white/5">
+                        <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">
+                          {feature.benefit}
+                        </span>
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          className="gap-1 font-bold border-lime-400 text-lime-400 hover:bg-lime-400 hover:text-black"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleUnlockClick(feature.title);
+                          }}
+                          data-testid={`button-feature-${feature.title.toLowerCase().replace(/\s+/g, '-')}`}
+                        >
+                          Try It <ArrowRight className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    )}
                   </CardContent>
                 </Card>
               </motion.div>
