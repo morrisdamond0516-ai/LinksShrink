@@ -510,11 +510,11 @@ export default function VideoAds() {
                       <p className="text-xs text-slate-400 mt-1">Pick a realistic person and voice for your ad</p>
                     </button>
                   </div>
-                  {mode === "agent" && uploadedImages.length > 0 && (
+                  {mode === "agent" && (uploadedImages.length > 0 || richImages.length > 0 || scrapedImages.length > 0) && (
                     <div className="flex items-start gap-2 p-3 rounded-lg bg-yellow-500/10 border border-yellow-500/30">
                       <span className="text-yellow-400 mt-0.5 shrink-0">⚠</span>
                       <p className="text-xs text-yellow-300">
-                        <strong>AI Auto-Generate ignores custom images</strong> — the AI controls the visuals automatically. To use your {uploadedImages.length} uploaded image{uploadedImages.length > 1 ? "s" : ""} as backgrounds, switch to <button type="button" onClick={() => setMode("avatar")} className="underline hover:text-yellow-200 cursor-pointer">Avatar & Voice mode</button>.
+                        <strong>AI Auto-Generate ignores your images</strong> — you have {uploadedImages.length + richImages.length + scrapedImages.length} image{(uploadedImages.length + richImages.length + scrapedImages.length) !== 1 ? "s" : ""} (uploaded + scraped) but the AI controls its own visuals in this mode. Switch to <button type="button" onClick={() => setMode("avatar")} className="underline hover:text-yellow-200 cursor-pointer">Avatar & Voice mode</button> to use your images as video backgrounds.
                       </p>
                     </div>
                   )}
@@ -1129,27 +1129,36 @@ export default function VideoAds() {
                       </p>
                     </div>
                   </div>
-                  {mode === "avatar" && uploadedImages.length > 0 && prompt && (() => {
+                  {mode === "avatar" && (uploadedImages.length > 0 || richImages.length > 0 || scrapedImages.length > 0) && prompt && (() => {
                     const scenes = buildScenes();
                     if (!scenes || scenes.length === 0) return null;
+                    const totalPool = uploadedImages.length + richImages.length + scrapedImages.length;
+                    const scenesWithBg = scenes.filter(s => s.backgroundUrl).length;
                     return (
                       <div className="rounded-lg border border-lime-400/20 bg-lime-400/5 p-3 space-y-2">
                         <div className="flex items-center justify-between">
                           <p className="text-xs text-lime-400 font-medium">Scene Preview — {scenes.length} scene{scenes.length > 1 ? "s" : ""}</p>
-                          <span className="text-[9px] text-slate-500">{scenes.filter(s => s.backgroundUrl && s.backgroundUrl.startsWith("/api/video-ads/uploaded/")).length} of your images matched</span>
+                          <span className="text-[9px] text-lime-500 bg-lime-400/10 px-2 py-0.5 rounded-full">
+                            {scenesWithBg}/{scenes.length} scenes have backgrounds · {totalPool} image{totalPool !== 1 ? "s" : ""} in pool
+                          </span>
                         </div>
                         {scenes.map((scene, i) => {
-                          const isYourImage = scene.backgroundUrl?.startsWith("/api/video-ads/uploaded/");
-                          const imgData = isYourImage ? uploadedImages.find(u => u.url === scene.backgroundUrl) : undefined;
+                          const isUploadedImg = scene.backgroundUrl?.startsWith("/api/video-ads/uploaded/") && !scene.backgroundUrl?.includes("screenshots/");
+                          const isScreenshot = scene.backgroundUrl?.includes("screenshots/");
+                          const isRichImg = scene.backgroundUrl && !isUploadedImg && !isScreenshot;
+                          const imgData = isUploadedImg ? uploadedImages.find(u => u.url === scene.backgroundUrl) : undefined;
+                          const richData = (isScreenshot || isRichImg) ? richImages.find(r => r.url === scene.backgroundUrl) : undefined;
                           return (
                             <div key={i} className="flex gap-2 items-start p-2 rounded bg-black/30 border border-white/5">
                               <div className="shrink-0">
                                 {scene.backgroundUrl ? (
                                   <div className="relative">
-                                    <img src={scene.backgroundUrl} alt={`Scene ${i + 1}`} className={`w-16 h-11 object-cover rounded border ${isYourImage ? "border-yellow-400/60" : "border-white/10"}`}
+                                    <img src={scene.backgroundUrl} alt={`Scene ${i + 1}`}
+                                      className={`w-16 h-11 object-cover rounded border ${isUploadedImg ? "border-yellow-400/60" : isScreenshot ? "border-lime-400/60" : "border-white/10"}`}
                                       onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
                                     />
-                                    {isYourImage && <span className="absolute -top-1 -right-1 bg-yellow-400 text-black text-[5px] font-bold px-1 rounded">YOURS</span>}
+                                    {isUploadedImg && <span className="absolute -top-1 -right-1 bg-yellow-400 text-black text-[5px] font-bold px-1 rounded">YOURS</span>}
+                                    {isScreenshot && <span className="absolute top-0 left-0 bg-lime-500/80 text-black text-[5px] font-bold px-1 rounded-br">📸</span>}
                                   </div>
                                 ) : (
                                   <div className="w-16 h-11 rounded border border-white/10 bg-black/40 flex items-center justify-center">
@@ -1162,19 +1171,29 @@ export default function VideoAds() {
                                 <p className="text-[10px] text-slate-300 leading-tight line-clamp-2">{scene.text}</p>
                                 {imgData ? (
                                   <p className="text-[8px] text-yellow-400 mt-0.5">
-                                    ↳ <span className="text-yellow-300">{imgData.originalName}</span>
-                                    {imgData.keywords.length > 0 && <span className="text-slate-500"> · {imgData.keywords.slice(0, 3).join(", ")}</span>}
+                                    ↳ Uploaded: <span className="text-yellow-300">{imgData.originalName}</span>
+                                    {imgData.keywords.length > 0 && <span className="text-slate-500"> · {imgData.keywords.slice(0, 2).join(", ")}</span>}
                                   </p>
-                                ) : isYourImage ? (
-                                  <p className="text-[8px] text-yellow-400 mt-0.5">↳ Your image (sequential)</p>
-                                ) : scene.backgroundUrl ? (
-                                  <p className="text-[8px] text-slate-500 mt-0.5">↳ Website image</p>
+                                ) : richData ? (
+                                  <p className="text-[8px] text-lime-400 mt-0.5">
+                                    ↳ {isScreenshot ? "Screenshot" : "Scraped"}: <span className="text-lime-300">{richData.sourcePage?.split("/").slice(-1)[0] || richData.sourcePage}</span>
+                                  </p>
+                                ) : isRichImg ? (
+                                  <p className="text-[8px] text-slate-500 mt-0.5">↳ Scraped image</p>
+                                ) : !scene.backgroundUrl ? (
+                                  <p className="text-[8px] text-red-400 mt-0.5">↳ No image found for this scene</p>
                                 ) : null}
                               </div>
                             </div>
                           );
                         })}
-                        <p className="text-[9px] text-slate-600">Rename images descriptively (e.g. "checkout-page.jpg") to improve matching.</p>
+                        <p className="text-[9px] text-slate-600">
+                          {uploadedImages.length > 0 && richImages.length > 0
+                            ? `Using ${uploadedImages.length} uploaded + ${richImages.length} scraped images. Rename files descriptively (e.g. "checkout.jpg") to improve keyword matching.`
+                            : uploadedImages.length > 0
+                            ? `Using ${uploadedImages.length} uploaded images. Rename files descriptively for best matching.`
+                            : `Using ${richImages.length + scrapedImages.length} scraped images. Upload images with descriptive filenames to improve matching.`}
+                        </p>
                       </div>
                     );
                   })()}
