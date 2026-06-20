@@ -177,6 +177,13 @@ export default function VideoAds() {
         context: u.keywords.join(" "),
         type: "uploaded",
       })),
+      // Include plain scraped URLs with context derived from slug so they can be matched
+      ...scrapedImages
+        .filter(url => !richImages.some(r => r.url === url))
+        .map(url => {
+          const slug = url.split("/").pop()?.replace(/[_\-\.]/g, " ").replace(/\.(jpe?g|png|webp|gif)$/i, "") || "";
+          return { url, sourcePage: slug, alt: slug, context: slug, type: "scraped" };
+        }),
     ];
     if (!script.trim() || allImgs.length === 0) return;
 
@@ -206,12 +213,12 @@ export default function VideoAds() {
 
     setStoryboard(newStoryboard);
     setShowStoryboard(newStoryboard.length > 0);
-  }, [richImages, uploadedImages, scoreImageForText]);
+  }, [richImages, uploadedImages, scrapedImages, scoreImageForText]);
 
   // Live-update the storyboard 400ms after each script edit (only when images exist)
   const storyboardDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(() => {
-    const hasImages = richImages.length > 0 || uploadedImages.length > 0;
+    const hasImages = richImages.length > 0 || uploadedImages.length > 0 || scrapedImages.length > 0;
     if (!hasImages) return;
     if (storyboardDebounceRef.current) clearTimeout(storyboardDebounceRef.current);
     storyboardDebounceRef.current = setTimeout(() => {
@@ -220,7 +227,7 @@ export default function VideoAds() {
     return () => {
       if (storyboardDebounceRef.current) clearTimeout(storyboardDebounceRef.current);
     };
-  }, [prompt, richImages, uploadedImages]);
+  }, [prompt, richImages, uploadedImages, scrapedImages]);
 
   const buildScenes = () => {
     const allImages = [
@@ -228,18 +235,36 @@ export default function VideoAds() {
       ...richImages.map(img => img.url),
       ...scrapedImages,
     ];
+    // Build a rich candidate pool for scoring (same as rebuildStoryboardFromScript)
+    const richCandidates: { url: string; sourcePage: string; alt: string; context: string; type: string }[] = [
+      ...richImages,
+      ...uploadedImages.map(u => ({
+        url: u.url,
+        sourcePage: u.originalName,
+        alt: u.description,
+        context: u.keywords.join(" "),
+        type: "uploaded",
+      })),
+      ...scrapedImages
+        .filter(url => !richImages.some(r => r.url === url))
+        .map(url => {
+          const slug = url.split("/").pop()?.replace(/[_\-\.]/g, " ").replace(/\.(jpe?g|png|webp|gif)$/i, "") || "";
+          return { url, sourcePage: slug, alt: slug, context: slug, type: "scraped" };
+        }),
+    ];
 
     if (storyboard.length > 0) {
       const usedUrls = new Set<string>();
       return storyboard.map((section, idx) => {
-        // Try smart keyword match first (prefer unused images)
-        let bgUrl = matchImageToText(section.text, uploadedImages, usedUrls);
-        // Fall back: any unused uploaded image → storyboard suggestion → any image by index
-        if (!bgUrl && uploadedImages.length > 0) {
-          const unused = uploadedImages.find(img => !usedUrls.has(img.url));
-          bgUrl = unused?.url || uploadedImages[idx % uploadedImages.length]?.url;
-        }
-        bgUrl = bgUrl || section.suggestedImages?.[0] || allImages[idx % allImages.length] || undefined;
+        // Score ALL available images against this scene text (same algorithm as storyboard rebuild)
+        const scored = richCandidates
+          .filter(img => !usedUrls.has(img.url))
+          .map(img => ({ url: img.url, score: scoreImageForText(section.text, img) }))
+          .sort((a, b) => b.score - a.score);
+
+        // Use the highest-scoring image; fall back to storyboard suggestion, then index
+        const bestScored = scored[0]?.score > 0 ? scored[0].url : null;
+        const bgUrl = bestScored || section.suggestedImages?.[0] || allImages[idx % allImages.length] || undefined;
         if (bgUrl) usedUrls.add(bgUrl);
         return { text: section.text, backgroundUrl: bgUrl };
       }).filter(s => s.text.trim());
@@ -255,8 +280,12 @@ export default function VideoAds() {
         const text = sentences.slice(i, i + chunkSize).join(" ").trim();
         if (!text) continue;
         const imgIdx = Math.floor(i / chunkSize);
-        const matched = matchImageToText(text, uploadedImages, usedUrls);
-        const bgUrl = matched || allImages[imgIdx % allImages.length];
+        // Score all candidates for this sentence chunk
+        const scored = richCandidates
+          .filter(img => !usedUrls.has(img.url))
+          .map(img => ({ url: img.url, score: scoreImageForText(text, img) }))
+          .sort((a, b) => b.score - a.score);
+        const bgUrl = (scored[0]?.score > 0 ? scored[0].url : null) || allImages[imgIdx % allImages.length];
         if (bgUrl) usedUrls.add(bgUrl);
         scenes.push({ text, backgroundUrl: bgUrl });
       }
