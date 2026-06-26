@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@500;600;700;800&family=Playfair+Display:wght@700;800&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -7,8 +7,9 @@
 :root {
   --font-body: 'Inter', sans-serif;
   --font-display: 'Outfit', sans-serif;
+  --font-serif: 'Playfair Display', serif;
 
-  /* Dark Lime & Yellow Palette */
+  /* Dark Lime & Yellow Palette — EbookGamez Gold Edition */
   --background: 0 0% 0%;
   --foreground: 74 100% 50%;
   
@@ -32,7 +33,18 @@
   --ring: 74 100% 50%;
   
   --radius: 0.5rem;
+
+  /* EbookGamez Brand Gold */
+  --ebg-gold: 43 68% 54%;
+  --ebg-gold-light: 43 80% 68%;
+  --ebg-dark: 30 20% 8%;
 }
+
+.text-ebg-gold { color: hsl(var(--ebg-gold)); }
+.bg-ebg-gold { background-color: hsl(var(--ebg-gold)); }
+.border-ebg-gold { border-color: hsl(var(--ebg-gold)); }
+.from-ebg-gold { --tw-gradient-from: hsl(var(--ebg-gold)); }
+.to-ebg-gold { --tw-gradient-to: hsl(var(--ebg-gold)); }
 
 @layer base {
   body {
