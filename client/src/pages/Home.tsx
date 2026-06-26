@@ -563,15 +563,32 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-black">
+
+      {/* EbookGamez Affiliate Top Banner */}
+      <a
+        href="https://ebookgamez.com"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="block w-full bg-gradient-to-r from-[hsl(43,68%,10%)] via-[hsl(43,68%,14%)] to-[hsl(43,68%,10%)] border-b border-[hsl(43,68%,54%)]/30 py-2 px-4 text-center group hover:from-[hsl(43,68%,12%)] hover:to-[hsl(43,68%,12%)] transition-all"
+        data-testid="banner-ebookgamez"
+      >
+        <span className="text-[hsl(43,68%,54%)] text-xs font-semibold tracking-widest uppercase">✦ An EbookGamez.com Brand</span>
+        <span className="text-slate-500 text-xs mx-3">·</span>
+        <span className="text-slate-400 text-xs group-hover:text-[hsl(43,80%,68%)] transition-colors">
+          LinksShrink is the link-management tool of the EbookGamez family — visit our parent platform →
+        </span>
+      </a>
+
       {!bubbleDismissed && (
-        <div className="fixed top-24 right-6 z-50 flex flex-col items-end gap-2" data-testid="ebookgamez-bubble">
+        <div className="fixed top-28 right-6 z-50 flex flex-col items-end gap-2" data-testid="ebookgamez-bubble">
           <div
-            className="relative bg-slate-900/95 border border-lime-400/20 backdrop-blur-md rounded-2xl rounded-br-sm px-4 py-3 shadow-lg shadow-lime-400/5 max-w-[220px] cursor-pointer group hover:border-lime-400/40 transition-all"
+            className="relative border backdrop-blur-md rounded-2xl rounded-br-sm px-4 py-3 shadow-xl max-w-[220px] cursor-pointer group transition-all"
+            style={{ background: "hsl(43,68%,8%)", borderColor: "hsl(43,68%,54%,0.35)" }}
             onClick={() => window.open("https://EbookGamez.com", "_blank")}
           >
             <button
               onClick={(e) => { e.stopPropagation(); setBubbleDismissed(true); }}
-              className="absolute -top-2 -right-2 w-5 h-5 bg-slate-800 border border-slate-700 rounded-full flex items-center justify-center text-slate-500 hover:text-white hover:border-lime-400/50 transition-colors text-xs"
+              className="absolute -top-2 -right-2 w-5 h-5 bg-slate-800 border border-slate-700 rounded-full flex items-center justify-center text-slate-500 hover:text-white transition-colors text-xs"
               data-testid="button-dismiss-bubble"
               aria-label="Dismiss"
             >
@@ -580,10 +597,13 @@ export default function Home() {
             <p className={`text-xs text-slate-300 group-hover:text-white transition-all duration-300 ${bubbleFading ? "opacity-0 translate-y-1" : "opacity-100 translate-y-0"}`}>
               {bubbleMessages[bubbleIndex]}
             </p>
-            <p className="text-[10px] text-lime-400/70 mt-1 font-medium group-hover:text-lime-400 transition-colors">EbookGamez.com →</p>
+            <p className="text-[10px] mt-1 font-semibold transition-colors" style={{ color: "hsl(43,68%,54%)" }}>
+              EbookGamez.com →
+            </p>
           </div>
-          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-lime-400 to-yellow-400 flex items-center justify-center shadow-lg shadow-lime-400/20 cursor-pointer hover:scale-110 transition-transform animate-bounce"
-            style={{ animationDuration: "3s" }}
+          <div
+            className="w-12 h-12 rounded-full flex items-center justify-center shadow-lg cursor-pointer hover:scale-110 transition-transform animate-bounce"
+            style={{ background: "linear-gradient(135deg, hsl(43,68%,54%), hsl(43,68%,38%))", boxShadow: "0 0 20px hsl(43,68%,54%,0.3)", animationDuration: "3s" }}
             onClick={() => window.open("https://EbookGamez.com", "_blank")}
           >
             <span className="text-xl">📚</span>
@@ -594,11 +614,16 @@ export default function Home() {
       {/* Navbar */}
       <nav className="border-b border-white/10 bg-black/50 backdrop-blur-md sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between text-white">
-          <div className="flex items-center gap-2 text-lime-400">
+          <div className="flex items-center gap-3">
             <div className="bg-primary/10 p-2 rounded-lg">
-              <Link2 className="w-6 h-6 text-primary" />
+              <Link2 className="w-6 h-6 text-lime-400" />
             </div>
-            <span className="text-xl font-bold tracking-tight">LinksShrink.com</span>
+            <div className="flex flex-col leading-tight">
+              <span className="text-xl font-bold tracking-tight text-lime-400">LinksShrink.com</span>
+              <span className="text-[9px] font-semibold uppercase tracking-widest" style={{ color: "hsl(43,68%,54%)" }}>
+                An EbookGamez Brand
+              </span>
+            </div>
           </div>
           <div className="flex items-center gap-4">
             <Link href="/pricing">
@@ -644,6 +669,22 @@ export default function Home() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
+            {/* Affiliate badge */}
+            <div className="flex items-center justify-center gap-2 mb-6">
+              <a
+                href="https://ebookgamez.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border text-xs font-semibold tracking-wide transition-all hover:scale-105"
+                style={{ borderColor: "hsl(43,68%,54%,0.5)", background: "hsl(43,68%,54%,0.08)", color: "hsl(43,68%,60%)" }}
+                data-testid="badge-ebookgamez-affiliate"
+              >
+                <span>📚</span>
+                <span>A branch of EbookGamez.com</span>
+                <span className="opacity-60">→</span>
+              </a>
+            </div>
+
             <h1 className="text-5xl md:text-7xl font-extrabold text-foreground mb-6 leading-tight">
               Shorten links.<br/>
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-lime-400 to-yellow-400">
@@ -654,7 +695,7 @@ export default function Home() {
               The all-in-one link management platform with AI Video Ad Creator, analytics, QR codes, retargeting pixels, A/B testing, geo-routing, link-in-bio pages, team workspaces, and 20 premium tools. Built for marketers, businesses, and creators.
             </p>
             <p className="text-sm text-slate-500 mb-12 max-w-xl mx-auto">
-              Free to start — 5 free links per month. Paid plans include unlimited links starting at $9.50/mo.
+              Free to start — 5 free links per month. Paid plans include unlimited links starting at $9.50/mo. Part of the <a href="https://ebookgamez.com" target="_blank" rel="noopener noreferrer" className="transition-colors hover:underline" style={{ color: "hsl(43,68%,60%)" }}>EbookGamez</a> ecosystem.
             </p>
           </motion.div>
 
