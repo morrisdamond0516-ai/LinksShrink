@@ -538,28 +538,6 @@ export default function Home() {
     }
   ];
 
-  const bubbleMessages = [
-    "Discover ebooks you won't find anywhere else",
-    "Rare & exclusive digital reads",
-    "New titles added weekly",
-    "Games, guides & hidden gems",
-    "Visit EbookGamez.com",
-  ];
-  const [bubbleIndex, setBubbleIndex] = useState(0);
-  const [bubbleFading, setBubbleFading] = useState(false);
-  const [bubbleDismissed, setBubbleDismissed] = useState(false);
-
-  useEffect(() => {
-    if (bubbleDismissed) return;
-    const interval = setInterval(() => {
-      setBubbleFading(true);
-      setTimeout(() => {
-        setBubbleIndex((i) => (i + 1) % bubbleMessages.length);
-        setBubbleFading(false);
-      }, 400);
-    }, 3500);
-    return () => clearInterval(interval);
-  }, [bubbleDismissed]);
 
   return (
     <div className="min-h-screen bg-black">
@@ -578,38 +556,6 @@ export default function Home() {
           LinksShrink is the link-management tool of the EbookGamez family — visit our parent platform →
         </span>
       </a>
-
-      {!bubbleDismissed && (
-        <div className="fixed top-28 right-6 z-50 flex flex-col items-end gap-2" data-testid="ebookgamez-bubble">
-          <div
-            className="relative border backdrop-blur-md rounded-2xl rounded-br-sm px-4 py-3 shadow-xl max-w-[220px] cursor-pointer group transition-all"
-            style={{ background: "hsl(43,68%,8%)", borderColor: "hsl(43,68%,54%,0.35)" }}
-            onClick={() => window.open("https://EbookGamez.com", "_blank")}
-          >
-            <button
-              onClick={(e) => { e.stopPropagation(); setBubbleDismissed(true); }}
-              className="absolute -top-2 -right-2 w-5 h-5 bg-slate-800 border border-slate-700 rounded-full flex items-center justify-center text-slate-500 hover:text-white transition-colors text-xs"
-              data-testid="button-dismiss-bubble"
-              aria-label="Dismiss"
-            >
-              ×
-            </button>
-            <p className={`text-xs text-slate-300 group-hover:text-white transition-all duration-300 ${bubbleFading ? "opacity-0 translate-y-1" : "opacity-100 translate-y-0"}`}>
-              {bubbleMessages[bubbleIndex]}
-            </p>
-            <p className="text-[10px] mt-1 font-semibold transition-colors" style={{ color: "hsl(43,68%,54%)" }}>
-              EbookGamez.com →
-            </p>
-          </div>
-          <div
-            className="w-12 h-12 rounded-full flex items-center justify-center shadow-lg cursor-pointer hover:scale-110 transition-transform animate-bounce"
-            style={{ background: "linear-gradient(135deg, hsl(43,68%,54%), hsl(43,68%,38%))", boxShadow: "0 0 20px hsl(43,68%,54%,0.3)", animationDuration: "3s" }}
-            onClick={() => window.open("https://EbookGamez.com", "_blank")}
-          >
-            <span className="text-xl">📚</span>
-          </div>
-        </div>
-      )}
 
       {/* Navbar */}
       <nav className="border-b border-white/10 bg-black/50 backdrop-blur-md sticky top-0 z-50">
