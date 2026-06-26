@@ -676,7 +676,7 @@ export class DatabaseStorage implements IStorage {
     const recentEvents = await db.select()
     .from(funnelEvents)
     .orderBy(desc(funnelEvents.createdAt))
-    .limit(50);
+    .limit(100);
 
     const topReferrers = await db.select({
       referrer: funnelEvents.referrer,
@@ -691,7 +691,89 @@ export class DatabaseStorage implements IStorage {
     .orderBy(desc(sql`count(*)`))
     .limit(10);
 
-    return { events, dailyEvents, recentEvents, topReferrers };
+    const topPages = await db.select({
+      page: funnelEvents.page,
+      count: sql<number>`count(*)::int`,
+      uniqueSessions: sql<number>`count(distinct ${funnelEvents.sessionId})::int`,
+    })
+    .from(funnelEvents)
+    .where(and(
+      gte(funnelEvents.createdAt, since),
+      sql`${funnelEvents.page} IS NOT NULL`,
+      sql`${funnelEvents.eventType} = 'page_view'`
+    ))
+    .groupBy(funnelEvents.page)
+    .orderBy(desc(sql`count(*)`))
+    .limit(15);
+
+    const recentPurchases = await db.select()
+    .from(featurePurchases)
+    .orderBy(desc(featurePurchases.purchasedAt))
+    .limit(20);
+
+    const totalPurchasesResult = await db.select({
+      count: sql<number>`count(*)::int`,
+    })
+    .from(featurePurchases)
+    .where(gte(featurePurchases.purchasedAt, since));
+
+    const totalPurchases = totalPurchasesResult[0]?.count ?? 0;
+
+    const purchasesByFeature = await db.select({
+      featureKey: featurePurchases.featureKey,
+      count: sql<number>`count(*)::int`,
+    })
+    .from(featurePurchases)
+    .where(gte(featurePurchases.purchasedAt, since))
+    .groupBy(featurePurchases.featureKey)
+    .orderBy(desc(sql`count(*)`));
+
+    const hourlyEvents = await db.select({
+      hour: sql<number>`extract(hour from ${funnelEvents.createdAt})::int`,
+      count: sql<number>`count(*)::int`,
+    })
+    .from(funnelEvents)
+    .where(gte(funnelEvents.createdAt, since))
+    .groupBy(sql`extract(hour from ${funnelEvents.createdAt})`)
+    .orderBy(sql`extract(hour from ${funnelEvents.createdAt})`);
+
+    const userAgents = await db.select({
+      userAgent: funnelEvents.userAgent,
+      count: sql<number>`count(*)::int`,
+    })
+    .from(funnelEvents)
+    .where(and(
+      gte(funnelEvents.createdAt, since),
+      sql`${funnelEvents.userAgent} IS NOT NULL`
+    ))
+    .groupBy(funnelEvents.userAgent)
+    .orderBy(desc(sql`count(*)`))
+    .limit(200);
+
+    const deviceBreakdown = { mobile: 0, desktop: 0, tablet: 0 };
+    for (const row of userAgents) {
+      const ua = (row.userAgent || '').toLowerCase();
+      if (/ipad|tablet|kindle|playbook/.test(ua)) {
+        deviceBreakdown.tablet += row.count;
+      } else if (/mobile|android|iphone|ipod|blackberry|windows phone/.test(ua)) {
+        deviceBreakdown.mobile += row.count;
+      } else {
+        deviceBreakdown.desktop += row.count;
+      }
+    }
+
+    return {
+      events,
+      dailyEvents,
+      recentEvents,
+      topReferrers,
+      topPages,
+      recentPurchases,
+      totalPurchases,
+      purchasesByFeature,
+      hourlyEvents,
+      deviceBreakdown,
+    };
   }
 
   async createVideoAd(data: InsertVideoAd): Promise<VideoAd> {
