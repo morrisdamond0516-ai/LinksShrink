@@ -10,7 +10,15 @@ async function heygenFetch(path: string, options: RequestInit = {}) {
       ...(options.headers || {}),
     },
   });
-  return res.json();
+  const data = await res.json();
+  if (!res.ok) {
+    const msg = data?.error?.message || data?.message || res.statusText;
+    throw new Error(`HeyGen API ${res.status}: ${msg}`);
+  }
+  if (data?.error?.message) {
+    throw new Error(data.error.message);
+  }
+  return data;
 }
 
 export async function listAvatars() {
@@ -132,9 +140,43 @@ export const AD_PACKAGE_SPECS = {
   ],
 };
 
+export async function listHeygenVideos(limit = 20, token?: string) {
+  const params = new URLSearchParams({ limit: String(limit) });
+  if (token) params.set("token", token);
+  const data = await heygenFetch(`/v3/videos?${params.toString()}`);
+  return data;
+}
+
+export async function getHeygenVideoV3(videoId: string) {
+  const data = await heygenFetch(`/v3/videos/${videoId}`);
+  return data;
+}
+
 export async function getVideoStatus(videoId: string) {
   const data = await heygenFetch(`/v1/video_status.get?video_id=${videoId}`);
   return data;
+}
+
+/** Safe wallet summary for admin UI — no secrets. Video Agent ≈ $2/min ($0.0333/sec). */
+export async function getHeygenWalletSummary() {
+  const [me, quota] = await Promise.all([
+    heygenFetch("/v3/users/me"),
+    heygenFetch("/v2/user/remaining_quota"),
+  ]);
+  const wallet = me?.data?.wallet;
+  const usage = me?.data?.usage_based;
+  const remainingBalanceUsd =
+    wallet?.remaining_balance != null
+      ? Number(wallet.remaining_balance)
+      : usage?.remaining_credits != null
+        ? Number(usage.remaining_credits)
+        : null;
+  return {
+    billingType: me?.data?.billing_type ?? null,
+    remainingBalanceUsd: Number.isFinite(remainingBalanceUsd) ? remainingBalanceUsd : null,
+    remainingQuota: quota?.data?.remaining_quota ?? null,
+    usdPerMinuteEstimate: 2,
+  };
 }
 
 export async function registerWebhook(url: string) {

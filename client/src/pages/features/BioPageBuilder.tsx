@@ -10,9 +10,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Separator } from "@/components/ui/separator";
 import {
   ArrowLeft, Plus, Trash2, Loader2, ExternalLink, Pencil, Link2,
-  ShoppingBag, User, Palette, Globe,
+  ShoppingBag, User, Palette, Globe, Linkedin,
 } from "lucide-react";
-import { SiX, SiInstagram, SiTiktok, SiYoutube, SiLinkedin } from "react-icons/si";
+import { SiX, SiInstagram, SiTiktok, SiYoutube } from "react-icons/si";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
 import { apiRequest, queryClient as qc } from "@/lib/queryClient";
@@ -384,7 +384,7 @@ export default function BioPageBuilder() {
                       { key: "instagram", icon: SiInstagram, placeholder: "https://instagram.com/..." },
                       { key: "tiktok", icon: SiTiktok, placeholder: "https://tiktok.com/@..." },
                       { key: "youtube", icon: SiYoutube, placeholder: "https://youtube.com/..." },
-                      { key: "linkedin", icon: SiLinkedin, placeholder: "https://linkedin.com/in/..." },
+                      { key: "linkedin", icon: Linkedin, placeholder: "https://linkedin.com/in/..." },
                     ] as const).map(({ key, icon: Icon, placeholder }) => (
                       <div key={key} className="flex items-center gap-2">
                         <Icon className="w-4 h-4 text-slate-400 shrink-0" />
@@ -583,7 +583,7 @@ export default function BioPageBuilder() {
                     {form.socialLinks.instagram && <SiInstagram className={`w-4 h-4 ${themeColors.accent}`} />}
                     {form.socialLinks.tiktok && <SiTiktok className={`w-4 h-4 ${themeColors.accent}`} />}
                     {form.socialLinks.youtube && <SiYoutube className={`w-4 h-4 ${themeColors.accent}`} />}
-                    {form.socialLinks.linkedin && <SiLinkedin className={`w-4 h-4 ${themeColors.accent}`} />}
+                    {form.socialLinks.linkedin && <Linkedin className={`w-4 h-4 ${themeColors.accent}`} />}
                   </div>
 
                   <div className="w-full mt-5 space-y-2">

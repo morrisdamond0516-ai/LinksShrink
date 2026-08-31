@@ -29,6 +29,8 @@ import GeoRouting from "./pages/features/GeoRouting";
 import DeepLinks from "./pages/features/DeepLinks";
 import VideoAds from "./pages/features/VideoAds";
 import AdminFunnel from "./pages/AdminFunnel";
+import AdminYouTubeStudio from "./pages/AdminYouTubeStudio";
+import AdminKidsShorts from "./pages/AdminKidsShorts";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
 import Contact from "./pages/Contact";
@@ -67,6 +69,8 @@ function Router() {
       <Route path="/features/deep-links" component={DeepLinks} />
       <Route path="/features/video-ads" component={VideoAds} />
       <Route path="/admin/funnel" component={AdminFunnel} />
+      <Route path="/admin/youtube-studio" component={AdminYouTubeStudio} />
+      <Route path="/admin/kids-shorts" component={AdminKidsShorts} />
       <Route component={NotFound} />
     </Switch>
   );

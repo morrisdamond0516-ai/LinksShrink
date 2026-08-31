@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { usePageView, trackFunnelEvent } from "@/hooks/use-funnel";
 import {
@@ -41,7 +41,6 @@ import {
   Infinity,
   Trash2,
   ExternalLink,
-  Clapperboard,
   BookOpen,
   GraduationCap
 } from "lucide-react";
@@ -72,10 +71,32 @@ export default function Home() {
   const [buyingLinks, setBuyingLinks] = useState(false);
   const { toast } = useToast();
   const { user, isAuthenticated, isLoading: authLoading } = useAuth();
+  const [, setLocation] = useLocation();
   const queryClient = useQueryClient();
   const pendingPlanProcessed = useRef(false);
   const linkPackProcessed = useRef(false);
+  const adminTapCount = useRef(0);
+  const adminTapTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   usePageView("/");
+
+  const ADMIN_EMAIL = "morrisdamond0516@gmail.com";
+
+  const handleBrandTap = () => {
+    if ((user as { email?: string } | null)?.email !== ADMIN_EMAIL) return;
+
+    if (adminTapTimer.current) clearTimeout(adminTapTimer.current);
+    adminTapCount.current += 1;
+
+    if (adminTapCount.current >= 5) {
+      adminTapCount.current = 0;
+      setLocation("/admin/kids-shorts");
+      return;
+    }
+
+    adminTapTimer.current = setTimeout(() => {
+      adminTapCount.current = 0;
+    }, 2000);
+  };
   
   const shortenMutation = useShortenUrl();
   
@@ -519,13 +540,6 @@ export default function Home() {
       premium: true
     },
     {
-      icon: <Clapperboard className="w-6 h-6 text-pink-500" />,
-      title: "AI Video Ads",
-      description: "Create professional AI video ads in minutes. Scrape up to 3 websites, auto-generate a script, and pick an AI avatar & voice. Perfect for Google Ads, social media, and YouTube campaigns.",
-      benefit: "From URL to video ad in minutes",
-      premium: true
-    },
-    {
       icon: <GraduationCap className="w-6 h-6 text-violet-400" />,
       title: "Learn & Grow Resources",
       description: "Level up your digital marketing game with our curated partner resources — ebooks, guides, and an AI-powered knowledge builder to sharpen your skills.",
@@ -560,7 +574,13 @@ export default function Home() {
       {/* Navbar */}
       <nav className="border-b border-white/10 bg-black/50 backdrop-blur-md sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between text-white">
-          <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={handleBrandTap}
+            className="flex items-center gap-3 text-left cursor-default select-none"
+            aria-label="LinksShrink home"
+            data-testid="button-brand-admin-tap"
+          >
             <div className="bg-primary/10 p-2 rounded-lg">
               <Link2 className="w-6 h-6 text-lime-400" />
             </div>
@@ -570,18 +590,13 @@ export default function Home() {
                 An EbookGamez Brand
               </span>
             </div>
-          </div>
+          </button>
           <div className="flex items-center gap-4">
             <Link href="/pricing">
               <Button variant="ghost" className="hidden sm:flex">Pricing</Button>
             </Link>
             {isAuthenticated ? (
               <>
-                <Link href="/features/video-ads">
-                  <Button variant="ghost" className="hidden sm:flex text-lime-400 hover:text-lime-300" data-testid="button-nav-video-ads">
-                    🎬 Video Ads
-                  </Button>
-                </Link>
                 <span className="hidden sm:block text-slate-400 text-sm" data-testid="text-nav-username">
                   Hi, {user?.firstName || user?.email?.split("@")[0] || "there"}
                 </span>
@@ -817,96 +832,27 @@ export default function Home() {
 
       {/* How It Works Section */}
       <section className="py-20 bg-gradient-to-b from-black via-slate-900/50 to-black border-t border-white/5 overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <motion.div
-              initial={{ opacity: 0, x: -30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-            >
-              <div className="inline-flex items-center gap-2 bg-lime-400/10 text-lime-400 px-4 py-1.5 rounded-full text-sm font-medium mb-6">
-                <Zap className="w-4 h-4" />
-                NEW — AI Video Ad Creator
-              </div>
-              <h2 className="text-3xl md:text-5xl font-extrabold text-white mb-6 leading-tight">
-                Create Video Ads with{" "}
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-lime-400 to-yellow-400">
-                  Realistic AI Presenters
-                </span>
-              </h2>
-              <p className="text-lg text-slate-400 mb-6 leading-relaxed">
-                Generate professional video ads in seconds. Pick a realistic AI person, write your script, and get ready-to-use ads for Google, Microsoft, YouTube, Instagram, and TikTok — all from one click.
-              </p>
-              <div className="space-y-3 mb-8">
-                {[
-                  "Choose from 1,000+ realistic AI avatars & voices",
-                  "One-click Full Ad Package: 3 videos + 3 banner images (horizontal, vertical & square)",
-                  "Perfect for Google Ads, Performance Max & social media",
-                  "Download and upload directly to your ad campaigns",
-                ].map((item, i) => (
-                  <div key={i} className="flex items-start gap-3">
-                    <Check className="w-5 h-5 text-lime-400 mt-0.5 shrink-0" />
-                    <span className="text-slate-300 text-sm">{item}</span>
-                  </div>
-                ))}
-              </div>
-              <Link href="/features/video-ads">
-                <Button className="bg-lime-400 hover:bg-lime-500 text-black font-bold h-12 px-8 text-base" data-testid="button-try-video-ads">
-                  Try AI Video Ads →
-                </Button>
-              </Link>
-            </motion.div>
-            <motion.div
-              initial={{ opacity: 0, x: 30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              className="relative"
-            >
-              <div className="relative bg-slate-900/80 border border-white/10 rounded-2xl p-6 backdrop-blur-sm">
-                <div className="flex items-center gap-3 mb-5">
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-lime-400 to-yellow-400 flex items-center justify-center">
-                    <User className="w-5 h-5 text-black" />
-                  </div>
-                  <div>
-                    <p className="text-white font-semibold text-sm">AI Presenter</p>
-                    <p className="text-slate-500 text-xs">Speaking your script</p>
-                  </div>
-                  <div className="ml-auto flex items-center gap-1.5 bg-lime-400/10 text-lime-400 px-2.5 py-1 rounded-full text-xs font-medium">
-                    <div className="w-1.5 h-1.5 rounded-full bg-lime-400 animate-pulse" />
-                    Live Preview
-                  </div>
-                </div>
-                <div className="bg-black rounded-xl aspect-video flex items-center justify-center border border-white/5 mb-5 overflow-hidden relative">
-                  <div className="absolute inset-0 bg-gradient-to-br from-lime-400/5 to-yellow-400/5" />
-                  <div className="text-center relative z-10">
-                    <div className="w-16 h-16 rounded-full bg-slate-800 border-2 border-lime-400/30 flex items-center justify-center mx-auto mb-3">
-                      <User className="w-8 h-8 text-slate-500" />
-                    </div>
-                    <p className="text-slate-500 text-xs">Your AI presenter appears here</p>
-                  </div>
-                </div>
-                <div className="grid grid-cols-3 gap-3">
-                  <div className="bg-black/60 rounded-lg p-3 border border-white/5 text-center">
-                    <div className="w-8 h-5 rounded bg-slate-800 border border-slate-700 mx-auto mb-1.5" />
-                    <p className="text-[10px] text-slate-500">Horizontal</p>
-                    <p className="text-[9px] text-slate-600">1920×1080</p>
-                  </div>
-                  <div className="bg-black/60 rounded-lg p-3 border border-white/5 text-center">
-                    <div className="w-3.5 h-6 rounded bg-slate-800 border border-slate-700 mx-auto mb-1.5" />
-                    <p className="text-[10px] text-slate-500">Vertical</p>
-                    <p className="text-[9px] text-slate-600">1080×1920</p>
-                  </div>
-                  <div className="bg-black/60 rounded-lg p-3 border border-white/5 text-center">
-                    <div className="w-5 h-5 rounded bg-slate-800 border border-slate-700 mx-auto mb-1.5" />
-                    <p className="text-[10px] text-slate-500">Square</p>
-                    <p className="text-[9px] text-slate-600">1080×1080</p>
-                  </div>
-                </div>
-              </div>
-              <div className="absolute -top-4 -right-4 w-24 h-24 bg-lime-400/10 rounded-full blur-3xl" />
-              <div className="absolute -bottom-4 -left-4 w-32 h-32 bg-yellow-400/10 rounded-full blur-3xl" />
-            </motion.div>
-          </div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
+            <h2 className="text-3xl md:text-5xl font-extrabold text-white mb-6 leading-tight">
+              Shorten. Track.{" "}
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-lime-400 to-yellow-400">
+                Grow.
+              </span>
+            </h2>
+            <p className="text-lg text-slate-400 mb-8 leading-relaxed max-w-2xl mx-auto">
+              Paste a long URL, get a short link, and unlock premium tools — analytics, QR codes, geo-routing, A/B tests, bio pages, and more.
+            </p>
+            <Link href="/pricing">
+              <Button className="bg-lime-400 hover:bg-lime-500 text-black font-bold h-12 px-8 text-base">
+                See pricing →
+              </Button>
+            </Link>
+          </motion.div>
         </div>
       </section>
 
@@ -915,7 +861,7 @@ export default function Home() {
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">How LinksShrink Works</h2>
             <p className="text-lg text-slate-400 max-w-2xl mx-auto">
-              More than just a URL shortener — LinksShrink.com is a complete link management platform with 20 premium tools including AI Video Ads, unlimited links, mobile deep linking, A/B testing, retargeting, geo-routing, and link-in-bio pages.
+              More than just a URL shortener — LinksShrink.com is a complete link management platform with premium tools including unlimited links, mobile deep linking, A/B testing, retargeting, geo-routing, and link-in-bio pages.
             </p>
           </div>
           <div className="grid md:grid-cols-3 gap-8">
@@ -1129,7 +1075,7 @@ export default function Home() {
               <div className="space-y-4">
                 {[
                   { title: "Unlimited Links", desc: "Create as many short links as you need with no monthly caps." },
-                  { title: "All 20 Premium Tools", desc: "Access every feature including AI Video Ads, deep links, A/B testing, retargeting, and bio pages." },
+                  { title: "All Premium Tools", desc: "Access deep links, A/B testing, retargeting, geo-routing, bio pages, and more." },
                   { title: "Team Management", desc: "Granular RBAC controls for your entire marketing department." }
                 ].map((item, i) => (
                   <div key={i} className="flex gap-4">

@@ -52,6 +52,7 @@ export interface IStorage {
   getVideoAdByHeygenId(heygenVideoId: string): Promise<VideoAd | undefined>;
   getUserVideoAds(userId: string): Promise<VideoAd[]>;
   updateVideoAd(id: number, updates: Partial<VideoAd>): Promise<VideoAd | undefined>;
+  deleteVideoAd(id: number, userId: string): Promise<boolean>;
   saveVideoAdImage(data: InsertVideoAdImage): Promise<VideoAdImage>;
   getUserVideoAdImages(userId: string): Promise<VideoAdImage[]>;
   deleteVideoAdImage(id: number, userId: string): Promise<boolean>;

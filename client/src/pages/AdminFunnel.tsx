@@ -229,6 +229,16 @@ export default function AdminFunnel() {
                 <ArrowLeft className="w-5 h-5" />
               </Button>
             </Link>
+            <Link href="/admin/youtube-studio">
+              <Button variant="outline" size="sm" className="border-red-500/40 text-red-400 hover:bg-red-500/10">
+                YouTube Studio (admin)
+              </Button>
+            </Link>
+            <Link href="/admin/kids-shorts">
+              <Button size="sm" className="bg-yellow-500 hover:bg-yellow-400 text-black font-bold">
+                One-Click Cartoons
+              </Button>
+            </Link>
             <div>
               <h1 className="text-3xl font-bold flex items-center gap-2" data-testid="text-funnel-title">
                 <BarChart3 className="w-8 h-8 text-lime-400" />

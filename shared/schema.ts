@@ -240,6 +240,7 @@ export const videoAds = pgTable("video_ads", {
   thumbnailUrl: text("thumbnail_url"),
   duration: integer("duration"),
   errorMessage: text("error_message"),
+  kidsSaved: boolean("kids_saved").default(false),
   createdAt: timestamp("created_at").defaultNow(),
   completedAt: timestamp("completed_at"),
 });
@@ -276,3 +277,55 @@ export const passwordResetTokens = pgTable("password_reset_tokens", {
   usedAt: timestamp("used_at"),
   createdAt: timestamp("created_at").defaultNow(),
 });
+
+/** Admin-only YouTube viral research packs */
+export const youtubeViralPacks = pgTable("youtube_viral_packs", {
+  id: serial("id").primaryKey(),
+  userId: text("user_id").notNull(),
+  topic: text("topic").notNull(),
+  count: integer("count").notNull().default(3),
+  briefJson: text("brief_json"),
+  status: text("status").default("researched"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export type YoutubeViralPack = typeof youtubeViralPacks.$inferSelect;
+
+/** Easy video edit projects (customers + admin) */
+export const videoEditProjects = pgTable("video_edit_projects", {
+  id: serial("id").primaryKey(),
+  userId: text("user_id").notNull(),
+  title: text("title").notNull().default("Untitled edit"),
+  sourceVideoUrl: text("source_video_url"),
+  sourceFilename: text("source_filename"),
+  trimStartSec: integer("trim_start_sec").default(0),
+  trimEndSec: integer("trim_end_sec"),
+  captionText: text("caption_text").default(""),
+  scriptText: text("script_text").default(""),
+  scenesJson: text("scenes_json"),
+  aspectRatio: text("aspect_ratio").default("9:16"),
+  status: text("status").default("draft"),
+  outputVideoUrl: text("output_video_url"),
+  linkedVideoAdId: integer("linked_video_ad_id"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export type VideoEditProject = typeof videoEditProjects.$inferSelect;
+
+/** Admin OAuth tokens for YouTube / Pinterest */
+export const socialConnections = pgTable("social_connections", {
+  id: serial("id").primaryKey(),
+  userId: text("user_id").notNull(),
+  provider: text("provider").notNull(),
+  accessToken: text("access_token").notNull(),
+  refreshToken: text("refresh_token"),
+  expiresAt: timestamp("expires_at"),
+  accountLabel: text("account_label"),
+  accountId: text("account_id"),
+  metaJson: text("meta_json"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export type SocialConnection = typeof socialConnections.$inferSelect;
