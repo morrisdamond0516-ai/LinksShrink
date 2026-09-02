@@ -7,7 +7,7 @@ import { getStripePublishableKey, getUncachableStripeClient } from "./stripeClie
 import { sendContactEmail, sendRefundQualifiedEmail, sendRefundDeniedEmails } from "./emailService";
 import { setupAuth, isAuthenticated } from "./replit_integrations/auth/replitAuth";
 import { listAvatars, listVoices, generateAvatarVideo, getVideoStatus, generateVideoAgent, getHeygenWalletSummary, listHeygenVideos, getHeygenVideoV3 } from "./heygen";
-import { researchViralTopic, heygenPromptFromAngle } from "./youtubeViral";
+import { researchViralTopic, heygenPromptFromAngle, listViralChannelPlaybooks, isYoutubeViralAiConfigured } from "./youtubeViral";
 import {
   listKidsFormats,
   listGenerationModes,
@@ -1205,6 +1205,16 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
   });
 
   // ——— Admin-only YouTube viral studio (hidden from customers) ———
+  app.get("/api/admin/youtube/playbooks", isAuthenticated, requireAdmin, (_req, res) => {
+    res.json({
+      playbooks: listViralChannelPlaybooks(),
+      aiConfigured: isYoutubeViralAiConfigured(),
+      aiHint: isYoutubeViralAiConfigured()
+        ? "OpenAI writes a fresh idea + scene script per channel method on each research run."
+        : "Add OPENAI_API_KEY to Secrets for fresh AI angles (falls back to channel templates).",
+    });
+  });
+
   app.post("/api/admin/youtube/research", isAuthenticated, requireAdmin, async (req, res) => {
     try {
       const userId = getUserId(req)!;
@@ -1225,7 +1235,12 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
         })
         .returning();
 
-      res.json({ packId: pack.id, brief });
+      res.json({
+        packId: pack.id,
+        brief,
+        aiConfigured: isYoutubeViralAiConfigured(),
+        channelMethods: listViralChannelPlaybooks().length,
+      });
     } catch (err: any) {
       console.error("youtube research error:", err);
       res.status(500).json({ message: err.message || "Research failed" });

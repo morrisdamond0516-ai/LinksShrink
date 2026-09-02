@@ -22,6 +22,14 @@ export interface ViralAngle {
   durationSeconds: number;
   viralScore: number;
   whyItCouldWork: string;
+  /** Channel method this angle follows (MrBeast-style, Veritasium-style, etc.) */
+  channelId?: string;
+  channelName?: string;
+  methodName?: string;
+  /** Step 1 — viral idea brief */
+  ideaBrief?: string;
+  /** Step 2 — scene-by-scene breakdown for HeyGen */
+  sceneScript?: string;
 }
 
 export interface ResearchBrief {
@@ -43,33 +51,16 @@ const BANNED_TOPIC_PATTERNS = [
   /\b(kill|murder)\s+(someone|people)\b/i,
 ];
 
-const STYLE_ROTATION: { style: VideoStyle; label: string; structure: string }[] = [
-  {
-    style: "realistic_avatar",
-    label: "Realistic AI Presenter",
-    structure: "Direct-to-camera authority hook → 3 points → clear CTA",
-  },
-  {
-    style: "faceless_broll",
-    label: "Faceless VO + B-roll",
-    structure: "Rapid value-per-second facts with on-screen captions",
-  },
-  {
-    style: "cartoon_story",
-    label: "Cartoon / Animated Story",
-    structure: "3-act mini story: problem → turn → payoff",
-  },
-  {
-    style: "myth_vs_truth",
-    label: "Myth vs Truth",
-    structure: "Open with popular myth → flip with surprising truth",
-  },
-  {
-    style: "countdown_facts",
-    label: "Countdown Tension",
-    structure: "Numbered stakes that escalate to the #1 reveal",
-  },
-];
+import {
+  VIRAL_CHANNEL_PLAYBOOKS,
+  buildTemplateSceneScript,
+  formatChannelIdeaBrief,
+  type ViralChannelPlaybook,
+} from "./youtubeChannelPlaybooks";
+import { generateViralAnglesWithAI, isYoutubeViralAiConfigured } from "./youtubeViralAI";
+
+export { listViralChannelPlaybooks } from "./youtubeChannelPlaybooks";
+export { isYoutubeViralAiConfigured };
 
 function sanitizeTopic(topic: string): string {
   return topic.trim().slice(0, 120);
@@ -244,43 +235,35 @@ export async function researchViralTopic(
     "Hook in the first 1–2 seconds (Shorts) or 15 seconds (long-form)",
     "Title creates a curiosity gap; thumbnail does not repeat the title",
     "Pay off the promise — misleading CTR gets demoted",
-    "Vary style + angle when batching 3–5 videos to test what the algorithm prefers",
+    "Each angle uses a different viral channel method (MrBeast, Veritasium, Bright Side, Dude Perfect, GaryVee-style)",
+    "Step 1: viral idea → Step 2: scene-by-scene script → HeyGen render",
     "Captions on-screen; cut every few seconds; no slow intros",
   ];
 
-  const angleSeeds = [
-    `The costly mistake around ${topic}`,
-    `What experts won't say about ${topic}`,
-    `A mini-story of failing then fixing ${topic}`,
-    `Myths vs truth about ${topic}`,
-    `Countdown of traps in ${topic}`,
-  ];
+  let angles: ViralAngle[];
 
-  const angles: ViralAngle[] = STYLE_ROTATION.slice(0, n).map((s, i) => {
-    const built = buildScript(topic, s.style, angleSeeds[i] || topic);
-    return {
-      id: `${s.style}-${i + 1}`,
-      style: s.style,
-      styleLabel: s.label,
-      angleTitle: angleSeeds[i] || `${topic} angle ${i + 1}`,
-      hook: built.hook,
-      script: built.script,
-      suggestedTitle: built.title.slice(0, 60),
-      thumbnailConcept: built.thumb,
-      durationSeconds: s.style === "faceless_broll" ? 25 : s.style === "countdown_facts" ? 35 : 45,
-      viralScore: scoreAngle(s.style, i),
-      whyItCouldWork: `${s.structure}. Differentiated style for A/B testing against other pack videos.`,
-    };
-  });
+  if (isYoutubeViralAiConfigured()) {
+    try {
+      angles = await generateViralAnglesWithAI(topic, n);
+    } catch (err) {
+      console.error("YouTube viral AI failed, using channel templates:", err);
+      angles = buildAnglesFromChannelPlaybooks(topic, n);
+    }
+  } else {
+    angles = buildAnglesFromChannelPlaybooks(topic, n);
+  }
 
   angles.sort((a, b) => b.viralScore - a.viralScore);
 
   return {
     topic,
     researchedAt: new Date().toISOString(),
-    sourcesNote: process.env.YOUTUBE_API_KEY
-      ? "Live YouTube Data API + viral pattern library"
-      : "Viral pattern library (add YOUTUBE_API_KEY for live top-video research)",
+    sourcesNote: [
+      isYoutubeViralAiConfigured()
+        ? "OpenAI fresh angles per channel method"
+        : "Channel playbook templates (add OPENAI_API_KEY for fresh AI angles)",
+      process.env.YOUTUBE_API_KEY ? "Live YouTube Data API" : "Pattern library only",
+    ].join(" · "),
     patterns,
     bannedOrRisky: false,
     riskNotes: [],
@@ -289,7 +272,52 @@ export async function researchViralTopic(
   };
 }
 
+function buildAnglesFromChannelPlaybooks(topic: string, n: number): ViralAngle[] {
+  return VIRAL_CHANNEL_PLAYBOOKS.slice(0, n).map((playbook, i) =>
+    angleFromChannelPlaybook(topic, playbook, i)
+  );
+}
+
+function angleFromChannelPlaybook(topic: string, playbook: ViralChannelPlaybook, index: number): ViralAngle {
+  const built = buildScript(topic, playbook.mappedStyle, `${playbook.methodName} on ${topic}`);
+  const ideaBrief = formatChannelIdeaBrief(playbook, topic, built.hook);
+  const { scriptText } = buildTemplateSceneScript(playbook, topic, built.hook, 60);
+
+  return {
+    id: `${playbook.id}-${index + 1}`,
+    channelId: playbook.id,
+    channelName: playbook.channelName,
+    methodName: playbook.methodName,
+    style: playbook.mappedStyle,
+    styleLabel: playbook.channelName,
+    angleTitle: `${topic} — ${playbook.methodName}`,
+    hook: built.hook,
+    script: built.script,
+    suggestedTitle: built.title.slice(0, 60),
+    thumbnailConcept: built.thumb,
+    durationSeconds: 60,
+    viralScore: scoreAngle(playbook.mappedStyle, index),
+    whyItCouldWork: `${playbook.psychology} ${playbook.secretSauce}`,
+    ideaBrief,
+    sceneScript: scriptText,
+  };
+}
+
 export function heygenPromptFromAngle(angle: ViralAngle, topic: string): string {
+  if (angle.sceneScript) {
+    return `Create a vertical YouTube Short (9:16), 60 seconds, about "${topic}".
+Channel method: ${angle.channelName || angle.styleLabel}${angle.methodName ? ` — ${angle.methodName}` : ""}
+
+STEP 1 — VIRAL IDEA:
+${angle.ideaBrief || angle.hook}
+
+STEP 2 — SCENE-BY-SCENE SCRIPT (follow exactly):
+${angle.sceneScript}
+
+Rules: Open with "${angle.hook}" in the first 2 seconds. Bold on-screen captions. Cut every 2–4 seconds. No slow intro.
+End with a loop or follow CTA. Title concept: ${angle.suggestedTitle}`;
+  }
+
   return `Create a vertical YouTube Short (9:16) about "${topic}".
 Style: ${angle.styleLabel}.
 Hook (say this first): ${angle.hook}

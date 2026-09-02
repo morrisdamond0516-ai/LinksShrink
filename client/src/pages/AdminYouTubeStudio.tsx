@@ -25,6 +25,21 @@ interface ViralAngle {
   durationSeconds: number;
   viralScore: number;
   whyItCouldWork: string;
+  channelId?: string;
+  channelName?: string;
+  methodName?: string;
+  ideaBrief?: string;
+  sceneScript?: string;
+}
+
+interface ChannelPlaybook {
+  id: string;
+  channelName: string;
+  methodName: string;
+  niche: string;
+  psychology: string;
+  mappedStyle: string;
+  titlePattern: string;
 }
 
 interface ResearchBrief {
@@ -57,6 +72,7 @@ export default function AdminYouTubeStudio() {
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [boardId, setBoardId] = useState("");
   const [privacy, setPrivacy] = useState<"private" | "unlisted" | "public">("private");
+  const [expandedAngle, setExpandedAngle] = useState<string | null>(null);
 
   const isAdmin = !!user && (user as any).email === ADMIN_EMAIL;
 
@@ -78,6 +94,16 @@ export default function AdminYouTubeStudio() {
       });
     }
   }, []);
+
+  const { data: playbookMeta } = useQuery<{
+    playbooks: ChannelPlaybook[];
+    aiConfigured: boolean;
+    aiHint: string;
+  }>({
+    queryKey: ["/api/admin/youtube/playbooks"],
+    enabled: isAuthenticated && isAdmin,
+  });
+
 
   const { data: packs = [] } = useQuery<any[]>({
     queryKey: ["/api/admin/youtube/packs"],
@@ -372,9 +398,35 @@ export default function AdminYouTubeStudio() {
 
         <Card className="bg-slate-900/80 border-white/10">
           <CardHeader>
+            <CardTitle className="text-white text-base">5 viral channel methods</CardTitle>
+            <p className="text-xs text-slate-400">
+              Each research angle applies one proven viral formula — same idea → scene script → HeyGen flow as Kids Shorts.
+            </p>
+            {playbookMeta?.aiHint && (
+              <p className={`text-xs mt-2 ${playbookMeta.aiConfigured ? "text-lime-400" : "text-amber-400"}`}>
+                {playbookMeta.aiConfigured ? "✓ AI on — fresh angles every research run" : playbookMeta.aiHint}
+              </p>
+            )}
+          </CardHeader>
+          <CardContent className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            {(playbookMeta?.playbooks || []).map((p) => (
+              <div key={p.id} className="rounded-lg border border-white/10 bg-black/30 p-3 space-y-1">
+                <p className="font-semibold text-white text-sm">{p.channelName}</p>
+                <p className="text-xs text-lime-400">{p.methodName}</p>
+                <p className="text-xs text-slate-400 line-clamp-2">{p.psychology}</p>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+
+        <Card className="bg-slate-900/80 border-white/10">
+          <CardHeader>
             <CardTitle className="text-white flex items-center gap-2">
               <Sparkles className="w-5 h-5 text-lime-400" /> One-button research pack
             </CardTitle>
+            <p className="text-xs text-slate-400">
+              Pick 1–5 videos — each uses a different channel method (MrBeast, Veritasium, Bright Side, Dude Perfect, GaryVee-style).
+            </p>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid sm:grid-cols-[1fr_auto_auto] gap-3 items-end">
@@ -440,24 +492,47 @@ export default function AdminYouTubeStudio() {
                     </Button>
                   </div>
                   {brief.angles.map((a) => (
-                    <label
+                    <div
                       key={a.id}
-                      className={`block rounded-xl border p-4 cursor-pointer ${
+                      className={`rounded-xl border ${
                         selected.has(a.id) ? "border-lime-400/60 bg-lime-400/5" : "border-white/10 bg-black/20"
                       }`}
                     >
-                      <div className="flex gap-3">
-                        <input type="checkbox" checked={selected.has(a.id)} onChange={() => toggleAngle(a.id)} className="mt-1" />
-                        <div className="flex-1 space-y-1">
-                          <div className="flex flex-wrap items-center gap-2">
-                            <span className="text-white font-semibold">{a.suggestedTitle}</span>
-                            <span className="text-xs px-2 py-0.5 rounded bg-white/10">{a.styleLabel}</span>
-                            <span className="text-xs text-lime-400">score {a.viralScore}</span>
+                      <label className="block p-4 cursor-pointer">
+                        <div className="flex gap-3">
+                          <input type="checkbox" checked={selected.has(a.id)} onChange={() => toggleAngle(a.id)} className="mt-1" />
+                          <div className="flex-1 space-y-1">
+                            <div className="flex flex-wrap items-center gap-2">
+                              <span className="text-white font-semibold">{a.suggestedTitle}</span>
+                              {a.channelName && (
+                                <span className="text-xs px-2 py-0.5 rounded bg-red-500/20 text-red-300">{a.channelName}</span>
+                              )}
+                              <span className="text-xs px-2 py-0.5 rounded bg-white/10">{a.styleLabel}</span>
+                              <span className="text-xs text-lime-400">score {a.viralScore}</span>
+                            </div>
+                            {a.methodName && <p className="text-xs text-slate-400">{a.methodName}</p>}
+                            <p className="text-sm text-slate-300"><strong>Hook:</strong> {a.hook}</p>
+                            <p className="text-xs text-slate-500 line-clamp-2">{a.whyItCouldWork}</p>
                           </div>
-                          <p className="text-sm text-slate-300"><strong>Hook:</strong> {a.hook}</p>
                         </div>
-                      </div>
-                    </label>
+                      </label>
+                      {(a.sceneScript || a.ideaBrief) && (
+                        <div className="px-4 pb-4">
+                          <button
+                            type="button"
+                            className="text-xs text-lime-400 underline"
+                            onClick={() => setExpandedAngle(expandedAngle === a.id ? null : a.id)}
+                          >
+                            {expandedAngle === a.id ? "Hide scene script" : "Show idea + scene script"}
+                          </button>
+                          {expandedAngle === a.id && (
+                            <pre className="mt-2 text-xs text-slate-300 whitespace-pre-wrap bg-black/40 rounded-lg p-3 max-h-64 overflow-y-auto border border-white/5">
+                              {a.sceneScript || a.ideaBrief}
+                            </pre>
+                          )}
+                        </div>
+                      )}
+                    </div>
                   ))}
                 </div>
               )}
